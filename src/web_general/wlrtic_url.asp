@@ -1,0 +1,1 @@
+<% checkWrite("rtic_info_addr_string"); %>
