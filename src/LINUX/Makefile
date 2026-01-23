@@ -808,7 +808,7 @@ ifeq ("$(CONFIG_PRD_SIGNATURE)", "9601DVD")
 	$(ROMFSINST) -s /home/httpd/web/share.js  /home/httpd/web/admin/share.js
 	$(ROMFSINST) -s /home/httpd/web/base64_code.js /home/httpd/web/admin/base64_code.js
 	$(ROMFSINST) -s /home/httpd/web/sha256_code.js /home/httpd/web/admin/sha256_code.js
-	$(ROMFSINST) -s /home/httpd/web/acl.asp  /home/httpd/web/admin/acl.asp
+	$(ROMFSINST) -s /home/httpd/web/acl.html  /home/httpd/web/admin/acl.html
 	$(ROMFSINST) -s /home/httpd/web/url_blocking.asp  /home/httpd/web/admin/url_blocking.asp
 	$(ROMFSINST) -s /home/httpd/web/fw-macfilter_rg.asp  /home/httpd/web/admin/fw-macfilter_rg.asp
 	$(ROMFSINST) -s /home/httpd/web/reboot.asp  /home/httpd/web/admin/reboot.asp
@@ -892,7 +892,7 @@ ifdef CONFIG_CMCC_ENTERPRISE
 endif
 	$(ROMFSINST) -s /home/httpd/web/common_style.css /home/httpd/web/admin/common_style.css
 	$(ROMFSINST) -s /home/httpd/web/common.css /home/httpd/web/admin/common.css
-	$(ROMFSINST) -s /home/httpd/web/acl.asp  /home/httpd/web/admin/acl.asp
+	$(ROMFSINST) -s /home/httpd/web/acl.html  /home/httpd/web/admin/acl.html
 ifndef CONFIG_00R0
 	$(ROMFSINST) -s /home/httpd/web/tz.asp  /home/httpd/web/admin/tz.asp
 endif
