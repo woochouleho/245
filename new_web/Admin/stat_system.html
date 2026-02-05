@@ -1,0 +1,137 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+
+var sessionKey = '646974322';
+var cur_user	= 'admin';
+
+var wv_cpu_th= 80; 
+var wv_mem_th= 80; 
+
+function frmLoad() {
+	document.getElementById("cpuusage").innerHTML = "0.2%";
+	document.getElementById("memtotal").innerHTML = "953.16M";
+	document.getElementById("memusage").innerHTML = "374.01M";
+	document.getElementById("memusage_per").innerHTML = "39.239%";
+	document.getElementById("flashsize").innerHTML = "25.10M";
+	document.getElementById("flashused").innerHTML ="128K";
+	document.getElementById("flashusage").innerHTML = "1%";
+	document.getElementById('cputhreshold').innerHTML = parseInt(wv_cpu_th) + '%';
+	document.getElementById('memthreshold').innerHTML = parseInt(wv_mem_th) + '%';
+	return;
+}
+
+function frmReload() {
+	document.location.reload();
+}
+
+function resetClick() {
+   var loc = 'statsifcreset.html';
+
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+</script>
+</head>
+
+<body onLoad='frmLoad()'>
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form>
+<div class="container custom_input">
+
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>통계 </li>
+			<li>시스템 통계</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">시스템 통계</h1>
+	<p>네트워크 연결 정보와 CPU 통계 정보를 출력합니다.</p>
+	<hr>
+
+	<h2 class="title_style_2">CPU</h2>
+	<div class="tb_style_2">
+		<table>
+			<tr>
+				<th scope="col"><center>CPU 사용량</center></th>
+				<td><span id="cpuusage" name="cpuusage"></span></td>
+			</tr>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">Memory</h2>
+	<div class="tb_style_2">
+		<table>
+			<tr>
+				<th scope="row">Memory 크기</th>
+				<td><span id="memtotal" name="memtotal"></span> </td>
+			</tr>
+			<tr>
+				<th scope="row">Memory 사용량 </th>
+				<td><span id="memusage" name="memusage"></span> </td>
+			</tr>
+			<tr>
+				<th scope="row">메모리 사용률(%) </th>
+				<td><span id="memusage_per" name="memusage_per"></span> </td>
+			</tr>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">Flash</h2>
+	<div class="tb_style_2">
+		<table>
+			<tr>
+				<th scope="row">Flash 크기</th>
+				<td><span id="flashsize" name="flashusize"></span> </td>
+			</tr>
+			<tr>
+				<th scope="row">Flash 사용량</th>
+				<td><span id="flashused" name="flashused"></span> </td>
+			</tr>
+			<tr>
+				<th scope="row">Flash 사용률(%)</th>
+				<td><span id="flashusage" name="flashusage"></span> </td>
+			</tr>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">Threshold</h2>
+	<div class="tb_style_2_1">
+		<table>
+			<tr>
+				<th scope="row">CPU 알람 임계값</th>
+				<td><p id='cputhreshold' name='cputhreshold'></p></td>
+			</tr>
+			<tr>
+				<th scope="row">Memory 알람 임계값</th>
+				<td><p id='memthreshold' name='memthreshold'></p></td>
+			</tr>
+		</table>
+	</div>
+	
+</div>
+</form>
+</body>
+</html>

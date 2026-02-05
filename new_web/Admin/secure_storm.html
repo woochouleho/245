@@ -1,0 +1,346 @@
+
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko">
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+
+<script language="javascript">
+
+var sessionKey='1127727627';
+
+var storm_dlf_mode = 3;
+var storm_dlf_limit = 200;
+
+var storm_bcast_mode = 3;
+var storm_bcast_limit = 200;
+
+var storm_mcast_mode = 3;
+var storm_mcast_limit = 200;
+
+function btnApply_get_strom() {
+	var storm_type = parseInt(document.getElementById('w_storm_type').value); 
+	var result = '';
+
+	switch(storm_type)
+	{
+		case 0 :
+			result  = 'storm_ctrl_dlf_mode='   	 + document.getElementById('w_storm_target').value;
+			result += '&storm_ctrl_dlf_limit=' 	 + document.getElementById('w_storm_pps').value;
+			break;
+
+		case 1 :
+			result  = 'storm_ctrl_bcast_mode='   + document.getElementById('w_storm_target').value;
+			result += '&storm_ctrl_bcast_limit=' + document.getElementById('w_storm_pps').value;
+			break;
+
+		case 2 :
+			result  = 'storm_ctrl_mcast_mode='   + document.getElementById('w_storm_target').value;
+			result += '&storm_ctrl_mcast_limit=' + document.getElementById('w_storm_pps').value;
+			break;
+
+		default:
+			break;
+	}
+	
+	return result;
+}
+
+function btnApply_check_storm() {
+	var storm_pps = parseInt( document.getElementById('w_storm_pps').value);
+
+	if( isNaN(storm_pps)  == true ) {
+		webAlert(" 폭주 제어 기능의 잘못된 허용 패킷 수 입니다.");
+		return false;
+	} else if( storm_pps < 0 || storm_pps > 50000) {
+		webAlert(" 폭주 제어 기능의 허용 패킷 수는 0 ~ 50000 사이로 설정 하십시오.");
+		return false;
+	}
+
+	return true;
+}
+
+function btnApply_check_mfg() {
+	var mfg_pps =  parseInt(document.forms[0].w_mfg_pps.value);
+	var mfg_btm =  parseInt(document.forms[0].w_mfg_btm.value);
+
+	if( isNaN(mfg_pps)  == true ) {
+		webAlert(" 잘못된 MAC Flood Guard의 패킷 제한 입니다.");
+		return false;
+	} else if( mfg_pps < 100 || mfg_pps > 2000) {
+		webAlert(" MAC Flood Guard의 패킷 제한은  100 ~ 2000 사이로 설정 하십시오.");
+		return false;
+	}
+
+	if( isNaN(mfg_btm)  == true ) {
+		webAlert(" 잘못된 MAC Flood Guard의 차단 시간 입니다.");
+		return false;
+	} else if( mfg_btm < 60 || mfg_btm > 86400) {
+		webAlert(" MAC Flood Guard의 차단 시간은  60 ~ 86400 사이로 설정 하십시오.");
+		return false;
+	}
+
+	return true;
+}
+
+function btnApply(save_type) {
+	var loc  = 'secure_storm.cgi?';
+	var code = '';
+
+	switch(save_type) {
+		case 0:
+			if( btnApply_check_storm() == false )
+				return;
+
+			loc += btnApply_get_strom();
+			break;
+
+		case 1:
+			if( btnApply_check_mfg() == false )
+				return;
+
+			loc += 'wv_mac_flood_guard_enable='        + document.forms[0].w_mfg_enable.value;
+			loc += '&wv_mac_flood_packet_limit_value=' + document.forms[0].w_mfg_pps.value;
+			loc += '&wv_mac_flood_block_time_value='   + document.forms[0].w_mfg_btm.value;
+			break;
+
+		default:
+			return;
+	}
+
+	loc += '&sessionKey=' + sessionKey;
+	code = 'location="' + loc + '"';
+	eval(code);
+
+	return;
+}
+
+function update_mfg_state() {
+	var mfg_enable = parseInt(document.getElementById('w_mfg_enable').value);
+
+	if(mfg_enable) {
+		document.forms[0].w_mfg_pps.disabled = false;
+		document.forms[0].w_mfg_btm.disabled = false;
+	}
+	else {
+		document.forms[0].w_mfg_pps.disabled = true;
+		document.forms[0].w_mfg_btm.disabled = true;
+	}
+}
+
+
+function update_storm_type_state() {
+	var storm_type = parseInt(document.getElementById('w_storm_type').value);
+
+	switch(storm_type)
+	{
+		case 0:		/* DLF */
+			document.getElementById('w_storm_target').value = storm_dlf_mode;
+			document.getElementById('w_storm_pps').value = storm_dlf_limit;
+			$('#w_storm_pps').attr('placeholder', '기본값: ' + '200');	/* show default */
+			break;
+
+		case 1:		/* BCAST */
+			document.getElementById('w_storm_target').value = storm_bcast_mode;
+			document.getElementById('w_storm_pps').value = storm_bcast_limit;
+			$('#w_storm_pps').attr('placeholder', '기본값: ' + '200');	/* show default */
+			break;
+
+		case 2:		/* MCAST */
+			document.getElementById('w_storm_target').value = storm_mcast_mode;
+			document.getElementById('w_storm_pps').value = storm_mcast_limit;
+			$('#w_storm_pps').attr('placeholder', '기본값: ' + '200');	/* show default */
+			break;
+
+		default:
+			break;
+	}
+
+	return;
+}
+
+function update_storm_target_state() {
+	var storm_target = parseInt(document.getElementById('w_storm_target').value);
+
+	if(storm_target == 0)
+		document.forms[0].w_storm_pps.disabled = true;
+	else
+		document.forms[0].w_storm_pps.disabled = false;
+
+	return;
+}
+
+function frmLoad() {
+	var mfg_enable = 0;
+	var mfg_pps    = 200;
+	var mfg_btm    = 300;
+
+	document.forms[0].w_mfg_enable.value = mfg_enable;
+	document.forms[0].w_mfg_pps.value = mfg_pps;
+	document.forms[0].w_mfg_btm.value = mfg_btm;
+	update_mfg_state();
+
+	update_storm_type_state();
+	update_storm_target_state();
+
+	/* show default */
+	$('#w_mfg_pps').attr('placeholder', '기본값: ' + '200');	
+	$('#w_mfg_btm').attr('placeholder', '기본값: ' + '300');	
+	return;
+}
+</script>
+</head>
+
+<body onload="frmLoad()">
+
+<div id="wrap">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+
+<form>
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>보안기능 </li>
+			<li>Storm 제어 </li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">Storm 제어</h1>
+	<!-- 20190326 말풍선영역 추가 -->
+	<!--div class="speech_bubble_area">
+		<a href="#" class="speech_bubble_open"><img src="img/icon_speech_bubble.png" alt="말풍선영역열기" /></a>
+		<div class="speech_bubble_txt">
+			설명문구가 들어갑니다. 설명문구가 들어갑니다. 설명문구가 들어갑니다. 설명문구가 들어갑니다. 설명문구가 들어갑니다. 설명문구가 들어갑니다.
+		</div>
+	</div-->
+	<!-- //20190326 말풍선영역 추가 -->
+	<p>포트별 폭주 제어 기능을 설정합니다. 브로드캐스트, 멀티캐스트 패킷 등이 해당됩니다.</p>
+	<hr>
+
+	<h2 class="title_style_2">폭주 제어 기능 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:25%;" />
+				<col />
+			</colgroup>
+			<tbody>
+				<!--tr>
+					<th scope="row">허용 패킷 수</th>
+					<td>
+						<input type='text' name='w_storm_pps' class='w_130'><span>&nbsp;Packet / Sec</span>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">WAN</th>
+					<td>
+						<select id="w_storm_wan" name="w_storm_wan">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">LAN</th>
+					<td>
+						<select id="w_storm_lan" name="w_storm_lan">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr-->
+				<tr>
+					<th scope="row">패킷 타입</th>
+					<td>
+						<select id="w_storm_type" name="w_storm_type" onchange="update_storm_type_state();">
+							<option value="0">DLF</option>
+							<option value="1">브로드캐스트</option>
+							<option value="2">멀티캐스트</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">제어 대상</th>
+					<td>
+						<select id="w_storm_target" name="w_storm_target" onchange="update_storm_target_state();">
+							<option value="0">비활성화</option>
+							<option value="1">LAN</option>
+							<option value="2">WAN</option>
+							<option value="3">ALL(WAN+LAN)</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">허용 패킷 수</th>
+					<td>
+						<input type='text' id="w_storm_pps" name="w_storm_pps" class='w_130'><span>&nbsp;Packet / Sec</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<p style="font-size:8pt">※ 값을 변경하면 성능 및 보안에 문제가 발생할 수 있습니다.</p>
+	</div>
+
+	<div class="txt_c mb_20"> <!-- 20190325 pt_20 클래스를 mb_20 클래스로 변경 -->
+		<input type="button"  onclick="btnApply(0)" value="적용" class="basic-btn01 btn-blue-bg" >
+	</div>
+
+	<h2 class="title_style_2">MAC Flood Guard 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:25%;" />
+				<col />
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">기능 동작</th>
+					<td>
+						<select id="w_mfg_enable" name="w_mfg_enable" onchange="update_mfg_state()">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">패킷 제한</th>
+					<td>
+						<input id="w_mfg_pps" name="w_mfg_pps" type="text" class='w_130'> (pps)<br>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">차단 시간</th>
+					<td>
+						<input id="w_mfg_btm" name="w_mfg_btm" type="text" class='w_130'> (초)
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c mb_20"> <!-- 20190325 pt_20 클래스를 mb_20 클래스로 변경 -->
+		<input type="button"  onclick="btnApply(1)" value="적용" class="basic-btn01 btn-blue-bg" >
+	</div>
+</div>
+</form>
+</div> <!-- //wrap -->
+</body>
+</html>

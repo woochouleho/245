@@ -1,0 +1,353 @@
+
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko">
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+
+<script language="javascript">
+
+var sessionKey='13958365';
+var check_off 	= 8;
+var check_every = 7;
+
+function write_StartTime(){
+	var n =0;
+	for(n = 0; n < 24; n++ )
+		if( n < 10)
+			document.write("<option value="+n+">0"+n+"시</option>\n");
+	else
+		document.write("<option value="+n+">"+n+"시</option>\n");
+}
+
+function write_EndTime(){
+	var n =0;
+	for(n = 1; n < 25; n++ )
+		if( n < 10)
+			document.write("<option value="+n+">0"+n+"시</option>\n");
+	else
+		document.write("<option value="+n+">"+n+"시</option>\n");
+}
+
+function write_time_min(){
+	var n =0;
+	for(n = 0; n < 6; n++ ) {
+		if(n == 0)
+			document.write("<option value="+Number(n*10)+">0"+Number(n*10)+"분</option>\n");
+		else
+			document.write("<option value="+Number(n*10)+">"+Number(n*10)+"분</option>\n");
+	}
+}
+
+function  change_week_off_checked() {
+	var n = 0;
+	var action = 0;
+	
+	if (document.forms[0].elements['chk_week[]'][check_off].checked) 
+		action = 1;
+
+	for(n = 0; n < check_off; n++ ) 
+	{
+		if(action == 1) {
+			document.forms[0].elements['chk_week[]'][n].checked = false;
+			document.forms[0].elements['chk_week[]'][n].disabled = true;
+			enable_time_input(0);
+		} else {
+			document.forms[0].elements['chk_week[]'][n].disabled = false;
+			enable_time_input(1);
+		}
+	}	
+}
+
+function  change_week_every() {
+	var n = 0;
+	var action = 0;
+
+	if (document.forms[0].elements['chk_week[]'][check_every].checked) 
+		action = 1;
+
+	for(n = 0; n < check_every; n++ ) 
+	{
+		if(action == 1)
+			document.forms[0].elements['chk_week[]'][n].checked = true;
+		else
+			document.forms[0].elements['chk_week[]'][n].checked = false;
+	}
+
+	return;
+}
+
+function  enable_time_input(action) {
+	if(action == 1) {
+		document.forms[0].w_led_hour_start.disabled = false;
+		document.forms[0].w_led_min_start.disabled 	= false;
+		document.forms[0].w_led_hour_end.disabled 	= false;
+		document.forms[0].w_led_min_end.disabled 	= false;
+	} else {
+		document.forms[0].w_led_hour_start.disabled = true;
+		document.forms[0].w_led_min_start.disabled 	= true;
+		document.forms[0].w_led_hour_end.disabled 	= true;
+		document.forms[0].w_led_min_end.disabled  	= true;
+
+		document.forms[0].w_led_hour_start.value 	= 0;
+		document.forms[0].w_led_min_start.value 	= 0;
+		document.forms[0].w_led_hour_end.value 		= 1;
+		document.forms[0].w_led_min_end.value 		= 0;
+	}
+
+	return;
+}
+
+function change_button_value() {
+	var n = 0;
+	
+	if( document.forms[0].w_led_off_enable.value == 0) 
+	{
+		for(n = 0; n < document.forms[0].elements['chk_week[]'].length ; n++ ) 
+		{
+			document.forms[0].elements['chk_week[]'][n].checked = false;
+			document.forms[0].elements['chk_week[]'][n].disabled = true;
+		}		
+		
+		enable_time_input(0);
+	} 
+	else  
+	{
+		for(n = 0; n < document.forms[0].elements['chk_week[]'].length ; n++ ) 
+			document.forms[0].elements['chk_week[]'][n].disabled = false;
+
+		enable_time_input(1);
+	}
+
+	return;
+}
+
+function change_hour_end() {
+	if(document.forms[0].w_led_hour_end.value == 24) {
+		document.forms[0].w_led_min_end.disabled = true;
+		document.forms[0].w_led_min_end.value = 0;
+	} else {
+		document.forms[0].w_led_min_end.disabled = false;
+	}
+
+	return;
+}
+
+function btnApplySave_check() {
+	var result = true;
+	var n 	   = 0;
+	var start  = Number(document.forms[0].w_led_hour_start.value)*60 + Number(document.forms[0].w_led_min_start.value);
+	var end   = Number(document.forms[0].w_led_hour_end.value)*60 + Number(document.forms[0].w_led_min_end.value);
+
+	if(document.forms[0].w_led_off_enable.value == 0)
+		return true;
+	
+	if(	Number(start) >= Number(end) ) {
+		webAlert('시작시간이 종료시간보다 같거나 클수는 없습니다');
+		return false;
+	}
+
+	result = false;
+	for(n = 0; n < document.forms[0].elements['chk_week[]'].length ; n++ ) {
+		if( document.forms[0].elements['chk_week[]'][n].checked)
+			result = true;
+	}
+
+	if(result == false)
+		webAlert('최소 하나의 요일을 선택해야 합니다.');
+	
+	return result;
+}
+
+function btnApplySave() {
+	var loc 	= "";
+	var n 		= 0;
+	var week 	= "";
+
+	if( !btnApplySave_check() )
+		return;
+	
+	if(document.forms[0].elements['chk_week[]'][check_off].checked)
+		week+="1";
+	else
+		week+="0";
+	
+	for(n = 6;  n >= 0; n--) 
+	{
+	 	if( n == check_every)
+	 		continue;
+
+	 	if(document.forms[0].elements['chk_week[]'][n].checked)
+	 		week+="1";
+	 	else
+	 		week+="0";
+	}
+
+	loc += "mng_led.cgi?";
+	loc += "led_ctrl_enable=" 		+ document.forms[0].w_led_off_enable.value;
+	loc += "&led_ctrl_week="		+ week;
+	loc += "&led_ctrl_starthour=" 	+ document.forms[0].w_led_hour_start.value;
+	loc += "&led_ctrl_startmin=" 	+ document.forms[0].w_led_min_start.value;
+	loc += "&led_ctrl_endhour=" 	+ document.forms[0].w_led_hour_end.value;
+	loc += "&led_ctrl_endmin=" 		+ document.forms[0].w_led_min_end.value;
+	loc += '&sessionKey=' 			+ sessionKey;
+
+	var code = 'location="' + loc + '"';
+	eval(code);
+}
+
+function frmLoad() {
+	var n 	 			 = 0;
+	var check_off_enable = 0;
+
+	var week 	= "00000000";
+	var enable 	= 0;
+
+	for(n = 0  ; n < check_every ; n++)
+	{
+
+		if( week.charAt( check_every -  n) == "1")
+			document.forms[0].elements['chk_week[]'][n].checked = true;
+		else
+			document.forms[0].elements['chk_week[]'][n].checked = false;
+	}
+
+	if(week.charAt(0) == "1") {
+	 	document.forms[0].elements['chk_week[]'][check_off].checked = true;
+		check_off_enable = 1;
+	} else {
+	 	document.forms[0].elements['chk_week[]'][check_off].checked = false;
+		check_off_enable = 0;
+	}
+
+	document.forms[0].w_led_off_enable.value  =  enable;
+
+	/* disable input by config when load page */
+	if(enable == 0) {
+		/* disable DAY/OFF button */
+		for(n = 0; n < document.forms[0].elements['chk_week[]'].length ; n++ )
+			document.forms[0].elements['chk_week[]'][n].disabled = true;
+		
+		enable_time_input(0);
+		return;
+	}
+	
+	if(check_off_enable == 1) {
+		/*  disable DAY button */
+		for(n = 0; n < check_off; n++ )
+			document.forms[0].elements['chk_week[]'][n].disabled = true;
+
+		enable_time_input(0);
+		return;
+	}
+
+	if(week == "01111111")	/* check every day */
+		document.forms[0].elements['chk_week[]'][check_every].checked  = true;
+
+	document.forms[0].w_led_hour_start.value 	= 0;
+	document.forms[0].w_led_min_start.value 	= 0;
+	document.forms[0].w_led_hour_end.value 		= 1;
+	document.forms[0].w_led_min_end.value 		= 0;
+	change_hour_end();
+	return;
+}
+</script>
+</head>
+
+<body onload="frmLoad()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form>
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>관리 </li>
+			<li>LED OFF </li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">LED OFF</h1>
+	<p>특정 시간 및 요일에 대하여 LED OFF를 설정할 수 있습니다(전원 LED 제외).</p>
+	<hr>
+
+	<h2 class="title_style_2">LED OFF 설정</h2>
+	<div class="tb_style_2 scroll">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row">LED OFF 동작</th>
+					<td>
+						<select name="w_led_off_enable" id="w_led_off_enable" onchange="change_button_value()">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">LED OFF 요일 설정</th>
+					<td>
+						<input type="checkbox" id="chk_week[]" name="chk_week[]" >일&nbsp
+						<input type="checkbox" id="chk_week[]" name="chk_week[]" >월&nbsp
+						<input type="checkbox" id="chk_week[]" name="chk_week[]" >화&nbsp
+						<input type="checkbox" id="chk_week[]" name="chk_week[]" >수&nbsp
+						<input type="checkbox" id="chk_week[]" name="chk_week[]" >목&nbsp
+						<input type="checkbox" id="chk_week[]" name="chk_week[]" >금&nbsp
+						<input type="checkbox" id="chk_week[]" name="chk_week[]" >토&nbsp
+						<input type="checkbox" id="chk_week[]" name="chk_week[]" onChange="change_week_every();" >매일&nbsp
+						<input type="checkbox" id="chk_week[]" name="chk_week[]" onChange="change_week_off_checked();">항상끄기&nbsp
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">수행 시간</th>
+					<td>
+<script language="javascript">
+						document.write('<select class="w_70" name="w_led_hour_start" id="w_led_hour_start">\n');
+						write_StartTime();
+						document.write('</select>\n');
+
+						document.write('<select class="w_70" name="w_led_min_start" id="w_led_min_start">\n');
+						write_time_min();
+						document.write('</select>\n');
+						
+						document.write("&nbsp; ~ &nbsp;\n");
+
+						document.write('<select class="w_70" name="w_led_hour_end" id="w_led_hour_end" onChange="change_hour_end();">\n');
+						write_EndTime();
+						document.write('</select>\n');
+
+						document.write('<select class="w_70" name="w_led_min_end" id="w_led_min_end">\n');
+						write_time_min();
+						document.write('</select>\n');
+
+
+</script>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c">
+		<input type="button" onclick="btnApplySave()" value="적용" class="basic-btn01 btn-blue-bg mr_20" >
+    </div>
+</div>
+</form>
+</body>
+</html>

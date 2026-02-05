@@ -1,0 +1,237 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+</head>
+<script language="javascript">
+
+var br_mode=0;
+var wan_ip ='192.168.80.51';
+var wan_subnet ='255.255.255.0';
+var wan_defaultgw ='192.168.80.1';
+var wan_ip_mode ='DHCP';
+var wan_mac ='';
+var ip_crash = 0
+;
+
+
+var lan_port_list = [
+[ "lan0",  "Enabled",  "Down",  "Auto",  "Auto",0,1],
+[ "lan1",  "Enabled",  "Down",  "Auto",  "Auto",0,1],
+[ "lan2",  "Enabled",  "Up",  "1000",  "Full",0,1],
+[ "lan3",  "Enabled",  "Down",  "Auto",  "Auto",0,1]];
+
+
+var wan_connect = 1;
+var gateway = 1;
+var dns1 = 1;
+var dns2 = 0;
+var igmp_q = 1;
+var dhcpd_lease_num = 1;
+var dhcpd_max_num = 252;
+var igmp_list = [ 1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 ]
+
+
+var port_list = [
+[ "lan4",  "Enabled",  "Up",  "2",  "1000",  "Full",0,0],
+[ "lan0",  "Enabled",  "Down",  "2",  "Auto",  "Auto",0,1],
+[ "lan1",  "Enabled",  "Down",  "2",  "Auto",  "Auto",0,1],
+[ "lan2",  "Enabled",  "Up",  "2",  "1000",  "Full",0,1],
+[ "lan3",  "Enabled",  "Down",  "2",  "Auto",  "Auto",0,1]];
+
+
+/* neon, refs #777 : wan port */
+var wan_port = 0 ;
+
+
+function convert_speed(speed) {
+	if(speed == "1000")
+		return "1G"
+	else if(speed == "2500")
+		return "2.5G"
+	else if(speed == "5000")
+		return "5G"
+	else if(speed == "10000")
+		return "10G"
+	else if(speed == "100")
+		return "100M"
+	return speed;
+}
+
+function frmLoad() {
+	if(gateway == 1  && wan_defaultgw !='0.0.0.0' )
+		document.getElementById("wan_defaultgw").innerHTML='<span class="f-blue"><div style="text-align:left"><strong>OK</strong></div></span>';
+	else
+		document.getElementById("wan_defaultgw").innerHTML='<span class="f-red"><div style="text-align:left"><strong>NOK</strong></div></span>';
+
+	if(dns1 == 1)
+		document.getElementById("wan_dnspri").innerHTML='<span class="f-blue"><div style="text-align:left"><strong>OK</strong></div></span>';
+	else
+		document.getElementById("wan_dnspri").innerHTML='<span class="f-red"><div style="text-align:left"><strong>NOK</strong></div></span>';
+
+	if(dns2 == 1 )
+		document.getElementById("wan_dnssec").innerHTML='<span class="f-blue"><div style="text-align:left"><strong>OK</strong></div></span>';
+	else
+		document.getElementById("wan_dnssec").innerHTML='<span class="f-red"><div style="text-align:left"><strong>NOK</strong></div></span>';
+
+	if( '0.0.0.0' == '0.0.0.0' )
+		document.getElementById("wan_dnssec_tr").style.display="none";
+
+/*
+	if(igmp_q == 1)
+		document.getElementById("igmp_query").innerHTML='<span class="f-blue"><div style="text-align:left"><strong>OK</strong></div></span>';
+	else
+		document.getElementById("igmp_query").innerHTML='<span class="f-red"><div style="text-align:left"><strong>NOK</strong></div></span>';
+*/
+
+	if(wan_ip_mode == 'Static'){
+		document.getElementById("wan_ip_state").innerHTML='<span class="f-yellow"><div style="text-align:left"><strong>OK &nbsp;</strong>(Fixed Assigned)</div></span>';
+	}else if(wan_ip_mode ='DHCP' && wan_ip =='0.0.0.0'){
+		document.getElementById("wan_ip_state").innerHTML='<span class="f-red"><div style="text-align:left"><strong>NOK</strong></div></span>';
+	}else{
+		document.getElementById("wan_ip_state").innerHTML='<span class="f-blue"><div style="text-align:left"><strong>OK</strong></div></span>';
+	}
+
+
+}
+</script>
+<body  onload="frmLoad()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<div class="container custom_input">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>특수기능 </li>
+			<li>자가진단 기능</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">자가진단 기능</h1>
+	<p>아래의 항목들에 대해 자가진단을 실시합니다.</p>
+	<hr>
+
+	<h2 class="title_style_2">Network</h2>
+	<div class="tb_style_2 txt_r w_200">
+		<table>
+			<script language="javascript">
+				document.write('<tr>\n');
+				document.write('<th scope="row">인터넷</th>\n');
+				if(wan_connect == 1)
+						document.write('<td class="f-blue"><div style="text-align:left"><strong>Link Up</strong> &nbsp;  &nbsp; &nbsp; ( Speed:'+convert_speed(port_list[wan_port][4])+', &nbsp; Duplex:'+port_list[wan_port][5]+')</div></td>\n');
+				else
+					document.write('<td class="f-red"><div style="text-align:left"><strong>Link Down</strong></div></td>\n');
+
+				document.write('</tr>\n');
+
+				var i =0;
+				var port_n = 0;
+				for(i =0; i<lan_port_list.length; i++) {
+					port_n = i +1;
+					document.write('<th scope="row">LAN'+port_n+'</th>\n');
+					if( lan_port_list[i][2] == "Up")
+						document.write('<td class="f-blue"><div style="text-align:left"><strong>Link Up</strong> &nbsp;  &nbsp; &nbsp;( Speed:'+convert_speed(lan_port_list[i][3])+', &nbsp; Duplex:'+lan_port_list[i][4]+')</div></td>\n');
+					else
+						document.write('<td class="f-red"><div style="text-align:left"><strong>Link Down</strong></div></td>\n');
+					document.write('</tr>\n');
+				}
+			</script>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">DHCP IP 할당</h2>
+	<div class="tb_style_2 txt_r w_200">
+		<table>
+			<tr>
+				<th scope="row">WAN IP 할당</th>
+				<td><p id="wan_ip_state" name="wan_ip_state"></p></td>
+			</tr>
+			<tr>
+				<th scope="row">LAN IP 할당(NAT 전용)</th>
+				<script language="javascript">
+					if(br_mode == 1)
+						document.write('<td><div style="text-align:left">----</div></td>\n');
+					else
+						document.write('<td><div style="text-align:left"><span class="f-red">'+dhcpd_lease_num+'&nbsp; </span> 개 할당 (최대 '+dhcpd_max_num+')</div></td>\n');
+				</script>
+			</tr>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">인터넷 서비스 및 DNS 상태</h2>
+	<div class="tb_style_2 txt_r w_200">
+		<table>
+			<tr>
+				<th scope="row">게이트웨이</th>
+				<td><p id="wan_defaultgw" name="wan_defaultgw"></p></td>
+			</tr>
+			<tr>
+				<th scope="row">기본 DNS</th>
+				<td><p id="wan_dnspri" name="wan_dnspri"></p></td>
+			</tr>
+			<tr  id="wan_dnssec_tr" name="wan_dnssec_tr">
+				<th scope="row">보조 DNS</th>
+				<td><p id="wan_dnssec" name="wan_dnssec"></p></td>
+			</tr>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">IGMP 상태</h2>
+	<div class="tb_style_2 txt_r w_200">
+		<table>
+<!--
+			<tr>
+				<th scope="row">Querier 등록여부</th>
+				<td><p id="igmp_query" name="igmp_query"></p></td>
+			</tr>
+-->
+			<tr>
+				<th scope="row">셋톱박스 연결상태</th>
+				<td>
+					<script language="javascript">
+						i =0;
+						port_n = 0;
+
+						document.write('<div style="text-align:left">');
+
+						for(i =0; i<lan_port_list.length; i++){
+							port_n = i +1;
+							if(igmp_list[i] == 0){
+								document.write('LAN'+port_n+' (  <span class="f-red"><strong>X</strong></span> )&nbsp;');
+							}else{
+								document.write('LAN'+port_n+' (  <span class="f-blue"><strong>O</strong></span> )&nbsp;');
+							}
+						}
+						document.write('</div>');
+
+					</script>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">PING TEST</h2>
+	<div>
+		<iframe id="ping_page" name="ping_page" src="special_selfcheck_ping.html" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="100%">
+	</div>
+
+</div>
+</body>
+</html>

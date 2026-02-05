@@ -1,0 +1,581 @@
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko">
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+
+<script language="javascript">
+
+var timeZones = new Array();
+timeZones[0] = '(GMT-12:00) International Date Line West';
+timeZones[1] = '(GMT-11:00) Midway Island, Samoa';
+timeZones[2] = '(GMT-10:00) Hawaii';
+timeZones[3] = '(GMT-09:00) Alaska';
+timeZones[4] = '(GMT-08:00) Pacific Time, Tijuana';
+timeZones[5] = '(GMT-07:00) Arizona, Mazatlan';
+timeZones[6] = '(GMT-07:00) Chihuahua, La Paz';
+timeZones[7] = '(GMT-07:00) Mountain Time';
+timeZones[8] = '(GMT-06:00) Central America';
+timeZones[9] = '(GMT-06:00) Central Time';
+timeZones[10] = '(GMT-06:00) Guadalajara, Mexico City, Monterrey';
+timeZones[11] = '(GMT-06:00) Saskatchewan';
+timeZones[12] = '(GMT-05:00) Bogota, Lima, Quito';
+timeZones[13] = '(GMT-05:00) Eastern Time';
+timeZones[14] = '(GMT-05:00) Indiana';
+timeZones[15] = '(GMT-04:00) Atlantic Time';
+timeZones[16] = '(GMT-04:00) Caracas, La Paz';
+timeZones[17] = '(GMT-04:00) Santiago';
+timeZones[18] = '(GMT-03:30) Newfoundland';
+timeZones[19] = '(GMT-03:00) Brasilia';
+timeZones[20] = '(GMT-03:00) Buenos Aires, Georgetown';
+timeZones[21] = '(GMT-03:00) Greenland';
+timeZones[22] = '(GMT-02:00) Mid-Atlantic';
+timeZones[23] = '(GMT-01:00) Azores';
+timeZones[24] = '(GMT-01:00) Cape Verde Is.';
+timeZones[25] = '(GMT-00:00) Casablanca, Monrovia';
+timeZones[26] = '(GMT-00:00) Greenwich Mean Time: Dublin, Edinburgh, Lisbon, London';
+timeZones[27] = '(GMT+01:00) Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna';
+timeZones[28] = '(GMT+01:00) Belgrade, Bratislava, Budapest, Ljubljana, Prague';
+timeZones[29] = '(GMT+01:00) Brussels, Copenhagen, Madrid, Paris';
+timeZones[30] = '(GMT+01:00) Sarajevo, Skopje, Warsaw, Zagreb';
+timeZones[31] = '(GMT+01:00) West Central Africa';
+timeZones[32] = '(GMT+02:00) Athens, Istanbul, Minsk';
+timeZones[33] = '(GMT+02:00) Bucharest';
+timeZones[34] = '(GMT+02:00) Cairo';
+timeZones[35] = '(GMT+02:00) Harare, Pretoria';
+timeZones[36] = '(GMT+02:00) Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius';
+timeZones[37] = '(GMT+02:00) Jerusalem';
+timeZones[38] = '(GMT+03:00) Baghdad';
+timeZones[39] = '(GMT+03:00) Kuwait, Riyadh';
+timeZones[40] = '(GMT+03:00) Moscow, St. Petersburg, Volgograd';
+timeZones[41] = '(GMT+03:00) Nairobi';
+timeZones[42] = '(GMT+03:30) Tehran';
+timeZones[43] = '(GMT+04:00) Abu Dhabi, Muscat';
+timeZones[44] = '(GMT+04:00) Baku, Tbilisi, Yerevan';
+timeZones[45] = '(GMT+04:30) Kabul';
+timeZones[46] = '(GMT+05:00) Ekaterinburg';
+timeZones[47] = '(GMT+05:00) Islamabad, Karachi, Tashkent';
+timeZones[48] = '(GMT+05:30) Chennai, Kolkata, Mumbai, New Delhi';
+timeZones[49] = '(GMT+05:45) Kathmandu';
+timeZones[50] = '(GMT+06:00) Almaty, Novosibirsk';
+timeZones[51] = '(GMT+06:00) Astana, Dhaka';
+timeZones[52] = '(GMT+06:00) Sri Jayawardenepura';
+timeZones[53] = '(GMT+06:30) Rangoon';
+timeZones[54] = '(GMT+07:00) Bangkok, Hanoi, Jakarta';
+timeZones[55] = '(GMT+07:00) Krasnoyarsk';
+timeZones[56] = '(GMT+08:00) Beijing, Chongquing, Hong Kong, Urumqi';
+timeZones[57] = '(GMT+08:00) Irkutsk, Ulaan Bataar';
+timeZones[58] = '(GMT+08:00) Kuala Lumpur, Singapore';
+timeZones[59] = '(GMT+08:00) Perth';
+timeZones[60] = '(GMT+08:00) Taipei';
+timeZones[61] = '(GMT+09:00) Osaka, Sapporo, Tokyo';
+timeZones[62] = '(GMT+09:00) Seoul';
+timeZones[63] = '(GMT+09:00) Yakutsk';
+timeZones[64] = '(GMT+09:30) Adelaide';
+timeZones[65] = '(GMT+09:30) Darwin';
+timeZones[66] = '(GMT+10:00) Brisbane';
+timeZones[67] = '(GMT+10:00) Canberra, Melbourne, Sydney';
+timeZones[68] = '(GMT+10:00) Guam, Port Moresby';
+timeZones[69] = '(GMT+10:00) Hobart';
+timeZones[70] = '(GMT+10:00) Vladivostok';
+timeZones[71] = '(GMT+11:00) Magadan';
+timeZones[72] = '(GMT+11:00) Solomon Is., New Caledonia';
+timeZones[73] = '(GMT+12:00) Auckland, Wellington';
+timeZones[74] = '(GMT+12:00) Fiji, Kamchatka, Marshall Is.';
+
+var sessionKey  = '902141564';
+var cur_user    = 'admin';
+var ra_enabled  = '0';
+var ra_port     = '3022';
+var ntp1        = 'time1.skbroadband.com';
+var ntp2        = 'time2.skbroadband.com';
+var ntp3        = 'time.bora.net';
+var ntp_enabled = '1';
+var tz_name     = 'Seoul';
+var interval    = '3600';
+
+/* neon, refs #774 : show Device Time */
+var current_time = "1575937139";
+
+
+
+function leadingZeros(n, digits) {
+	var zero = '';
+	n = n.toString();
+
+	if (n.length < digits) {
+		for (i = 0; i < digits - n.length; i++)
+			zero += '0';
+	}
+	return zero + n;
+}
+
+function getTodayLabel()
+{
+	var week = new Array('일요일', '월요일', ' 화요일', '수요일', '목요일', '금요일', '토요일');
+	var today = new Date().getDay();
+	var todayLabel = week[today];
+	return todayLabel;
+}
+
+function getTimeStamp(time) { // 24시간제
+	var d = new Date(time*1000);
+	var s =
+		leadingZeros(d.getFullYear(), 4) + '.' +
+		leadingZeros(d.getMonth() + 1, 2) + '.' +
+		leadingZeros(d.getDate(), 2) + ' ' +
+
+		leadingZeros(d.getHours(), 2) + ':' +
+		leadingZeros(d.getMinutes(), 2) + ':' +
+		leadingZeros(d.getSeconds(), 2);
+	return s;
+}
+
+function realtimeClock() {
+	 document.getElementById("dev_time").innerHTML = getTimeStamp(current_time) + " (" + getTodayLabel() + ")";
+	 setTimeout("realtimeClock()", 1000);
+	 current_time++;
+}
+
+function getTimeZoneName(idx) {
+	var str = timeZones[idx];
+	var ret = '';
+
+	ret = str.substr(12);
+
+	return ret;
+}
+
+function getTimeZoneIndex(timeZoneName) {
+	var i = 0, ret = 4;  // default to Pacific time
+
+	for ( var i = 0; i < timeZones.length; i++ ) {
+		if ( timeZones[i].search(timeZoneName) != -1 )
+			break;
+	}
+
+	if ( i < timeZones.length )
+		ret = i;
+
+	return ret;
+}
+
+function getTimeZoneOffset(idx) {
+	var str = timeZones[idx];
+	var ret = '';
+
+	if ( idx != 25 && idx != 26 )
+		ret = str.substr(4, 6);
+
+	return ret;
+}
+
+function changeRacc() {
+	var idx = document.getElementById('w_ra_enable').selectedIndex;
+
+	if(idx == "1") {
+		document.forms[0].w_ra_port.disabled = false;
+	}
+	else {
+		document.forms[0].w_ra_port.disabled = true;
+	}
+}
+
+function changeNtpMode() {
+
+	var idx = document.getElementById('w_ntp_enable').selectedIndex;
+
+	if(document.getElementById('w_ntp_enable').options[idx].value == "1") {
+		document.forms[0].cboTimeZone.disabled     = false;
+		document.forms[0].ntpServerOther1.disabled = false;
+		document.forms[0].ntpServerOther2.disabled = false;
+		document.forms[0].ntpServerOther3.disabled = false;
+	} else {
+		document.forms[0].cboTimeZone.disabled     = true;
+		document.forms[0].ntpServerOther1.disabled = true;
+		document.forms[0].ntpServerOther2.disabled = true;
+		document.forms[0].ntpServerOther3.disabled = true;
+	}
+}
+
+function checkPasswd()
+{
+	if(document.forms[0].pwdNew.value == document.forms[0].pwdOld.value) {
+		webAlert("현재 암호와 새암호가 같습니다.");
+		return false;
+	}
+
+	if(document.forms[0].pwdNew.value != document.forms[0].pwdCfm.value) {
+		webAlert("새 암호 확인 과 일치하지 않습니다.");
+		return false;
+	}
+
+	var str = new String();
+	str = document.forms[0].pwdNew.value;
+
+	if ( str.indexOf(' ') != -1 ) {
+		webAlert('암호는 공백을 포함 할 수 없습니다.');
+		return false;
+	}
+
+	return true;
+}
+
+function chk_ssh_port()
+{
+	var port = parseInt(document.forms[0].w_ra_port.value);
+
+	if(port < 0 || port > 65535) {
+		webAlert('포트 입력 범위를 초과했습니다(범위: 22 또는 1024 ~ 65535)');
+		return false;
+	}
+	if(port < 1024) {
+		if(port != 22) {
+			webAlert('22를 제외한 well-known 포트는 사용할 수 없습니다.');
+			return false;
+		}
+	}
+
+	return true;
+}
+
+function btnApplySave(save_type) {
+	var loc   = "";
+	var idx   = 0;
+	var code  = "";
+	var value = "";
+
+	switch(save_type) {
+		case 0:
+			loc   = 'wv_ssh.cgi?';
+			idx   = document.getElementById('w_ra_enable').selectedIndex;
+			loc  += 'wv_ssh_enable=' + document.getElementById('w_ra_enable').options[idx].value;
+			if(chk_ssh_port() == false) return;
+			loc  += '&wv_ssh_port=' + document.forms[0].w_ra_port.value;
+			break;
+
+		case 1:
+			loc = 'reboot_progress.cgi?';
+			break;
+
+		case 2:
+			loc  = 'restoreinfo.cgi?';
+			loc += '&bridgeMode=0';
+			break;
+
+		case 3:
+			if(checkPasswd() == false) return;
+			loc  = 'password.cgi?';
+			loc += 'inUserName=admin';
+			loc += '&inPassword='    + encodeUrl(document.forms[0].pwdNew.value);
+			loc += '&inOrgPassword=' + encodeUrl(document.forms[0].pwdOld.value);
+			break;
+
+		case 4:
+			loc  = 'mng_sntpcfg.cgi?';
+			idx  = document.getElementById('w_ntp_enable').selectedIndex;
+			loc += 'ntp_enabled=' + document.getElementById('w_ntp_enable').options[idx].value;
+			if(document.getElementById('w_ntp_enable').options[idx].value == "1") {
+				loc += '&ntpServer1=' + document.forms[0].ntpServerOther1.value;
+				loc += '&ntpServer2=' + document.forms[0].ntpServerOther2.value;
+				loc += '&ntpServer3=' + document.forms[0].ntpServerOther3.value;
+				loc += '&ntpServer4=' + '';
+				loc += '&ntpServer5=' + '';
+				loc += '&timezone_offset=' + document.forms[0].cboTimeZone[document.forms[0].cboTimeZone.selectedIndex].value;
+				loc += '&timezone=' + getTimeZoneName(document.forms[0].cboTimeZone.selectedIndex);
+				loc += '&use_dst=0';
+				//loc += '&wv_ntp_interval='+document.forms[0].ntpSyncInterval.value;
+				loc += '&wv_ntp_interval=' + '3600';
+			}
+			break;
+
+		default:
+			return;
+			break;
+	}
+
+	if(save_type != "1") 
+		loc += '&sessionKey=' + sessionKey;
+	else
+		loc += 'sessionKey='  + sessionKey;
+
+	code = 'location="' +loc + '"';
+	eval(code);
+
+	return;
+}
+
+function frmLoad() {
+	var idx = 0;
+
+	if(cur_user != "admin") {
+		document.getElementById('w_note_admin').style.display="none";
+		document.getElementById('w_note_none_admin').style.display="block";
+
+		document.getElementById('w_ra_sub').style.display="block";
+		document.getElementById('w_ra_setup').style.display = "block";
+		document.getElementById('w_ra_button').style.display = "block";
+		document.getElementById('w_ntp_sub').style.display="block";
+		document.getElementById('w_ntp_setup').style.display = "block";
+		document.getElementById('w_ntp_button').style.display = "block";
+		if(ra_enabled == "1") {
+			document.forms[0].w_ra_enable.selectedIndex = 1;
+			document.forms[0].w_ra_port.disabled = false;
+		}
+		else {
+			document.forms[0].w_ra_enable.selectedIndex = 0;
+			document.forms[0].w_ra_port.disabled = true;
+		}
+
+		document.forms[0].w_ra_port.value = ra_port;
+
+		/* neon, refs #774 : show Device Time */
+		if(current_time != "0" && ntp_enabled == "1")
+			realtimeClock();
+
+		if(ntp_enabled == "1") {
+			document.forms[0].w_ntp_enable.selectedIndex = 1;
+			document.forms[0].cboTimeZone.disabled = false;
+			document.forms[0].ntpServerOther1.disabled = false;
+			document.forms[0].ntpServerOther2.disabled = false;
+			document.forms[0].ntpServerOther3.disabled = false;
+		}
+		else {
+			document.forms[0].w_ntp_enable.selectedIndex = 0;
+			document.forms[0].cboTimeZone.disabled = true;
+			document.forms[0].ntpServerOther1.disabled = true;
+			document.forms[0].ntpServerOther2.disabled = true;
+			document.forms[0].ntpServerOther3.disabled = true;
+		}
+
+		document.forms[0].cboTimeZone.selectedIndex = getTimeZoneIndex(tz_name);
+		document.forms[0].ntpServerOther1.value = ntp1;
+		document.forms[0].ntpServerOther2.value = ntp2;
+		document.forms[0].ntpServerOther3.value = ntp3;
+	}
+	else {
+		document.getElementById('w_note_admin').style.display="block";
+		document.getElementById('w_note_none_admin').style.display="none";
+
+		document.getElementById('w_ra_sub').style.display="none";
+		document.getElementById('w_ra_setup').style.display = "none";
+		document.getElementById('w_ra_button').style.display = "none";
+		document.getElementById('w_ntp_sub').style.display="none";
+		document.getElementById('w_ntp_setup').style.display = "none";
+		document.getElementById('w_ntp_button').style.display = "none";
+	}
+
+	return;
+}
+</script>
+</head>
+
+<body onload="frmLoad()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form autocomplete="off">
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>관리 </li>
+			<li>시스템 관리 </li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">시스템 관리</h1>
+	<p id="w_note_admin">시스템 초기화, 패스워드 설정을 변경합니다.</p>
+	<p id="w_note_none_admin">시스템 원격접속, 초기화, 패스워드, NTP 설정을 변경합니다.</p>
+	<hr>
+
+	<h2 class="title_style_2" id="w_ra_sub" style="">원격접속 설정</h2>
+	<div class="tb_style_2" id="w_ra_setup">
+		<table>
+		<tr>
+			<th scope="row">원격접속 활성화</th>
+			<td>
+				<select id="w_ra_enable" onchange="changeRacc()">
+					<option value="0">비활성화</option>
+					<option value="1">활성화</option>
+				</select>
+			</td>
+		</tr>
+		<tr>
+			<th scope="row">원격접속 포트 번호</th>
+			<td>
+				<input style="display:none;" autocomplete="new-password" type="text" \>
+				<input type="text" name="w_ra_port" id="w_ra_port" autocomplete="off">
+			</td>
+		</tr>
+		</table>
+	</div>
+
+	<div class="txt_c mb_20" id="w_ra_button">
+		<input type="button"  onclick="btnApplySave(0)" value="적용" class="basic-btn01 btn-blue-bg" >
+	</div>
+
+	<h2 class="title_style_2">시스템 재시작</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row" >시스템 재시작</th>
+					<td>
+						<input type="button"  id="wv_reset_button" name="wv_reset_button" value="재시작" class="basic-btn01 btn-blue-bg" >
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">시스템 초기화</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row" >시스템 초기화</th>
+					<td>
+						<input type="button"  value="초기화" id="wv_default_button" name="wv_default_button" class="basic-btn01 btn-blue-bg" >
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">비밀번호 변경</h2>
+	<p class="mb_10 f-red">
+		변경 규칙: 문자/특수문자/숫자 포함, 10 ~ 16 자리<br>
+		사용 불가: [#], [%], [;], [<], [>], ["], [']
+	</p>
+	<div class="tb_style_2">
+		<table>
+			<thead>
+				<tr>
+					<th><center>변경 ID</center></th>
+					<td><center>admin</center></td>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<th><center>현재 비밀번호</center></th>
+					<td><input name='pwdOld' type="password" maxlength="16" autocomplete="off"></td>
+				</tr>
+				<tr>
+					<th><center>새 비밀번호</center></th>
+					<td><input name='pwdNew' type="password" maxlength="16" autocomplete="off"></td>
+				</tr>
+				<tr>
+					<th><center>새 비밀번호 확인</center></th>
+					<td><input name='pwdCfm' type='password' maxlength="16" autocomplete="off"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c mb_20">
+		<input type="button"  onclick="btnApplySave(3)" value="적용" class="basic-btn01 btn-blue-bg" >
+	</div>
+
+	<h2 class="title_style_2" id="w_ntp_sub">NTP 설정</h2>
+	<div class="tb_style_2" id="w_ntp_setup">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row">NTP 동작 설정</th>
+					<td>
+					<select id="w_ntp_enable" onchange="changeNtpMode()">
+						<option value="0">비활성화</option>
+						<option value="1">활성화</option>
+					</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">현재 시간</th>
+					<td><p id="dev_time" name="dev_time"> --월 -- 일 -- --</p></td>
+				</tr>
+				<tr>
+					<th scope="row">표준시간대 설정</th>
+					<td>
+						<select name='cboTimeZone'  class="w_100p">
+						<script language="javascript">
+							for( var i = 0; i < timeZones.length; i++ )
+								document.writeln("<option value=" + getTimeZoneOffset(i) + ">" + timeZones[i] + "</option>");
+						</script>
+					</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">NTP 서버 1</th>
+					<td><input type="text" name="ntpServerOther1" id="ntpServerOther1"></td>
+				</tr>
+				<tr>
+					<th scope="row">NTP 서버 2</th>
+					<td><input type="text"  name="ntpServerOther2" id="ntpServerOther2"></td>
+				</tr>
+				<tr>
+					<th scope="row">NTP 서버 3</th>
+					<td><input type="text"  name="ntpServerOther3" id="ntpServerOther3"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c" id="w_ntp_button">
+		<input type="button"  onclick="btnApplySave(4)" value="적용" class="basic-btn01 btn-blue-bg" >
+		<input type="button"   onclick="location.href='mng_system.html'" value="새로고침" class="basic-btn01 btn-gray-bg2" >
+	</div>
+
+</div>
+
+<script type="text/javascript">
+	$("#wv_reset_button").click(function() {
+		var popup = new Popup({
+			'type': 'confirm',
+			'title': '알림',
+			'text':  '재시작 하시겠습니까?',
+			'cancelbutton': true,
+			'closeCallBack': function() {
+
+			},
+			'submitCallBack': function() {
+				btnApplySave(1);
+			}
+		});	/* end confirm */
+	});
+
+	$("#wv_default_button").click(function() {
+		var popup = new Popup({
+			'type': 'confirm',
+			'title': '알림',
+			'text':  '초기 설정으로 복원 하시겠습니까?',
+			'cancelbutton': true,
+			'closeCallBack': function() {
+
+			},
+			'submitCallBack': function() {
+				btnApplySave(2);
+			}
+		});	/* end confirm */
+	});
+</script>
+</script>
+
+</form>
+</body>
+</html>

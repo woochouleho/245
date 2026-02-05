@@ -1,0 +1,158 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+
+var br_mode=0;
+var wan_ip ='192.168.80.51';
+var wan_subnet ='255.255.255.0';
+var wan_defaultgw ='192.168.80.1';
+var wan_ip_mode ='DHCP';
+var wan_mac ='';
+var ip_crash = 0
+;
+
+
+function frmStatReset()
+{
+	return;
+}
+
+function frmReload() {
+	document.location.reload();
+}
+
+function frmLoad() {
+	var n  	= 0;
+	var len = 0;
+	var flow = 0;
+
+	len = document.getElementsByName("connection_stat_value[]").length;
+
+	if( br_mode == 1 )
+	{
+		document.getElementById("nat_session").innerHTML='-';
+
+		for(n = 0; n <len ; n++)
+			 document.getElementsByName("connection_stat_value[]")[n].innerHTML='-';
+	} else {
+		document.getElementById("nat_session").innerHTML=flow;
+		document.getElementsByName("connection_stat_value[]")[0].innerHTML=flow;
+	}
+
+	return;
+}
+
+function resetClick() {
+   var loc = 'statsifcreset.html';
+
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+</script>
+</head>
+
+<body onLoad='frmLoad()'>
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form>
+<div class="container custom_input">
+
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>통계 </li>
+			<li>커넥션 정보 통계</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">커넥션 정보 통계</h1>
+	<p>전체 및 IP별 커넥션 정보를 확인 할 수 있는 페이지입니다. 전체 커넥션 정보는 WAN구간의 정보를 의미합니다.</p>
+	<hr>
+
+	<h2 class="title_style_2">NAT 세션</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+			<col style="width:25%;"/>
+				<col style=""/>
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row"><span>HW / SW 세션 개수</span></th>
+					<td><span><p id="nat_session" name="nat_session">-</p></span></td>
+				</tr>
+			</tbody>
+	</table>
+	</div>
+
+	<h2 class="title_style_2">전체 커넥션 정보 통계</h2>
+	<div class="tb_style_2">
+		<table>
+			<table>
+			<colgroup>
+				<col style="width:10%;"/>
+				<col style="width:10%;"/>
+				<col style="width:10%;"/>
+				<col style="width:10%;"/>
+				<col style="width:10%;"/>
+				<col style="width:10%;"/>
+				<col style="width:10%;"/>
+				<col style="width:10%;"/>
+				<col style="width:10%;"/>
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col"><center>Total</center></th>
+					<th scope="col"><center>TCP</center></th>
+					<th scope="col"><center>UDP</center></th>
+					<th scope="col"><center>ICMP</center></th>
+					<th scope="col"><center>Unknown</center></th>
+					<th scope="col"><center>Rx-Pkts</center></th>
+					<th scope="col"><center>Tx-Pkts</center></th>
+					<th scope="col"><center>Rx-Bytes</center></th>
+					<th scope="col"><center>Tx-Bytes</center></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr style="text-align:center;">
+					<td><span><p name='connection_stat_value[]'>0</p></span></td>
+<td><span><p name='connection_stat_value[]'>0</p></span></td>
+<td><span><p name='connection_stat_value[]'>0</p></span></td>
+<td><span><p name='connection_stat_value[]'>-</p></span></td>
+<td><span><p name='connection_stat_value[]'>0</p></span></td>
+<td><span><p name='connection_stat_value[]'>0</p></span></td>
+<td><span><p name='connection_stat_value[]'>0</p></span></td>
+<td><span><p name='connection_stat_value[]'>0</p></span></td>
+<td><span><p name='connection_stat_value[]'>0</p></span></td>
+
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c">
+		<input type="button"  onclick="frmReload()" value="새로고침" class="basic-btn01 btn-gray-bg2 mr_20" >
+	</div>
+</div>
+</form>
+</body>
+</html>

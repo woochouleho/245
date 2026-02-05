@@ -1,0 +1,380 @@
+
+<html lang="ko" xml:lang="ko">
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+
+var wan_ipv6_mode = 0; 
+var wan_ipv6 = "2001:1000:1000::5"; 
+var wan_ipv6_link = "FE80::"; 
+var wan_ipv6_static_defaultgw  = "2001:1000:1000::1"; 
+var v_prefix = "64";
+var ipv6_dns1 = "2001:1000:1000::2";
+var ipv6_dns2 = "2001:1000:1000::3";
+
+var v_ipv6_mld_enable = 0;
+
+
+var wan_ipv6_list = [
+""];
+var wan_ipv6_defaultgw = "2001:1000:1000::1";
+ var wan_ipv6_dns1 = "";
+var wan_ipv6_dns2 = "";
+
+
+var ipv6_crash = '0000:0000:0000:0000:0000:0000:0000:0000';
+
+
+var br_mode=0;
+var wan_ip ='192.168.80.51';
+var wan_subnet ='255.255.255.0';
+var wan_defaultgw ='192.168.80.1';
+var wan_ip_mode ='DHCP';
+var wan_mac ='';
+var ip_crash = 0
+;
+
+
+var port_list = [
+[ "lan4",  "Enabled",  "Up",  "2",  "1000",  "Full",0,0],
+[ "lan0",  "Enabled",  "Down",  "2",  "Auto",  "Auto",0,1],
+[ "lan1",  "Enabled",  "Down",  "2",  "Auto",  "Auto",0,1],
+[ "lan2",  "Enabled",  "Up",  "2",  "1000",  "Full",0,1],
+[ "lan3",  "Enabled",  "Down",  "2",  "Auto",  "Auto",0,1]];
+
+
+function show_ipv6_dns() {
+	switch(wan_ipv6_mode)
+	{
+		case 0:
+			document.getElementById("wan_ipv6").style.display="none";
+			break;
+		case 1:
+		case 2:
+			document.getElementById("wan_ipv6_mode").innerHTML = "자동";
+			if(wan_ipv6_dns1 !="") {
+				document.getElementById("ipv6_dns_pri_tr").style.display="";
+				document.getElementById("wan_ipv6_dns_pri").innerHTML=wan_ipv6_dns1;
+			} else {
+				document.getElementById("ipv6_dns_pri_tr").style.display="none";
+			}
+
+			if( wan_ipv6_dns2 !="") {
+				document.getElementById("ipv6_dns_dnssec_tr").style.display="";
+				document.getElementById("wan_ipv6_dns_sec").innerHTML=wan_ipv6_dns2;
+			} else {
+				document.getElementById("ipv6_dns_dnssec_tr").style.display="none";
+			}
+			break;
+		case 3:
+			document.getElementById("wan_ipv6_mode").innerHTML = "수동";
+			document.getElementById("wan_ipv6_dns_pri").innerHTML = ipv6_dns1;
+			document.getElementById("wan_ipv6_dns_sec").innerHTML= ipv6_dns2;
+			break;
+	}
+}
+
+function frmLoad() {
+	var dhcpEnbl = '1';
+
+	if(br_mode== 1)
+		document.getElementById("mode").innerHTML="Bridge";
+	else if(br_mode ==2)
+		document.getElementById("mode").innerHTML="Repeater";
+	else
+		document.getElementById("mode").innerHTML="NAT";
+
+	document.getElementById("wan_mode").innerHTML=wan_ip_mode;
+
+	if( ip_crash == 1 )
+		document.getElementById("wan_ip").innerHTML=(wan_ip + "<font color='red'><strong> &nbsp; IP 충돌</strong></font>");
+	else
+		document.getElementById("wan_ip").innerHTML=wan_ip;
+
+	document.getElementById("wan_subnet").innerHTML=wan_subnet;
+	document.getElementById("wan_defaultgw").innerHTML=wan_defaultgw;
+	//document.getElementById("wan_mac").innerHTML=wan_mac;
+	//document.getElementById("wan_dnspri").innerHTML=wan_dnsPri;
+	//document.getElementById("wan_dnssec").innerHTML=wan_dnsSec;
+	document.getElementById("wan_dnspri").innerHTML='210.220.163.82';
+
+	if( '210.220.36.130' != '0.0.0.0' ) {
+		document.getElementById("wan_dnssec").innerHTML= '210.220.36.130';
+	} else {
+		document.getElementById("wan_dnssec_tr").style.display="none";
+	}
+
+/*
+	if(dhcpEnbl == 1)
+		document.getElementById("lan_dhcp_mode").innerHTML="활성화";
+	else
+		document.getElementById("lan_dhcp_mode").innerHTML="비활성화";
+*/
+	document.getElementById("lan_ip").innerHTML= '192.168.45.1';
+	document.getElementById("lan_subnet").innerHTML='255.255.255.0';
+
+	switch(wan_ipv6_mode)
+	{
+		case 0:
+			document.getElementById("wan_ipv6").style.display="none";
+			break;
+		case 1:
+			document.getElementById("wan_ipv6_mode").innerHTML = "EUI-64";
+			break;
+		case 2:
+			document.getElementById("wan_ipv6_mode").innerHTML = "DHCPv6";
+			break;
+		case 3:
+			document.getElementById("wan_ipv6_mode").innerHTML = "고정 IP";
+			break;
+	}
+
+	show_ipv6_dns();
+
+	//document.getElementById("wan_ipv6_ip").innerHTML = wan_ipv6;
+	if(wan_ipv6_list[0] != "")
+		document.getElementById("wan_ipv6_defaultgateway").innerHTML = wan_ipv6_defaultgw;
+
+	if(ipv6_crash != '0000:0000:0000:0000:0000:0000:0000:0000')
+		document.getElementById("ipv6_crash").innerHTML="<font color='red' size='4'>IPv6 충돌 감지</font>";
+
+/*
+	if(jumboflag == 1)
+	{
+		document.getElementById("JumboFrame_div").style.display="";
+		document.getElementById("jumbolan").innerHTML=jumboLAN;
+	}
+*/
+}
+</script>
+</head>
+<body onload="frmLoad()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>네트워크</li>
+			<li>네트워크 상태 정보</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">네트워크 상태 정보</h1>
+	<p> 인터넷 연결 정보와 DHCP서버에서 할당된 단말 정보를 출력합니다. </p>
+	<hr>
+	<h2 class="title_style_2">WAN 정보</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row">운용 모드</th>
+					<td><p id="mode" name="mode"></p></td>
+				</tr>
+				<tr>
+					<th scope="row">연결 방식</th>
+					<td><p id="wan_mode" name="wan_mode"></p></td>
+				</tr>
+				<tr>
+					<th scope="row">WAN IP 주소</th>
+					<td><p id="wan_ip" name="wan_ip"></p></td>
+				</tr>
+				<tr>
+					<th scope="row">서브넷</th>
+					<td><p id="wan_subnet" name="wan_subnet"></p></td>
+				</tr>
+				<tr>
+					<th scope="row">기본 게이트웨이</th>
+					<td><p id="wan_defaultgw" name="wan_defaultgw"></td>
+				</tr>
+				<tr>
+					<th scope="row">기본 DNS 서버</th>
+					<td><p id="wan_dnspri" name="wan_dnspri"></td>
+				</tr>
+				<tr id="wan_dnssec_tr" name="wan_dnssec_tr">
+					<th scope="row">보조 DNS 서버</th>
+					<td><p id="wan_dnssec" name="wan_dnssec"></p></td>
+				</tr>
+				<tr>
+					<th scope="row">MAC 주소</th>
+					<td>00:23:aa:42:a1:01</td>
+				</tr>
+				<tr>
+					<th scope="row">세션 수</th>
+					<td><p>0</p></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">LAN 정보</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row">LAN IP 주소</th>
+					<td><p id="lan_ip" name="lan_ip"></p></td>
+				</tr>
+				<tr>
+					<th scope="row">서브넷</th>
+					<td><p id="lan_subnet" name="lan_subnet"></p></td>
+				</tr>
+				<tr>
+					<th scope="row">MAC 주소</th>
+					<td>00:23:aa:42:a1:01</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div id="wan_ipv6" name="wan_ipv6">
+		<h2 class="title_style_2">WAN IPv6 정보</h2>
+		<div class="tb_style_2">
+			<table>
+				<tbody>
+					<tr>
+						<th scope="row">WAN IPv6 모드</th>
+						<td><p id="wan_ipv6_mode" name="wan_ipv6_mode"></p></td>
+					</tr>
+						<th scope='row'>IPv6 주소 <p name="ipv6_crash" id="ipv6_crash"></p></th>
+						<td>
+							<script language="javascript">
+								var i = 0;
+								for(i = 0; i <wan_ipv6_list.length; i++ ) {
+									if(wan_ipv6_list[i] !="")
+										document.write(wan_ipv6_list[i]+"<br>\n");
+								}
+							</script>
+						</td>
+					</tr>
+					<tr>
+					<tr>
+						<th scope="row">Ipv6 Gateway</th>
+						<td><p id="wan_ipv6_defaultgateway" name="wan_ipv6_defaultgateway"></td>
+					</tr>
+					<tr id="ipv6_dns_pri_tr" name="ipv6_dns_pri_tr">
+						<th scope="row">Ipv6 DNS Primary</th>
+						<td><p id="wan_ipv6_dns_pri" name="wan_ipv6_dns_pri"></td>
+					</tr>
+					<tr id="ipv6_dns_dnssec_tr" name="ipv6_dns_dnssec_tr">
+						<th scope="row">Ipv6 DNS Secondary</th>
+						<td><p id="wan_ipv6_dns_sec" name="wan_ipv6_dns_sec"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div id="portStatus" name="portStatus">
+		<h2 class="title_style_2">유선 포트 상태</h2>
+		<div class="tb_style_2">
+			<table id="portStatusTable">
+				<thead>
+				<tr>
+					<th scope="col"><center>WAN</center></th>
+					<th scope="col"><center>LAN1</center></th>
+					<th scope="col"><center>LAN2</center></th>
+					<th scope="col"><center>LAN3</center></th>
+					<th scope="col"><center>LAN4</center></th>
+				</tr>
+				</thead>
+				<tbody>
+				<tr>
+					<script language="javascript">
+						var i = 0;
+						var port_n = 0;
+						for(i = 0; i < port_list.length; i++)
+						{
+							port_n = i;
+							document.write('<td><center>');
+							if(port_list[i][2] == "Up") {
+								if(port_list[i][4] == "10")
+                                    document.write("10Mbps ");
+                                else if(port_list[i][4] == "100")
+                                    document.write("100Mbps ");
+                                else if(port_list[i][4]  == "1000")
+                                    document.write("1Gbps ");
+                                else if(port_list[i][4]  == "2500")
+                                    document.write("2.5Gbps ");
+                                else if(port_list[i][4]  == "5000")
+                                    document.write("5Gbps ");
+                                else if(port_list[i][4]  == "10000")
+                                    document.write("10Gbps ");
+								else
+                                    document.write("Unknown ");
+								document.write(port_list[i][5]);
+							} else {
+								document.write("-");
+							}
+							document.write('</center></td>');
+						}
+					</script>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+
+	<div id="dhcpList" name="dhcpList">
+		<h2 class="title_style_2">DHCP 할당 정보 리스트</h2>
+		<div class="tb_style_2">
+			<table id="dhcpListTable">
+				<thead>
+				<tr>
+					<th scope="col"><center>IP 주소</center></th>
+					<th scope="col"><center>MAC</center></th>
+					<th scope="col"><center>Hostname</center></th>
+					<th scope="col"><center>할당 방법</center></th>
+					<th scope="col"><center>Lease Time</center></th>
+				</tr>
+				</thead>
+				<tbody>
+					<!-- Static List -->
+					<script language="javascript">
+						var staticiplease = '';
+						var info = staticiplease.split('|');
+						var i = 0;
+
+						if(info != '') {
+							for ( i = 0; i < info.length; i++ ) {
+								var inames = info[i];
+								var names = inames.split('/');
+								document.writeln("<tr>");
+								document.writeln("<td><center>" + names[1] + "</center></td>");	/* IP */
+								document.writeln("<td><center>" + names[0] + "</center></td>");	/* MAC */
+								document.writeln("<td><center>-</center></td><td><center>Static</center></td>");
+								document.writeln("<td><center>-</center></td>");
+								document.writeln("</tr>");
+							}
+						}
+					</script>
+
+					<!-- Dynamic List -->
+					<tr><td><center>192.168.45.80</center></td><td><center>a8:2b:b9:09:8a:00</center></td><td><center>-</center></td><td><center>static</center></td><td><center>-</center></td></tr>
+					<tr><td><center>192.168.45.82</center></td><td><center>a8:2b:b9:09:3b:8c</center></td><td><center>Galaxy-S8</center></td><td><center>dynamic</center></td><td><center>57 분 33 초</center></td></tr>
+					
+
+
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+</body>
+</html>

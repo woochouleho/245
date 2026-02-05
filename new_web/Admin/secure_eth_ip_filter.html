@@ -1,0 +1,713 @@
+
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko">
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+
+<script language="javascript">
+
+var ip_filter_list = [
+[ "0",  "0",  "-",  "ALL",  "0",  "192.168.80.254",  "24",  "0.0.0.0",  "32",  "0",  "0",  "0",  "0",  "Allow" ]];
+var filter_cnt = 1;
+
+var sessionKey = '1432148208';
+var query = '';
+var ip_version = 0;
+
+function get_dir_str(dir_type) {
+	var val =  parseInt(dir_type);
+
+	switch(val) {
+		case 0: return 'ALL';
+		case 1: return 'WAN';
+		case 2: return 'LAN';
+	}
+
+	return '';
+}
+
+function get_policy_str(val) {
+	if(val == 'Allow') return '허용';
+	if(val == 'Deny') return '차단';
+
+	return '';
+}
+
+function change_protocol_type() {
+	var proto = document.forms[0].w_ethip_proto.value;
+
+	if(proto == "ALL" || proto == "ICMP") {
+		document.getElementById('w_ip_tr_4').style.display = "none";
+		document.getElementById('w_ip_tr_5').style.display = "none";
+	}
+	else {
+		document.getElementById('w_ip_tr_4').style.display = "";
+		document.getElementById('w_ip_tr_5').style.display = "";
+	}
+}
+
+function change_ethtype() {
+	var ethtype = parseInt(document.forms[0].w_ethip_ethtype.value);
+
+	if(ethtype) {
+		document.forms[0].w_ethip_ethtype_value.disabled   = false;
+		document.getElementById('w_ip_tr_1').style.display = "none";
+		document.getElementById('w_ip_tr_2').style.display = "none";
+		document.getElementById('w_ip_tr_3').style.display = "none";
+		document.getElementById('w_ip_tr_4').style.display = "none";
+		document.getElementById('w_ip_tr_5').style.display = "none";
+	}
+	else {
+		document.forms[0].w_ethip_ethtype_value.disabled   = true;
+		document.getElementById('w_ip_tr_1').style.display = "";
+		document.getElementById('w_ip_tr_2').style.display = "";
+		document.getElementById('w_ip_tr_3').style.display = "";
+		change_protocol_type();
+	}
+
+	return;
+}
+
+function check_ethtype_hex() {
+	var n = 0;
+	var val = document.forms[0].w_ethip_ethtype_value.value;
+
+	if(val.indexOf(' ') != -1 ) {
+		webAlert('Ethertype에 공백을 사용할수 없습니다');
+		return false;
+	}
+
+	if(val.charAt(0) != '0' && val.charAt(1) != 'x') {
+		webAlert('4자리 헥사 코드를 입력해 주세요.  ex) 0x0800');
+		return false;
+	}
+
+	if(val.length != 6) {
+		webAlert('4자리 헥사 코드를 입력해 주세요.  ex) 0x0800');
+		return false;
+	}
+
+	for(n = 2; n < val.length ; n++) {
+		if(isHexaDigit(val.charAt(n) ) == false) {
+			webAlert('4자리 헥사 코드를 입력해 주세요. ex) 0x0800');
+			return false;
+		}
+	}
+
+	/* check duplication */
+	for(n = 0; n < ip_filter_list.length; n++) {
+		if(document.forms[0].w_ethip_ethtype.value == ip_filter_list[n][0]
+		&& document.forms[0].w_ethip_port.value == ip_filter_list[n][1]
+		&& document.forms[0].w_ethip_ethtype_value.value == ip_filter_list[n][2]
+		&& document.forms[0].w_ethip_policy.value == ip_filter_list[n][13]) {
+			webAlert('중복되는 항목이 존재합니다');
+			return false;
+		}
+	}
+
+	/* make query */
+	query += document.forms[0].w_ethip_ethtype.value + '|';
+	query += document.forms[0].w_ethip_port.value + '|';
+	query += document.forms[0].w_ethip_ethtype_value.value + '|';
+	query += 'ALL|0|-|0|-|0|0|0|0|0|';
+	query += document.forms[0].w_ethip_policy.value + '|';
+
+	return true;
+}
+
+function check_ip_mode() {
+	var val_ip   = '';
+	var val_mask = 0;
+	var src_ip_mode = 0;
+	var dst_ip_mode = 0;
+
+	val_ip = document.forms[0].w_ethip_srcip.value;
+
+	if(val_ip != '') {
+		if(isValidIpAddress(val_ip) == false) {
+			if(isValidIpAddress6(val_ip) == false) {
+				webAlert('발신 IP 주소 형식이 잘 못되었습니다.');
+				return -1;
+			}
+			else {
+				src_ip_mode = 6;
+			}
+		}
+		else {
+			src_ip_mode = 4;
+		}
+	}
+
+	val_ip = document.forms[0].w_ethip_dstip.value;
+
+	if(val_ip != '') {
+		if(isValidIpAddress(val_ip) == false) {
+			if(isValidIpAddress6(val_ip) == false) {
+				webAlert('착신 IP 주소 형식이 잘 못되었습니다.');
+				return -1;
+			}
+			else {
+				dst_ip_mode = 6;
+			}
+		}
+		else {
+			dst_ip_mode = 4;
+		}
+	}
+
+	if(src_ip_mode == 0 && dst_ip_mode == 0) {
+		webAlert('발신 또는 착신 IP 주소 중 하나는 반드시 입력되어야 합니다.');
+		return -1;
+	}
+
+	if (src_ip_mode > 0) {
+		str_mask = document.forms[0].w_ethip_srcmask.value;
+		val_mask = parseInt(str_mask);
+
+		if (src_ip_mode == 4) {
+			if (str_mask.length > 2)
+			{
+				webAlert('발신 Mask 값은 0 ~ 32 사이의 값을 사용해야 합니다.');
+				return -1;
+			}
+
+			if(isNaN(val_mask) == true || val_mask < 0 || val_mask > 32)
+			{
+				webAlert('발신 Mask 값은 0 ~ 32 사이의 값을 사용해야 합니다.');
+				return -1;
+			}
+		}
+		else {
+			if (str_mask.length > 3)
+			{
+				webAlert('발신 Mask 값은 0 ~ 128 사이의 값을 사용해야 합니다.');
+				return -1;
+			}
+
+			if (isNaN(val_mask) == true || val_mask < 0 || val_mask > 128)
+			{
+				webAlert('발신 Mask 값은 0 ~ 128 사이의 값을 사용해야 합니다.');
+				return -1;
+			}
+		}
+	}
+
+	if (dst_ip_mode > 0) {
+		str_mask = document.forms[0].w_ethip_dstmask.value;
+		val_mask = parseInt(str_mask);
+
+		if (dst_ip_mode == 4) {
+			if (str_mask.length > 2)
+			{
+				webAlert('착신 Mask 값은 0 ~ 32 사이의 값을 사용해야 합니다.');
+				return -1;
+			}
+
+			if(isNaN(val_mask) == true || val_mask < 0 || val_mask > 32)
+			{
+				webAlert('착신 Mask 값은 0 ~ 32 사이의 값을 사용해야 합니다.');
+				return -1;
+			}
+		}
+		else {
+			if (str_mask.length > 3)
+			{
+				webAlert('착신 Mask 값은 0 ~ 128 사이의 값을 사용해야 합니다.');
+				return -1;
+			}
+
+			if(isNaN(val_mask) == true || val_mask < 0 || val_mask > 128)
+			{
+				webAlert('착신 Mask 값은 0 ~ 128 사이의 값을 사용해야 합니다.');
+				return -1;
+			}
+		}
+	}
+
+	if (src_ip_mode != dst_ip_mode && (src_ip_mode > 0 && dst_ip_mode > 0)) {
+		webAlert('발신 또는 착신 IP 주소 형식(IPv4, IPv6)은 같아야 합니다.');
+		return -1;
+	}
+
+	if (src_ip_mode == 4)
+		return 0;
+	else if(src_ip_mode == 6)
+		return 1;
+
+	if (dst_ip_mode == 4)
+		return 0;
+	else if (dst_ip_mode == 6)
+		return 1;
+
+	return -1;
+}
+
+function check_ip_port() {
+	var val_start = 0;
+	var val_end = 0;
+
+	if (document.forms[0].w_ethip_srcport_start.value != "") {
+		val_start = parseInt(document.forms[0].w_ethip_srcport_start.value);
+		if(isNaN(val_start) == true || val_start < 0 || val_start > 65535)
+		{
+			webAlert('발신 포트 시작 값은 0 ~ 65535 사이의 값을 사용해야 합니다.');
+			return false;
+		}
+
+		val_end = parseInt(document.forms[0].w_ethip_srcport_end.value);
+		if(isNaN(val_end) == true || val_end < 0 || val_end > 65535)
+		{
+			webAlert('발신 포트 종료 값은 0 ~ 65535 사이의 값을 사용해야 합니다.');
+			return false;
+		}
+
+		if(isNaN(val_start) == false && isNaN(val_end) == false)
+		{
+			if(val_start > val_end) {
+				webAlert('발신 포트 값 범위는 시작 값이 종료 값보다 작아야 합니다.');
+				return false;
+			}
+		}
+	}
+
+	if (document.forms[0].w_ethip_dstport_start.value != "") {
+		val_start = parseInt(document.forms[0].w_ethip_dstport_start.value);
+		if(isNaN(val_start) == true || val_start < 0 || val_start > 65535)
+		{
+			webAlert('착신 포트 시작 값은 0 ~ 65535 사이의 값을 사용해야 합니다.');
+			return false;
+		}
+
+		val_end = parseInt(document.forms[0].w_ethip_dstport_end.value);
+		if(isNaN(val_end) == true || val_end < 0 || val_end > 65535)
+		{
+			webAlert('착신 포트 종료 값은 0 ~ 65535 사이의 값을 사용해야 합니다.');
+			return false;
+		}
+
+		if(isNaN(val_start) == false && isNaN(val_end) == false)
+		{
+			if(val_start > val_end) {
+				webAlert('착신 포트 값 범위는 시작 값이 종료 값보다 작아야 합니다.');
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+function check_ip_value() {
+	var n = 0;
+	var mode = 0;
+	var val = '';
+
+	/* check ip */
+	ip_version = check_ip_mode();
+	if(ip_version < 0) return false;
+
+	/* check port */
+	val = document.forms[0].w_ethip_proto.value;
+	if(val == 'TCP' || val == 'UDP') {
+		if(check_ip_port() == false) return false;
+	}
+
+	/* check duplication */
+/*
+	for(n = 0; n < ip_filter_list.length; n++) {
+		if(document.forms[0].w_ethip_srcip.value == ip_filter_list[n][5]
+		&& document.forms[0].w_ethip_srcmask.value == ip_filter_list[n][6]
+		&& document.forms[0].w_ethip_dstip.value == ip_filter_list[n][7]
+		&& document.forms[0].w_ethip_dstmask.value == ip_filter_list[n][8]
+		&& document.forms[0].w_ethip_policy.value == ip_filter_list[n][13]) {
+			var src_port_start = 0;
+			var src_port_end = 0;
+			var dst_port_start = 0;
+			var dst_port_end = 0;
+
+			src_port_start = parseInt(document.forms[0].w_ethip_srcport_start.value);
+			src_port_end   = parseInt(document.forms[0].w_ethip_srcport_end.value);
+			dst_port_start = parseInt(document.forms[0].w_ethip_dstport_start.value);
+			dst_port_end   = parseInt(document.forms[0].w_ethip_dstport_end.value);
+
+			if(src_port_start == ip_filter_list[n][9]
+			&& src_port_end   == ip_filter_list[n][10]
+			&& dst_port_start == ip_filter_list[n][11]
+			&& dst_port_end   == ip_filter_list[n][12]) {
+				webAlert('중복되는 항목이 존재합니다');
+				return false;
+			}
+		}
+	}
+*/
+
+	return true;
+}
+
+function btnApplyAdd() {
+	var n = 0;
+	var filter_type = 0;
+	var rc = false;
+	var val = '';
+
+	if ( ip_filter_list.length >= 40)
+    {
+        webAlert('최대 엔트리 개수에 도달 했습니다.');
+        return false;
+    }
+
+	/* check eth filter */
+	filter_type = parseInt(document.forms[0].w_ethip_ethtype.value);
+	if(filter_type) {
+		if(check_ethtype_hex() == false)
+			return false;
+		else
+			return true;
+	}
+
+	if(check_ip_value() == false) return false;
+
+	query += filter_type + '|';
+	query += document.forms[0].w_ethip_port.value + '|';
+	query += '-|';
+	query += document.forms[0].w_ethip_proto.value + '|';
+	query += ip_version + '|';
+
+	val = document.forms[0].w_ethip_srcip.value;
+	if(val != '')
+		query += val + '|';
+	else
+		query += '0.0.0.0|';
+
+	val = document.forms[0].w_ethip_srcmask.value;
+	if(val != '')
+		query += val + '|';
+	else {
+		if(ip_version) query += '128|';
+		else query += '32|';
+	}
+
+	val = document.forms[0].w_ethip_dstip.value;
+	if(val != '')
+		query += val + '|';
+	else
+		query += '0.0.0.0|';
+
+	val = document.forms[0].w_ethip_dstmask.value;
+	if(val != '')
+		query += val + '|';
+	else {
+		if(ip_version) query += '128|';
+		else query += '32|';
+	}
+
+	val = document.forms[0].w_ethip_proto.value;
+	if(val == 'TCP' || val == 'UDP') {
+		val = document.forms[0].w_ethip_srcport_start.value;
+		if(val != '')
+			query += val + '|';
+		else
+			query += '0|';
+		val = document.forms[0].w_ethip_srcport_end.value;
+		if(val != '')
+			query += val + '|';
+		else
+			query += '0|';
+		val = document.forms[0].w_ethip_dstport_start.value;
+		if(val != '')
+			query += val + '|';
+		else
+			query += '0|';
+		val = document.forms[0].w_ethip_dstport_end.value;
+		if(val != '')
+			query += val + '|';
+		else
+			query += '0|';
+	}
+	else {
+		query += '0|0|0|0|'
+	}
+
+	query += document.forms[0].w_ethip_policy.value + '|';
+
+	return true;
+}
+
+function btnApplyRemove() {
+	var i = 0;
+	var entry = '';
+	var idx = 0;
+
+	for(i = 0; i < ip_filter_list.length; i++) {
+		entry = "wv_eth_ip_filter_rm_" + i;
+		if(document.getElementById(entry).checked == true) {
+			query += document.getElementById(entry).value + ",";
+		}
+	}
+
+	return;
+}
+
+function btnApplySave(action) {
+	var loc  = "wc_ip_filter.cgi?";
+	var code = '';
+
+	query = '';
+
+	switch(action) {
+		case 0:
+			loc +="wv_ip_filter_action=add";
+			if( btnApplyAdd() == false) return;
+			loc +='&wv_ip_filter_query=' + query;
+			break;
+
+		case 1:
+			loc +="wv_ip_filter_action=remove";
+			btnApplyRemove();
+			loc +='&wv_ip_filter_query=' + query;
+			break;
+
+		default:
+			loc +="wv_ip_filter_action=refresh";
+			break;
+	}
+
+	loc += '&sessionKey=' + sessionKey;
+	code = 'location="' + loc + '"';
+	eval(code);
+}
+
+function frmLoad() {
+	change_ethtype();
+	change_protocol_type();
+}
+</script>
+</head>
+
+<body onload="frmLoad()">
+
+<div id="wrap">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form>
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>보안기능 </li>
+			<li>IP/Port 필터링 </li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">IP/Port 필터링</h1>
+	<p>IP, Port 번호를 이용하여 필터링을 설정합니다. </p>
+	<hr>
+
+	<h2 class="title_style_2">필터링 추가</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">포트</th>
+					<td>
+						<select id="w_ethip_port" name="w_ethip_port">
+							<option value="0">ALL</option>
+							<option value="1">WAN</option>
+							<option value="2">LAN</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">Ethertype</th>
+					<td>
+					<div style="border: 0px; float: left; width: 150px;">
+						<select id="w_ethip_ethtype" name="w_ethip_ethtype" onchange="change_ethtype()">
+							<option value="0">None</option>
+							<option value="1">Hexa Value</option>
+						</select>
+					</div>
+					<div style="border: 0px; float:left; width:30%; ">
+						<input type="text" id="w_ethip_ethtype_value" name="w_ethip_ethtype_value" maxlength="8">
+					</div>
+					</td>
+				</tr>
+				<tr id="w_ip_tr_1" name="w_ip_tr_1" style="">
+					<th scope="row">프로토콜</th>
+					<td>
+						<select id="w_ethip_proto" name="w_ethip_proto" onchange="change_protocol_type()">
+							<option value="ALL">ALL</option>
+							<option value="TCP">TCP</option>
+							<option value="UDP">UDP</option>
+							<option value="ICMP">ICMP</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="w_ip_tr_2" name="w_ip_tr_2" style="">
+					<th scope="row">발신IP/MASK</th>
+					<td>
+						<input type="text" id="w_ethip_srcip" name="w_ethip_srcip" style="width:40%">
+						&nbsp;/&nbsp;
+						<input type="text" id="w_ethip_srcmask" name="w_ethip_srcmask" style="width:30%">
+					</td>
+				</tr>
+				<tr id="w_ip_tr_3" name="w_ip_tr_3" style="">
+					<th scope="row">착신IP/MASK</th>
+					<td>
+						<input type="text" id="w_ethip_dstip" name="w_ethip_dstip" style="width:40%">
+						&nbsp;/&nbsp;
+						<input type="text" id="w_ethip_dstmask" name="w_ethip_dstmask" style="width:30%">
+					</td>
+				</tr>
+				<tr id="w_ip_tr_4" name="w_ip_tr_4" style="display:none">
+					<th scope="row">발신포트</th>
+					<td>
+						<input type="text" id="w_ethip_srcport_start" name="w_ethip_srcport_start" style="width:20%">
+						&nbsp;-&nbsp;
+						<input type="text" id="w_ethip_srcport_end" name="w_ethip_srcport_end" style="width:20%">
+					</td>
+				</tr>
+				<tr id="w_ip_tr_5" name="w_ip_tr_5" style="display:none">
+					<th scope="row">착신포트</th>
+					<td>
+						<input type="text" id="w_ethip_dstport_start" name="w_ethip_dstport_start" style="width:20%">
+						&nbsp;-&nbsp;
+						<input type="text" id="w_ethip_dstport_end" name="w_ethip_dstport_end" style="width:20%">
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">정책</th>
+					<td>
+						<select id="w_ethip_policy" name="w_ethip_policy">
+							<option value="Allow">허용</option>
+							<option value="Deny">차단</option>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="txt_c">
+		<input type="button" onclick="btnApplySave(0)" value="추가" class="basic-btn01 btn-blue-bg mr_20" >
+    </div>
+
+	<h2 class="title_style_2">리스트</h2>
+	<div class="tb_style_1 scroll">
+		<table>
+			<colgroup>
+				<col style="width:5%;"/>
+				<col style="width:10%;"/>
+				<col style="width:10%;"/>
+				<col style="width:8%;" />
+				<col style="width:15%;"/>
+				<col style="width:15%;"/>
+				<col style="width:10%;"/>
+				<col style="width:10%;"/>
+				<col style="width:9%;"/>
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col"><center>선택</center></th>
+					<th scope="col"><center>포트</center></th>
+					<th scope="col"><center>Ethertype</center></th>
+					<th scope="col"><center>프로토콜</center></th>
+					<th scope="col"><center>발신 IP/MASK</center></th>
+					<th scope="col"><center>착신 IP/MASK</center></th>
+					<th scope="col"><center>발신포트</center></th>
+					<th scope="col"><center>착신포트</center></th>
+					<th scope="col"><center>정책</center></th>
+				</tr>
+			</thead>
+			<tbody style="text-align:center">
+				<script language="javascript">
+					var i = 0;
+					var str_dir     = '';
+					var str_policy  = '';
+
+					if(filter_cnt > 0) {
+						for(i = 0; i < filter_cnt; i++) {
+							str_dir    = get_dir_str(ip_filter_list[i][1]);
+							str_policy = get_policy_str(ip_filter_list[i][13]);
+
+							document.write("<tr>\n");
+							document.write("<td>\n");
+							document.write("<input type='checkbox' name='wv_eth_ip_filter_rm_" + i + "'");
+							document.write("id='wv_eth_ip_filter_rm_" + i + "' ");
+							document.write("value='" + ip_filter_list[i][0] + "|"
+							            + ip_filter_list[i][1]  + "|"
+										+ ip_filter_list[i][2]  + "|"
+										+ ip_filter_list[i][3]  + "|"
+									 	+ ip_filter_list[i][4]  + "|"
+									 	+ ip_filter_list[i][5]  + "|"
+									 	+ ip_filter_list[i][6]  + "|"
+									 	+ ip_filter_list[i][7]  + "|"
+									 	+ ip_filter_list[i][8]  + "|"
+									 	+ ip_filter_list[i][9]  + "|"
+									 	+ ip_filter_list[i][10] + "|"
+									 	+ ip_filter_list[i][11] + "|"
+									 	+ ip_filter_list[i][12] + "|"
+									 	+ ip_filter_list[i][13] + "'");
+							document.write("</td>\n");
+							document.write("<td>" + str_dir + "</td>");
+							if(parseInt(ip_filter_list[i][0])) {
+								document.write("<td>" + ip_filter_list[i][2] + "</td>");
+								document.write("<td>-</td>");
+								document.write("<td>-</td>");
+								document.write("<td>-</td>");
+								document.write("<td>-</td>");
+								document.write("<td>-</td>");
+								document.write("<td>" + str_policy + "</td>");
+							}
+							else {
+								document.write("<td>-</td>");
+								document.write("<td>" + ip_filter_list[i][3] + "</td>");
+								document.write("<td>" + ip_filter_list[i][5] + "/" + ip_filter_list[i][6] + "</td>");
+								document.write("<td>" + ip_filter_list[i][7] + "/" + ip_filter_list[i][8] + "</td>");
+								if(ip_filter_list[i][10] != "" && ip_filter_list[i][10] > "0")
+									document.write("<td>" + ip_filter_list[i][9] + ":" + ip_filter_list[i][10] + "</td>");
+								else
+									document.write("<td>" + ip_filter_list[i][9] + "</td>");
+								if(ip_filter_list[i][12] != "" && ip_filter_list[i][12] > "0")
+									document.write("<td>" + ip_filter_list[i][11] + ":" + ip_filter_list[i][12] + "</td>");
+								else
+									document.write("<td>" + ip_filter_list[i][11] + "</td>");
+								document.write("<td>" + str_policy + "</td>");
+							}
+							document.write("</td>\n");
+							document.write("</tr>\n");
+						}
+					}
+				</script>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c mb_20"> <!-- 20190325 pt_20 클래스를 mb_20 클래스로 변경 -->
+		<input type="button" value="삭제"  onClick='btnApplySave(1)' class="basic-btn01 btn-gray-bg2 mr_20" />
+	</div>
+
+</div>
+</form>
+</div>
+<!-- //wrap -->
+
+</body>
+</html>

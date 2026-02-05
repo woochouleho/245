@@ -1,0 +1,442 @@
+<html>
+	<head>
+	<title>H854AX</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/portName.js"></script>
+	<script language="javascript" src="js/prv_util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+var ap_btn_push =1;
+var is_ap_btn_check=0;
+var ap_btn_check_function;
+function frmLoad()
+{
+	var band = new String();
+	var params = getURLVars(window.location.href);
+
+	if(params["band"]  == "2g")
+	{
+		band = "2g";
+	}
+	else
+	{
+		band = "5g";
+	}
+
+	var select_band = document.getElementById("select_band");
+	select_band.value = band;
+	changeBand();
+	ap_btn_check_function = setInterval("ap_btn_check()",500);
+}
+
+function ap_btn_check()
+{
+}
+
+function btnApplySave()
+{
+	document.wifi_wps_form.submit();
+	return true;
+}
+
+function changeWPSEnable(nvram_value)
+{
+	if(nvram_value == "enabled")
+		document.getElementsByName("input_wps_enable")[1].checked = true;
+	else
+		document.getElementsByName("input_wps_enable")[0].checked = true;
+}
+
+function getSSID(band_value)
+{
+	if(band_value == "5g")
+	{
+		return html_code_to_script_str("SK_WiFiGIGAA101_5G");
+	}
+	else if(band_value == "2g")
+	{
+		return html_code_to_script_str("SK_WiFiGIGAA101");
+	}
+}
+
+function getWPSConf(band_value)
+{
+	var ifname;
+	var wps_mode;
+	var wps_oob;
+	var mode;
+	if(band_value == "5g")
+	{
+		ifname = "wl0";
+		wps_mode = "enabled";
+		wps_oob = "";
+		mode = "ap";
+	}
+	else if(band_value == "2g")
+	{
+		ifname = "wl1";
+		wps_mode = "enabled";
+		wps_oob = "";
+		mode = "ap";
+	}
+	if ( wps_mode == "enabled") 
+	{
+		if (mode == "ap") 
+		{
+			var lan_ifnames = "eth0 eth1 eth2 eth3 wl0 wl0.1 wl1 wl1.1";
+			var lan1_ifnames = "";
+			if (lan_ifnames.indexOf(ifname) !=-1) {
+				if ( "disabled" == "disabled") {
+					return "Configured";
+				} else {
+					return "Unconfigured";
+				}
+
+			} else if (lan1_ifnames.indexOf(ifname) !=-1) {
+				if ( "" == "disabled") {
+					return "Configured";
+				} else {
+					return "Unconfigured";
+				}
+
+			}
+		} else {
+			if ((wps_oob == "disabled")) 
+			{
+				return "Configured";
+			} else {
+				return "Unconfigured";
+			}
+		}
+	}
+	else
+	{
+		return "Unconfigured";
+	}
+}
+function getSecMode(band_value)
+{
+	if(band_value == "5g")
+	{
+		return "wpa2wpa";
+	}
+	else if(band_value == "2g")
+	{
+		return "wpa2wpa";
+	}
+}
+
+function getAuthType(band_value,sec_mode)
+{
+	if(sec_mode.indexOf("wpa") != -1)
+	{
+		if(band_value == "5g")
+		{
+			return "psk";
+		}
+		else if(band_value == "2g")
+		{
+			return "psk";
+		}
+	}
+	else if(sec_mode == "wep")
+	{
+		if(band_value == "5g")
+		{
+			return "";
+		}
+		else if(band_value == "2g")
+		{
+			return "";
+		}
+	}
+	else if(sec_mode == "none")
+	{
+		return "-";
+	}
+}
+
+function getEncryptType(band_value,sec_mode)
+{
+	if(sec_mode.indexOf("wpa") != -1)
+	{
+		if(band_value == "5g")
+		{
+			return "tkip+aes";
+		}
+		else if(band_value == "2g")
+		{
+			return "tkip+aes";
+		}
+	}
+	else 
+	{
+		return "-";
+	}
+}
+
+function changeWiFiStatus(band_value)
+{
+	var sec_mode = getSecMode(band_value);
+	$("#ssid td").text(getSSID(band_value));
+	$("#conf td").text(getWPSConf(band_value));
+	$("#sec_mode td").text(sec_mode.toUpperCase());
+	$("#auth_type td").text(getAuthType(band_value,sec_mode).toUpperCase());
+	$("#encrypt_type td").text(getEncryptType(band_value,sec_mode).toUpperCase());
+
+	if($("#sec_mode td").text() == "NONE")
+		$("#sec_mode td").text("무인증"); 
+	else if($("#sec_mode td").text() == "WPA_MIXED")
+		$("#sec_mode td").text("WPA / WPA2");
+
+	if($("#auth_type td").text() == "-")
+		$("#auth_type").hide();
+	else
+		$("#auth_type").show();
+
+	if($("#encrypt_type td").text() == "-")
+		$("#encrypt_type").hide();
+	else
+		$("#encrypt_type").show();
+}
+
+function changeBand()
+{
+	var select_band =document.getElementById("select_band");
+
+	changeWiFiStatus(select_band.value);
+	if(select_band.value == "5g")
+	{
+		changeWPSEnable("enabled");
+	}
+	else
+	{
+		changeWPSEnable("enabled");
+	}
+}
+
+
+var wps_count_val=0;
+var wps_timer;
+function wps_count_down()
+{
+	wps_count_val--;
+	document.getElementsByClassName("txt_2")[0].innerText=String(wps_count_val);
+	if(wps_count_val == 0)
+	{
+		ap_btn_push =0;
+		clearInterval(wps_timer);
+	}
+}
+
+var url_wps= window.location.protocol + '//' + window.location.host + '/wlwps.cgi';
+function btn_connect_click()
+{
+	var select_band =document.getElementById("select_band");
+	var wps_mode;
+	
+
+	if(select_band.value == "5g")
+		wps_mode = "enabled";
+	if(select_band.value == "2g")
+		wps_mode = "enabled";
+
+	if( wps_mode == "disabled" )
+	{
+		webAlert("WPS 사용이 중단일 경우 WPS 연결할 수 없습니다.\n");
+	}
+	else if($("#encrypt_type td").text() == "TKIP")
+	{
+		webAlert("WiFi의 암호화가 TKIP일 경우에는 WPS 기능을 사용할 수 없습니다\n");
+	}
+	else
+	{
+		wps_count_val =120;
+		btn_delay=1;
+		webAlert("남은시간이 표시되면 무선 디바이스에서 WPS 버튼을 눌러 연결하세요.");
+		var data = "Req=wps_addenrollee";
+		setTimeout(function(){btn_delay=0;},1500);
+		post_wps_cgi(data);
+	}
+}
+
+function btn_connect_cancel_click()
+{
+	var data = "Req=wps_stop";
+	ap_btn_push =0;
+	post_wps_cgi(data);
+}
+
+function post_wps_cgi(cgi_data)
+{
+	var select_band =document.getElementById("select_band");
+	
+	cgi_data +="&Ifname="
+	if(select_band.value == "5g")
+	{
+		cgi_data = cgi_data+"wl0";
+	}
+	else if(select_band.value == "2g")
+	{
+		cgi_data = cgi_data+"wl1";
+	}
+	$.post(url_wps,cgi_data);
+}
+</script>
+</head>
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<body onload="frmLoad()">
+<form name= "wifi_wps_form" action="">
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>WiFi</li>
+			<li>WPS</li>			
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">WPS (Wi-Fi Protected Setup)</h1>
+	<!-- 20190326 말풍선영역 추가 -->
+<!--	<div class="speech_bubble_area">
+		<a href="#" class="speech_bubble_open"><img src="img/icon_speech_bubble.png" alt="말풍선영역열기" /></a>
+		<div class="speech_bubble_txt">
+			설명문구가 들어갑니다. 설명문구가 들어갑니다. 설명문구가 들어갑니다. 설명문구가 들어갑니다. 설명문구가 들어갑니다. 설명문구가 들어갑니다.
+		</div>
+	</div>
+-->
+
+	<p>WPS를 통해서 복잡한 설정없이 무선 연결 및 보안설정을 쉽게 할 수 있습니다</p>
+	<hr>
+	
+	<h2 class="title_style_2">WPS 상태 표시</h2>
+	<div class="reset mb_20">
+		<SPAN class="txt_2">
+			WPS 기능 준비중 입니다
+		</SPAN>
+		<span class="txt_2">
+		</span>
+		<p class="txt_2">
+            단, WiFi의 암호화가 TKIP일 경우에는 WPS 기능을 사용할 수 없습니다
+        </p>
+	</div>
+	
+	<h2 class="title_style_2">무선 대역 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:25%;" />
+				<col style="" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col"><center>무선 대역</center></th>
+					<td>
+					<select id="select_band" name="select_band" onChange="changeBand();">
+						<option value="5g">5GHz</option>
+						<option value="2g">2.4GHz</option>
+					</select>
+					</td>
+				</tr>
+			</thead>
+		</table>
+	</div>
+	
+	<h2 class="title_style_2">WPS 연결</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:25%;" />
+				<col />
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="col"><center>WPS 연결하기</center></th>
+					<td scope="col">
+						<input type="button" value="연결" class="basic-btn01 btn-gray-bg2"
+						onclick="btn_connect_click();"/>
+						<input type="button" value="취소" class="basic-btn01 btn-gray-bg2"
+						onclick="btn_connect_cancel_click();"/>
+					</td>
+					
+				</tr>				
+			</tbody>
+		</table>
+	</div>
+	
+	<h2 class="title_style_2">무선 상태 정보</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:25%;" />
+				<col />
+			</colgroup>
+			<tbody>
+				<tr id="conf">
+					<th scope="col"><center>Configured</center></th>
+					<td scope="col"><span>Configured</span></td>
+				</tr>
+				<tr id="ssid">
+					<th scope="col"><center>SSID(네트워크 이름)</center></th>
+					<td scope="col"><span>SK_WiFi_TEST</span></td>
+				</tr>		
+				<tr id="sec_mode">
+					<th scope="col"><center>보안 모드</center></th>
+					<td scope="col"><span>무인증</span></td>
+				</tr>
+				<tr id="auth_type">
+					<th scope="col"><center>인증 타입</center></th>
+					<td scope="col"><span>-</span></td>
+				</tr>
+				<tr id="encrypt_type">
+					<th scope="col"><center>암호화 타입</center></th>
+					<td scope="col"><span>-</span></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+<!--	
+	<h2 class="title_style_2">WPS (Wi-Fi Protected Setup)</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:25%;" />
+				<col />
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="col"><center>WPS 사용</center></th>
+					<td scope="col">
+						<input type="radio" name="input_wps_enable" value="disabled"/><span>&nbsp;중단&nbsp;&nbsp;&nbsp;  </span>
+						<input type="radio" name="input_wps_enable" value="enabled"/><span>&nbsp;사용&nbsp;&nbsp;&nbsp;  </span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	<div class="txt_c">
+		 <input type="button" value="저장"  onclick="btnApplySave()" class="basic-btn01 btn-blue-bg mr_20" />
+	</div>
+-->	
+</div>	
+</form>
+</body>
+</html>
+

@@ -1,0 +1,1135 @@
+
+<html><head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+
+var lan_mac_list = [
+[ "a8:2b:b9:00:00:01","엄마_핸드폰" ],
+[ "a8:2b:b9:00:00:02","큰아들_핸드폰" ],
+[ "a8:2b:b9:09:3b:8c","Galaxy-S8" ]];
+
+var port_policy = [
+[ 0, 1, 1 ],
+[ 1, 1, 1 ],
+[ 2, 1, 1 ],
+[ 3, 1, 1 ]];
+
+var mac_filter_list = [
+["0","00:23:aa:32:aa:12","test"]];
+
+var venable=1;
+
+
+var sessionKey = 588617347;
+var loc   = '';
+var query = '';
+
+var cur_user = 'root';
+
+function btnAdd() {
+	var p = 0;
+	var str ='';
+
+	query = '';
+
+	/* check value */
+	if(mac_filter_list.length >= 32) {
+		webAlert('남은 엔트리가 없습니다');
+		return false;
+	}
+
+	str = document.forms[0].w_mf_add_mac_data.value;
+	if(str.indexOf(' ') != -1) {
+		webAlert('MAC주소에 공백을 사용할수 없습니다');
+		return false;
+	}
+
+	str = document.forms[0].w_mf_add_desc.value;
+	if(str.indexOf(' ') != -1 ) {
+		webAlert('Comment에 공백을 사용할수 없습니다');
+		return false;
+	}
+	else if( str.indexOf('|') != -1 ) {
+		webAlert('문자 | 을 사용할수 없습니다');
+		return false;
+	}
+	else if(str == '') {
+		webAlert('Comment가 없습니다');
+		return false;
+	}
+
+	if(isValidMacAddress(document.forms[0].w_mf_add_mac_data.value) == false )
+	{
+		webAlert('유효하지 않는 MAC주소입니다 ' +'Ex) 00:23:AA:00:00:00');
+		return false;
+	}
+	/* check value end */
+
+	for(p = 0; p < mac_filter_list.length; p++)
+	{
+		if(mac_filter_list[p][0] == document.forms[0].w_mf_add_port.value
+		&& mac_filter_list[p][1] == document.forms[0].w_mf_add_mac_data.value)
+		{
+			webAlert('같은 PORT에 중복되는 MAC주소가 있습니다');
+			return false;
+		}
+	}
+
+	query += document.forms[0].w_mf_add_port.value+'|';
+	query += document.forms[0].w_mf_add_mac_data.value+'|';
+	query += document.forms[0].w_mf_add_desc.value+'|,';
+
+	return true;
+}
+
+function btnDel() {
+	var p = 0;
+	var str ='';
+	for(p = 0; p < mac_filter_list.length; p++)
+	{
+		str = 'wv_mac_filter_rm_' + p;
+		if(document.getElementById(str).checked == true)
+			query += document.getElementById(str).value+",";
+	}
+}
+
+function btnPolicy() {
+	var port   = document.getElementById('w_mf_port').value;
+	var policy = parseInt(document.getElementById('w_mf_port_policy').value);
+
+	query = port + '|';
+
+	switch(policy) {
+		case 0:
+			query += '1|Allow';
+			break;
+		case 1:
+			query += '1|Deny';
+			break;
+		case 2:
+		default:
+			query += '0|Deny';
+			break;
+	}
+
+	return;
+}
+
+function btnEnable()
+{
+	if ( document.getElementById("mac_filter_enable").checked == true)
+		query+='enabled';
+	else
+		query+='disabled';
+}
+
+function btnApplySave(save_type) {
+	var code = '';
+
+	loc = 'wv_mac_filter.cgi?';
+	query = '';
+
+	switch(save_type) {
+		case 0:
+			loc += 'wv_mac_filter_action=remove';
+			btnDel();
+			loc += '&wv_mac_filter_query='+query;
+			break;
+
+		case 1:
+			loc += 'wv_mac_filter_action=policy';
+			btnPolicy();
+			loc +='&wv_mac_filter_query='+query;
+			break;
+
+		case 2:
+			loc += 'wv_mac_filter_action=add';
+			if(btnAdd() == false)
+				return;
+			loc += '&wv_mac_filter_query=' + query;
+			break;
+
+		case 3:
+			loc += 'wv_mac_filter_action=enable';
+			btnEnable();
+			loc += '&wv_mac_filter_query=' + query;
+			break;
+
+		case 4:
+			loc+='wv_mac_filter_action=refresh';
+			break;
+
+		default:
+			return;
+	}
+
+	loc += '&sessionKey=' + sessionKey;
+	code = 'location="' + loc + '"';
+	eval(code);
+}
+
+function change_mac_input() {
+	var val = document.getElementById('w_mf_add_mac').value;
+
+	if(val == "99") {
+		document.getElementById('w_mf_add_mac').style.width = "35%"
+		document.getElementById('w_mf_add_mac_data').style.display = "";
+		document.getElementById('w_mf_add_mac_data').style.width = "60%";
+		document.getElementById('w_mf_add_mac_data').value = "";
+	}
+	else {
+		document.getElementById('w_mf_add_mac').style.width = "100%"
+		document.getElementById('w_mf_add_mac_data').style.display = "none";
+
+		if(val != "0") {
+			document.getElementById('w_mf_add_mac_data').value = val;
+		}
+	}
+
+	return;
+}
+
+function getMFPolicyName(port_no) {
+	var port = 0;
+
+	if(port_no == '') return "-";
+	port = parseInt(port_no);
+
+	if(port_policy[port][1]) {
+		if(port_policy[port][2]) return "차단";
+		else                     return "허용";
+	}
+	else
+		return "비활성화";
+}
+
+function selectMFPortPolicy() {
+	var port = parseInt(document.getElementById('w_mf_port').value);
+
+	if(port_policy[port][1]) {
+		document.getElementById('w_mf_port_policy').value = port_policy[port][2];
+	}
+	else
+		document.getElementById('w_mf_port_policy').value = 2;
+
+	return;
+}
+
+/* Wireless Mac Filter Function */
+
+var ifname ="wl";
+var max_ssid_count = 6;
+var max_ssid_count_2g = 4;
+var max_ssid_count_5g = 3;
+var selected_ssid = new String();
+var count_list_5g = new Array();
+var count_list_2g = new Array();
+
+var ssid_if_5g = new Array();
+ssid_if_5g.push("SK_WiFiGIGAA101_5G");
+ssid_if_5g.push("SK_WiFiGIGAA101");
+ssid_if_5g.push("T wifi home");
+ssid_if_5g.push("wl0_Guest3");
+ssid_if_5g.push("Broadcom");
+ssid_if_5g.push("Broadcom");
+ssid_if_5g.push("Broadcom");
+ssid_if_5g.push("Broadcom");
+
+var ssid_if_2g = new Array();
+ssid_if_2g.push("SK_WiFiGIGAA101");
+ssid_if_2g.push("SK_VoIP");
+ssid_if_2g.push("T wifi home");
+ssid_if_2g.push("SK_WiFi_w6370");
+ssid_if_2g.push("Broadcom");
+ssid_if_2g.push("Broadcom");
+ssid_if_2g.push("Broadcom");
+ssid_if_2g.push("Broadcom");
+
+
+var ssid_ext_5g = new Array();
+ssid_ext_5g.push("메인 5G");
+ssid_ext_5g.push("핸드오버");
+ssid_ext_5g.push("");
+ssid_ext_5g.push("");
+ssid_ext_5g.push("");
+ssid_ext_5g.push("");
+ssid_ext_5g.push("");
+ssid_ext_5g.push("");
+
+var ssid_ext_2g = new Array();
+ssid_ext_2g.push("메인 2.4G");
+ssid_ext_2g.push("");
+ssid_ext_2g.push("");
+ssid_ext_2g.push("");
+ssid_ext_2g.push("");
+ssid_ext_2g.push("");
+ssid_ext_2g.push("");
+ssid_ext_2g.push("");
+
+
+var maclist_5g = new Array();
+maclist_5g.push("00:23:AA:32:AA:A4");
+maclist_5g.push("");
+maclist_5g.push("");
+maclist_5g.push("");
+maclist_5g.push("");
+maclist_5g.push("");
+maclist_5g.push("");
+maclist_5g.push("");
+
+var maclist_2g = new Array();
+maclist_2g.push("");
+maclist_2g.push("");
+maclist_2g.push("");
+maclist_2g.push("00:16:32:00:00:00 00:21:4c:00:00:00 ec:e0:9b:00:00:00 f4:d9:fb:00:00:00");
+maclist_2g.push("");
+maclist_2g.push("");
+maclist_2g.push("");
+maclist_2g.push("");
+
+
+var macmode_5g = new Array();
+macmode_5g.push("disabled");
+macmode_5g.push("disabled");
+macmode_5g.push("disabled");
+macmode_5g.push("disabled");
+macmode_5g.push("disabled");
+macmode_5g.push("disabled");
+macmode_5g.push("disabled");
+macmode_5g.push("disabled");
+
+var macmode_2g = new Array();
+macmode_2g.push("disabled");
+macmode_2g.push("disabled");
+macmode_2g.push("disabled");
+macmode_2g.push("allow");
+macmode_2g.push("disabled");
+macmode_2g.push("disabled");
+macmode_2g.push("disabled");
+macmode_2g.push("disabled");
+
+
+var maclist_ext_5g = new Array();
+maclist_ext_5g.push("test_wifi");
+maclist_ext_5g.push("");
+maclist_ext_5g.push("");
+maclist_ext_5g.push("");
+maclist_ext_5g.push("");
+maclist_ext_5g.push("");
+maclist_ext_5g.push("");
+maclist_ext_5g.push("");
+
+var maclist_ext_2g = new Array();
+maclist_ext_2g.push("");
+maclist_ext_2g.push("");
+maclist_ext_2g.push("");
+maclist_ext_2g.push("-;-;-;-");
+maclist_ext_2g.push("");
+maclist_ext_2g.push("");
+maclist_ext_2g.push("");
+maclist_ext_2g.push("");
+
+
+
+function btnApplySave_wireless(cmd)
+{
+	switch(cmd) {
+		case 1 :
+			document.getElementById("cmd").value="op";
+			break;
+		case 2 :
+			if( add_mac() != true){
+				return;
+			}
+			document.getElementById("cmd").value="add";
+			break;
+		case 3 :
+			del_mac_list();
+			document.getElementById("cmd").value="del";
+			break;
+	}
+
+	document.wifi_mac_filter_form.sessionKey.value = sessionKey;
+	document.wifi_mac_filter_form.submit();
+}
+
+function del_mac_list()
+{
+	var checkboxs = document.getElementsByName("mac_ch");
+	var mac_val_arr = new Array();
+	var mac_val_str = new Array();
+	var mac_val_ext_arr = new Array();
+	var mac_val_ext_str = new Array();
+
+	var ssid_val_arr = new Array();
+	var ssid_val_str = new Array();
+
+	var band_val_arr = new Array();
+	var band_val_str = new Array();
+
+	var filter_mode_arr = new Array();
+	var filter_mode_str = new Array();
+
+	var i;
+
+	for( i = 0; i < checkboxs.length; i++)
+	{
+		if(checkboxs[i].checked)
+		{
+			$("#"+checkboxs[i].value).remove();
+			i--;
+		}
+	}
+
+	mac_val_arr = document.getElementsByName("mac_val");
+	ssid_val_arr = document.getElementsByName("ssid_val");
+	mac_val_ext_arr = document.getElementsByName("mac_val_ext");
+	filter_mode_arr = document.getElementsByName("filtermode_val");
+	band_val_arr = document.getElementsByName("ssid_list");
+
+	for(i = 0; i < mac_val_arr.length; i++)
+	{
+		mac_val_str.push(mac_val_arr[i].innerText);
+		ssid_val_str.push(ssid_val_arr[i].innerText);
+		mac_val_ext_str.push(mac_val_ext_arr[i].innerText);
+		filter_mode_str.push(filter_mode_arr[i].innerText);
+		band_val_str.push(band_val_arr[i].value);
+	}
+	$("#wl_mac_filter_list").children('tr').remove();
+
+	for(i = 0; i< mac_val_str.length; i++)
+	{
+		add_mac_filter_list("wl_mac_filter_list",i, band_val_str[i], ssid_val_str[i], "", filter_mode_str[i] ,mac_val_str[i], mac_val_ext_str[i]);
+	}
+}
+
+function wl_bandwidth_change()
+{
+	var prefix = new String();
+	var bw_value = new String();
+	var list_name = new String();
+
+	$("#wl_ssid").children('option').remove();
+	bw_value = document.getElementById("wl_bandwidth").value
+
+	var acct_root = 0;
+	$('#user_name').val(cur_user);
+	if (cur_user == "root")
+		acct_root = 1;
+
+	if(bw_value == "0")
+	{
+		for (var i = 0; i < ssid_if_5g.length; i++)
+		{
+			if(i == 2) // T wifi home
+				continue;
+			if(i == 0)
+			{
+				prefix = ifname+bw_value;
+			}
+			else
+			{
+				prefix = ifname+bw_value+"."+String(i);
+			}
+			if (ssid_ext_5g[i] != "") {
+				list_name = ssid_if_5g[i]+" ["+ssid_ext_5g[i]+"]";
+			} else {
+				list_name = ssid_if_5g[i] ;
+			}
+
+			// except T wifi home ssid if account isn't root
+			if (acct_root == 0 && ssid_if_5g[i].indexOf("T wifi home") == 0)
+				continue;
+
+			if(i < max_ssid_count_5g) {
+				add_option("wl_ssid", prefix, list_name);
+			}
+		}
+	}
+	if(bw_value == "1")
+	{
+		for(var i = 0; i < ssid_if_2g.length; i++)
+		{
+			if(i == 1 || i == 2) // SK_VoIP, T wifi home
+				continue;
+			if(i == 0)
+			{
+				prefix = ifname+bw_value;
+			}
+			else
+			{
+				prefix = ifname+bw_value+"."+String(i);
+			}
+			if (ssid_ext_2g[i] != "") {
+				list_name = ssid_if_2g[i]+" ["+ssid_ext_2g[i]+"]";
+			} else {
+				list_name = ssid_if_2g[i];
+			}
+
+			// except T wifi home ssid if account isn't root
+			if (acct_root == 0 && ssid_if_2g[i].indexOf("T wifi home") == 0)
+				continue;
+
+			if(i < max_ssid_count_2g) {
+					add_option("wl_ssid", prefix, list_name);
+			}
+		}
+	}
+	wl_ssid_clik();
+}
+
+function wl_ssid_clik()
+{
+	policyselect( document.getElementById("wl_ssid").value );
+}
+
+function policyselect( wl_select )
+{
+	var mac_filter_op;
+	var prefix = new String();
+	var i,j;
+
+	for( i = 0; i < 2; i++)
+	{
+		prefix = ifname+String(i);
+		if(prefix == wl_select)
+		{
+			if( i == 0)
+			{
+				mac_filter_op = macmode_5g[0];
+			}
+			else if( i == 1)
+			{
+				mac_filter_op = macmode_2g[0];
+			}
+		}
+		prefix = prefix +".";
+		for( j=1; j < max_ssid_count; j++)
+		{
+			if( (prefix + String(j)) == wl_select)
+			{
+				if( i == 0)
+				{
+					mac_filter_op = macmode_5g[j];
+				}
+				else if( i == 1)
+				{
+					mac_filter_op = macmode_2g[j];
+				}
+
+			}
+		}
+	}
+
+	document.wifi_mac_filter_form.wl_macmode.value = mac_filter_op;
+
+	for(i = 0; i < document.getElementById('wl_macmode').options.length; i++)
+	{
+		if(mac_filter_op ==  document.getElementById("wl_macmode").options[i].value)
+		{
+			document.getElementById("wl_macmode").options[i].selected = true;
+		}
+	}
+}
+
+function add_option(select_id, option_val, option_name)
+{
+	var option = document.createElement("OPTION");
+	var text = document.createTextNode(option_name);
+	option.setAttribute("value", option_val);
+
+	option.appendChild(text);
+	document.getElementById(select_id).appendChild(option);
+}
+
+function add_mac_filter_list(add_id, index, band, ssid, ssid_ext, filter_mode, mac_value, mac_value_ext)
+{
+	var tmp = String();
+	var tag = "";
+
+	if ( filter_mode == "allow") {
+		tmp = "허용";
+	} else if ( filter_mode == "deny") {
+		tmp = "차단";
+	} else {
+		tmp = "비활성화";
+	}
+
+	tag += "<tr id=\""+index+"\" name=\""+index+"\">\n";
+	tag += "<td><center><input id=\"mac_ch\"";
+	tag += "name=\"mac_ch\" \n";
+	tag += "type=\"checkbox\" value=\""+index+"\"></center></td>\n";
+	if ( ssid_ext != "") {
+		tag += "<td><center><label name=\"ssid_val\">"+ssid+" ["+ssid_ext+"]</label></center>";
+	} else {
+		tag += "<td><center><label name=\"ssid_val\">"+ssid+"</label></center>";
+	}
+	tag += "<input id=\"ssid_list"+index+"\" name=\"ssid_list"+index+"\"";
+	tag += "value=\""+band+"\" type=\"hidden\"> </td>";
+	tag += "<input name=\"ssid_list\""; // 19.7.18 juy operating javascript and cgi
+	tag += "value=\""+band+"\" type=\"hidden\"> </td>";
+
+	tag += "<td><center><label name=\"mac_val\">"+mac_value+"</label></center>\n";
+	tag += "<input id=\"mac_list"+index+"\" name=\"mac_list"+index+"\"";
+	tag += "value=\""+mac_value+"\" type=\"hidden\"></td>";
+
+	tag += "<td><center><label name=\"mac_val_ext\">"+mac_value_ext+"</label></center>\n";
+	tag += "<input id=\"mac_ext_list"+index+"\" name=\"mac_ext_list"+index+"\"";
+	tag += "value=\""+mac_value_ext+"\" type=\"hidden\"></td>";
+
+	tag += "<td><center><label name=\"filtermode_val\">"+tmp+"</label></center></td>";
+
+	tag += "</tr>\n";
+	$("#"+add_id).append(tag);
+	document.getElementById("mac_filter_list_count").value = $("#wl_mac_filter_list tr").length;
+
+}
+
+function clean_input()
+{
+	$("#input_mac").value = "";
+}
+
+function add_mac()
+{
+	var mac_input_value = document.getElementById("input_mac").value;
+	var band_value = document.getElementById("add_wl_ssid").value;
+	var i, j;
+
+	mac_input_value = mac_input_value.toUpperCase();
+
+	if(isValidMacAddress(mac_input_value) == true )
+	{
+		for( j = 0 ; j < 2 ; j++) {
+			for( i = 0 ; i < 8; i++) {
+				if (i == 0) {
+					if (band_value == "wl"+String(j)) {
+						if ( j == 0 ) {
+							if(count_list_5g[i] >= 16 ) {
+								webAlert('각각의 SSID에 최대 16개의 필터를 추가할 수 있습니다.');
+								return false;
+							}
+						} else {
+							if(count_list_2g[i] >= 16 ) {
+								webAlert('각각의 SSID에 최대 16개의 필터를 추가할 수 있습니다.');
+								return false;
+							}
+						}
+						break;
+					}
+				} else {
+					if (band_value == "wl"+String(j)+"."+String(i)) {
+						if ( j == 0 ) {
+							if(count_list_5g[i] >= 16 ) {
+								webAlert('각각의 SSID에 최대 16개의 필터를 추가할 수 있습니다.');
+								return false;
+							}
+						} else {
+							if(count_list_2g[i] >= 16 ) {
+								webAlert('각각의 SSID에 최대 16개의 필터를 추가할 수 있습니다.');
+								return false;
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+
+		if($("#wl_mac_filter_list tr").length >= 260)
+		{
+			webAlert('남는 엔트리가 없습니다.');
+			return false;
+		}
+		for(i = 0; i < $("#wl_mac_filter_list tr").length ; i++)
+		{
+			var mac_list_name_tmp = "mac_list"+String(i);
+			var ssid_list_name_tmp = "ssid_list"+String(i);
+			if((document.getElementById(mac_list_name_tmp).value == mac_input_value) &&(document.getElementById(ssid_list_name_tmp).value == band_value))
+			{
+				webAlert("중복되는 MAC주소가 있습니다.");
+
+				return false;
+			}
+		}
+		document.getElementById("mac_filter_list_count").value = $("#wl_mac_filter_list tr").length;
+		return true;
+	}
+	else
+	{
+		webAlert("유효하지 않은 MAC주소입니다." + "Ex) 00:23:AA:00:00:00");
+		return false;
+	}
+}
+
+function wl_all_iface_list()
+{
+	var prefix = new String();
+	var list_name = new String();
+
+	var acct_root = 0;
+	$('#user_name').val(cur_user);
+	if (cur_user == "root")
+		acct_root = 1;
+
+	for( var band = 0 ; band < 2 ; band++) {
+		if( band == 0) {
+			for (var i = 0; i < ssid_if_5g.length; i++)
+			{
+				if (i == 2) // T wifi home
+					continue;
+				if(i == 0)
+				{
+					prefix = ifname+String(band);
+				}
+				else
+				{
+					prefix = ifname+String(band)+"."+String(i);
+				}
+
+				if (ssid_ext_5g[i] != "") {
+					list_name = ssid_if_5g[i]+" ["+ssid_ext_5g[i]+"]";
+				} else {
+					list_name = ssid_if_5g[i] ;
+				}
+
+				// except T wifi home ssid if account isn't root
+				if (acct_root == 0 && ssid_if_5g[i].indexOf("T wifi home") == 0)
+					continue;
+
+				if(i < max_ssid_count_5g) {
+					add_option("add_wl_ssid", prefix, list_name);
+				}
+			}
+		}
+		else {
+			for(var i = 0; i < ssid_if_2g.length; i++)
+			{
+				if(i == 1 || i == 2) // SK_VoIP, T wifi home
+					continue;
+				if(i == 0)
+				{
+					prefix = ifname+String(band);
+				}
+				else
+				{
+					prefix = ifname+String(band)+"."+String(i);
+				}
+				if (ssid_ext_2g[i] != "") {
+					list_name = ssid_if_2g[i]+" ["+ssid_ext_2g[i]+"]";
+				} else {
+					list_name = ssid_if_2g[i];
+				}
+
+				// except T wifi home ssid if account isn't root
+				if (acct_root == 0 && ssid_if_2g[i].indexOf("T wifi home") == 0)
+					continue;
+
+				if(i < max_ssid_count_2g) {
+						add_option("add_wl_ssid", prefix, list_name);
+				}
+			}
+		}
+	}
+}
+
+function wl_self_insert_mac_addr()
+{
+	if (document.getElementById("dhcpStaticMac_input").value == "1") {
+		document.getElementById("dhcpStaticMac_input").style.width = "35%"
+		$("#input_mac").show();
+		document.getElementById("input_mac").value = "";
+	} else {
+		$("#input_mac").hide();
+		document.getElementById("dhcpStaticMac_input").style.width = "100%"
+		document.getElementById("input_mac").value = document.getElementById("dhcpStaticMac_input").value ;
+	}
+}
+
+function wl_select_ssid()
+{
+	var i, j ;
+	var tmp = String();
+	var ssid_if_5g = new Array();
+ssid_if_5g.push("SK_WiFiGIGAA101_5G");
+ssid_if_5g.push("SK_WiFiGIGAA101");
+ssid_if_5g.push("T wifi home");
+ssid_if_5g.push("wl0_Guest3");
+ssid_if_5g.push("Broadcom");
+ssid_if_5g.push("Broadcom");
+ssid_if_5g.push("Broadcom");
+ssid_if_5g.push("Broadcom");
+
+	var ssid_if_2g = new Array();
+ssid_if_2g.push("SK_WiFiGIGAA101");
+ssid_if_2g.push("SK_VoIP");
+ssid_if_2g.push("T wifi home");
+ssid_if_2g.push("SK_WiFi_w6370");
+ssid_if_2g.push("Broadcom");
+ssid_if_2g.push("Broadcom");
+ssid_if_2g.push("Broadcom");
+ssid_if_2g.push("Broadcom");
+
+
+	var macmode_5g = new Array();
+macmode_5g.push("disabled");
+macmode_5g.push("disabled");
+macmode_5g.push("disabled");
+macmode_5g.push("disabled");
+macmode_5g.push("disabled");
+macmode_5g.push("disabled");
+macmode_5g.push("disabled");
+macmode_5g.push("disabled");
+
+	var macmode_2g = new Array();
+macmode_2g.push("disabled");
+macmode_2g.push("disabled");
+macmode_2g.push("disabled");
+macmode_2g.push("allow");
+macmode_2g.push("disabled");
+macmode_2g.push("disabled");
+macmode_2g.push("disabled");
+macmode_2g.push("disabled");
+
+
+	for( j = 0 ; j < 2 ; j++) {
+		if( j == 0) {
+			for( i = 0 ; i < 8; i++) {
+				if (i == 0) {
+					if (document.getElementById("add_wl_ssid").value == "wl"+String(j)) {
+						document.getElementById("selected_ssid").value = ssid_if_5g[0];
+						document.getElementById("selected_macmode").value = macmode_5g[0];
+						break;
+					}
+				} else {
+					if (document.getElementById("add_wl_ssid").value == "wl"+String(j)+"."+String(i)) {
+						document.getElementById("selected_ssid").value = ssid_if_5g[i];
+						document.getElementById("selected_macmode").value = macmode_5g[i];
+						break;
+					}
+				}
+			}
+		} else {
+			for( i = 0 ; i < 8; i++) {
+				if (i == 0) {
+					if (document.getElementById("add_wl_ssid").value == "wl"+String(j)) {
+						document.getElementById("selected_ssid").value = ssid_if_2g[0];
+						document.getElementById("selected_macmode").value = macmode_2g[0];
+						break;
+					}
+				} else {
+					if (document.getElementById("add_wl_ssid").value == "wl"+String(j)+"."+String(i)) {
+						document.getElementById("selected_ssid").value = ssid_if_2g[i];
+						document.getElementById("selected_macmode").value = macmode_2g[i];
+						break;
+					}
+				}
+			}
+		}
+	}
+
+}
+
+/* Wireless Mac Filter Function End */
+
+function frmLoad() {
+	/* Wire */
+	selectMFPortPolicy();
+
+	/* Wireless */
+	//wl_bandwidth_change();
+	//wl_ssid_clik();
+	//wl_all_iface_list();
+	document.getElementById("mac_filter_list_count").value = $("#wl_mac_filter_list tr").length;
+	document.getElementById("selected_ssid").value = ssid_if_5g[0];
+	document.getElementById("selected_macmode").value = macmode_5g[0];
+}
+</script>
+</head>
+
+<body onload="frmLoad()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<div class="container">
+<form>
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>보안기능 </li>
+			<li>MAC 주소 필터링 </li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">유선 MAC 주소 필터링</h1>
+	<p>MAC 주소를 이용하여 유선 필터링을 설정합니다. 포트 및 SSID 기준으로 허용/차단 한 개만 설정 가능 합니다.</p>
+	<hr>
+
+	<h2 class="title_style_2">동작 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:23%;" />
+				<col style="" />
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">포트</th>
+					<td>
+						<select id="w_mf_port" name="w_mf_port" onchange='selectMFPortPolicy()'>
+							<option value='0'>ALL</option>
+							<option value="1">LAN1</option>
+							<option value="2">LAN2</option>
+							<option value="3">LAN3</option>
+							<option value="4">LAN4</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">정책</th>
+					<td>
+						<select id="w_mf_port_policy" name="w_mf_port_policy">
+							<option value="1">차단</option>
+							<option value="0">허용</option>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c pt_20">
+		<input type="button" onclick="btnApplySave(1)" value="적용" class="basic-btn01 btn-blue-bg mr_20" >
+	</div>
+
+	<br>
+
+	<div id="w_wire_mac_list">
+	<h2 class="title_style_2">필터링 추가 및 리스트</h2>
+	<div class='tb_style_2'>
+		<table>
+			<colgroup>
+				<col style="width:10%;" />
+				<col style="width:10%;" />
+				<col style="width:30%;" />
+				<col style="width:20%;" />
+				<col style="width:15%;" />
+			</colgroup>
+			<thead>
+				<th scope="row" style="width:8%">선택</th>
+				<th scope="row">포트번호</th>
+				<th scope="row">MAC주소</th>
+				<th scope="row">설명</th>
+				<th scope="row">정책</th>
+			</thead>
+			<tbody id="w_mf_list" style="text-align:center;">
+				<script language="javascript">
+					var i = 0;
+					var port = 0;
+					var policy = '';
+
+					for(i = 0; i < mac_filter_list.length; i++) {
+						if(mac_filter_list[i][0] != '') {
+							port   = parseInt(mac_filter_list[i][0]) + 1;
+							policy = getMFPolicyName(mac_filter_list[i][0]);
+
+							document.writeln("<tr><td>\n");
+							document.writeln("<input type='checkbox' name='wv_mac_filter_rm_" + i + "'");
+							document.writeln("id='wv_mac_filter_rm_" + i + "'");
+							document.writeln("value='" + mac_filter_list[i][0] + "|" + mac_filter_list[i][1] + "|" + mac_filter_list[i][2] + "'></td>\n");
+							document.writeln("<td>LAN" + port + "</td>\n<td>" + mac_filter_list[i][1] + "</td>\n");
+							document.writeln("<td>" + mac_filter_list[i][2] + "</td><td>" + policy + "</td>\n");
+							document.writeln("</tr>\n");
+						}
+					}
+				</script>
+			</tbody>
+			<tbody>
+				<tr style="text-align:center;">
+					<th scope="row"><center>필터링 추가</center></th>
+					<td>
+						<select id='w_mf_add_port' name='w_mf_add_port' style="width:100%">
+							<option value='0'>ALL</option>
+							<option value='1'>LAN1</option>
+							<option value='2'>LAN2</option>
+							<option value='3'>LAN3</option>
+							<option value='4'>LAN4</option>
+						</select>
+					</td>
+					<td>
+						<select style='width:100%;' name='w_mf_add_mac' id='w_mf_add_mac' onchange='change_mac_input()'>
+							<option value="0">MAC Address</option>
+							<script language="javascript">
+								for(var i = 0; i <= 64; i++) {
+									if(lan_mac_list.length) {
+										if(typeof lan_mac_list[i] != "undefined") {
+											document.write("<option value="+ lan_mac_list[i][0]  + ">"
+												+ lan_mac_list[i][0] + "[" + lan_mac_list[i][1] + "]</option>");
+										}
+									}
+								}
+							</script>
+							<option value="99">직접입력</option>
+						</select>
+						<input type="text" id='w_mf_add_mac_data' name='w_mf_add_mac_data' style="width:60%; display:none;">
+					</td>
+					<td>
+						<input type="text" id='w_mf_add_desc' name='w_mf_add_mac_desc'>
+					</td>
+					<td>
+						<span>-</span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="txt_c mb_20">
+		<input onclick="btnApplySave(2)" type="button" value="추가" class="basic-btn01 btn-gray-bg mr_20">
+		<input onclick="btnApplySave(0)" type="button" value="삭제" class="basic-btn01 btn-gray-bg2">
+	</div>
+</form>
+
+<form id="wifi_mac_filter_form" name="wifi_mac_filter_form" method="post" action="">
+	<br><br>
+	<h1 class="title_style_1">무선 MAC 주소 필터링</h1>
+	<p>MAC 주소를 이용하여 무선 필터링을 설정합니다.</p>
+	<hr>
+	<h2 class="title_style_2">동작 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:23%;" />
+				<col style="" />
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">무선 대역</th>
+					<td>
+						<select name="wl_bandwidth" id="wl_bandwidth" style="width:25%;"
+							onChange="wl_bandwidth_change();">
+							<option value="0">5GHz </option>
+							<option value="1">2.4GHz</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">SSID(네트워크 이름/설명)</th>
+					<td>
+						<select name="wl_ssid" id="wl_ssid" style="width:45%;" onChange="wl_ssid_clik();">
+							<option>ALL</option>
+							<option>SK_WiFiGIGAA101_5G [메인 5G]</option>
+							<option>SK_WiFiGIGAA101 [핸드오버]</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">정책</th>
+					<td>
+						<select id="wl_macmode" name="wl_macmode" style="width:30%;" >
+							<option value="disabled">비활성화</option>
+							<option value="allow">허용</option>
+							<option value="deny">차단</option>
+						</select>
+						<input style="display:none;" type="button"  value="적용" onclick="btnApplySave_wireless(1);" class="basic-btn01 btn-blue-bg" >
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="txt_c mb_20"> <!-- 20190325 pt_20 클래스를 mb_20 클래스로 변경 -->
+		<input type="button"  value="적용" onclick="btnApplySave_wireless(1);" class="basic-btn01 btn-blue-bg" >
+	</div>
+	<h2 class="title_style_2">MAC 주소 필터링 리스트</h2>
+	<div class="tb_style_2 scroll">
+		<table>
+			<colgroup>
+				<col style="width:10%;" />
+				<col style="width:30%;" />
+				<col style="width:25%;" />
+				<col style="width:20%;" />
+				<col style="width:15%;" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th><center>선택<center></th>
+					<th scope="col"><center>SSID</center></th>
+					<th scope="col"><center>MAC</center></th>
+					<th scope="col"><center>설명</center></th>
+					<th scope="col"><center>정책</center></th>
+				</tr>
+			</thead>
+			<tbody id="wl_mac_filter_list" name="wl_mac_filter_list">
+				<tr id="0" name="0">
+<td><center><input name="mac_ch" type="checkbox" value="0"><center></td>
+<td><center><label name="ssid_val">SK_WiFiGIGAA101_5G [메인 5G]</label></center>
+<input id="ssid_list0" name="ssid_list0" value="wl0", type="hidden">
+<input name="ssid_list" value="wl0", type="hidden"></td>
+<td><center><label name="mac_val">00:23:AA:32:AA:A4</label></center>
+<input id="mac_list0" name="mac_list0" value="00:23:AA:32:AA:A4" type="hidden"></td>
+<td><center><label name="mac_val_ext">test_wifi</label></center>
+<input id="mac_ext_list0" name="mac_ext_list0" value="test_wifi" type="hidden"></td>
+<td><center><label name="filtermode_val">비활성화</label></center></td></tr>
+
+			</tbody>
+			<input type="hidden" id="mac_filter_list_count" name="mac_filter_list_count" value="0">
+			<tbody>
+				<tr>
+					<th scope="row"><center>필터링 추가</center></th>
+					<td>
+						<select name="add_wl_ssid" id="add_wl_ssid" style="width:100%;" onChange="wl_select_ssid();">
+							<option >ALL</option>
+							<option>SK_WiFiGIGAA101_5G [메인 5G]</option>
+							<option>SK_WiFiGIGAA101 [핸드오버]</option>
+						</select>
+						<input  type="hidden" id="selected_ssid" name="selected_ssid" value= "">
+						<input  type="hidden" id="selected_macmode" name="selected_macmode" value= "">
+					</td>
+					<td>
+							<select style='width:100%;' name='dhcpStaticMac_input' id='dhcpStaticMac_input'
+							onChange="wl_self_insert_mac_addr();">
+								<option value="0">Mac Address</option>
+								<option value="2">a8:2b:b9:00:00:01 [엄마_핸드폰]</option>
+								<option value="3">a8:2b:b9:00:00:02 [큰아들_핸드폰]</option>
+								<option value="4">a8:2b:b9:09:3b:8c [Galaxy-S8]</option>
+								<option value="1">직접입력</option>
+							</select>
+							<input type="text" id='input_mac' name='input_mac' value="" style="width:60%; display:none;">
+					</td>
+					<td>
+						<input type="text" id='input_mac_ext' name='input_mac_ext'>
+					</td>
+					<!--SSID 선택 시 선택에 해당되는 항목이 뜸-->
+					<td><center>-</center></td>
+				</tr>
+			</tbody>
+
+		</table>
+			<p align="right" style="font-size:8pt">※ 각각의 SSID에 16개의 필터를 추가할 수 있습니다.</p>
+	</div>
+	<div class="txt_c mg_20"> <!-- 20190325 pt_20 클래스를 mb_20 클래스로 변경 -->
+		<input type="button"  value="추가" onclick="btnApplySave_wireless(2);" class="basic-btn01 btn-gray-bg mr_20" >
+		<input type="button"  value="삭제" onclick="btnApplySave_wireless(3);" class="basic-btn01 btn-gray-bg2" >
+	</div>
+	<input  type="hidden" name="sessionKey" value="">
+	<input  type="hidden" id="cmd" name="cmd" value="">
+	<input type="hidden" value="" name="user_name" id="user_name">
+</form>
+</div>
+</body>
+</html>

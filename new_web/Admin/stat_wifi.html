@@ -1,0 +1,218 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/prv_util.js"></script>
+<script language="javascript">
+
+var cur_user = 'root';
+
+function byte_unit(bytes)
+{
+	if (bytes >= 1073741824)		
+		return parseFloat( (bytes/1073741824).toFixed(1) )+"G"
+	else if (bytes >= 1048576)		
+		return parseFloat( (bytes/1048576).toFixed(1) )+"M"
+	else if (bytes >= 1024)			
+		return parseFloat( (bytes/1024).toFixed(1) )+"K"
+	else								
+		return parseInt(bytes);
+}
+
+function frmLoad() {
+	var all_stat = new Array();
+	var stat_5g_t = "";
+	var stat_2g_t = "";
+	var rx_byte, tx_byte;
+	var rx_byte_str, tx_byte_str;
+	all_stat.push(new Array());
+	all_stat[0].push("SK_WiFiGIGAA101_5G");
+	all_stat[0].push("wl0");
+	all_stat[0].push("0");
+	all_stat[0].push("0");
+	all_stat[0].push("49073");
+	all_stat[0].push("365");
+	all_stat[0].push("0");
+all_stat.push(new Array());
+	all_stat[1].push("SK_WiFiGIGAA101");
+	all_stat[1].push("wl0.1");
+	all_stat[1].push("0");
+	all_stat[1].push("0");
+	all_stat[1].push("50003");
+	all_stat[1].push("373");
+	all_stat[1].push("0");
+all_stat.push(new Array());
+	all_stat[2].push("SK_WiFiGIGAA101");
+	all_stat[2].push("wl1");
+	all_stat[2].push("0");
+	all_stat[2].push("0");
+	all_stat[2].push("43132");
+	all_stat[2].push("345");
+	all_stat[2].push("0");
+all_stat.push(new Array());
+	all_stat[3].push("SK_VoIP");
+	all_stat[3].push("wl1.1");
+	all_stat[3].push("0");
+	all_stat[3].push("0");
+	all_stat[3].push("41238");
+	all_stat[3].push("353");
+	all_stat[3].push("0");
+
+
+	var acct_root = 0;
+	$('#user_name').val(cur_user);
+	if (cur_user == "root")
+		acct_root = 1;
+	
+	for(var i =0; i< all_stat.length; i++)
+		html_code_to_script_str(all_stat[i][0]); //ssid
+
+	for(var i = 0; i < all_stat.length; i++)
+	{
+		if (acct_root == 0 && all_stat[i][0].indexOf("T wifi home") == 0)
+			continue;
+
+		if(all_stat[i][1].indexOf("wl0") != -1)
+		{
+			stat_5g_t += "<tr>\n";
+			stat_5g_t += "<th>"+all_stat[i][0]+"</th>\n";
+			
+			/*rx*/
+			stat_5g_t += "<td>"+all_stat[i][2+1]+"</td>\n"; /* packets */
+			rx_byte = Number(all_stat[i][2+0]);
+			rx_byte_str = byte_unit(rx_byte);
+			stat_5g_t += "<td>"+rx_byte_str+"</td>\n"; /* bytes */
+			
+			/*tx*/
+			stat_5g_t += "<td>"+all_stat[i][4+1]+"</td>\n"; /* packets */
+			tx_byte = Number(all_stat[i][4+0]);
+			tx_byte_str = byte_unit(tx_byte);
+			stat_5g_t += "<td>"+tx_byte_str+"</td>\n"; /* bytes */
+			
+			stat_5g_t += "<td>"+all_stat[i][6]+"</td>\n"; /* sta_count */
+			stat_5g_t += "</tr>\n";
+		}
+		else if(all_stat[i][1].indexOf("wl1") != -1)
+		{
+			// Hiding SK_VoIP
+			if (all_stat[i][0] == "SK_VoIP")
+				continue;
+
+			stat_2g_t += "<tr>\n";
+			stat_2g_t += "<th>"+all_stat[i][0]+"</th>\n";
+			
+			/*rx*/
+			stat_2g_t += "<td>"+all_stat[i][2+1]+"</td>\n"; /* packets */
+			rx_byte = Number(all_stat[i][2+0]);
+			rx_byte_str = byte_unit(rx_byte);
+			stat_2g_t += "<td>"+rx_byte_str+"</td>\n"; /* bytes */
+
+			/*tx*/
+			stat_2g_t += "<td>"+all_stat[i][4+1]+"</td>\n"; /* packets */
+			tx_byte = Number(all_stat[i][4+0])/1000;
+			tx_byte_str = byte_unit(tx_byte);
+			stat_2g_t += "<td>"+tx_byte_str+"</td>\n"; /* bytes */
+			
+			stat_2g_t += "<td>"+all_stat[i][6]+"</td>\n"; /* sta_count */
+			stat_2g_t += "</tr>\n";
+		}
+	}
+	$("#stat_5g").append(stat_5g_t);
+	$("#stat_2g").append(stat_2g_t);
+}
+
+
+
+</script>
+</head>
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<body onLoad='frmLoad()'>
+<form>
+<div class="container custom_input">
+
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>통계 </li>
+			<li>WiFi 통계</li>
+		</ul>
+	</div>
+	
+	<h1 class="title_style_1">WiFi 통계</h1>
+	<p>무선 패킷 통계 정보를 출력합니다.</p>
+	<hr>
+	<h2 class="title_style_2">무선 5Ghz 통계</h2>
+	<div class="tb_style_1 scroll">
+		<table>
+			<colgroup>
+				<col style="width:16%;" />
+				<col style="width:16%;" />
+				<col style="width:16%;" />
+				<col style="width:16%;" />
+				<col style="width:16%;" />
+				<col style="width:16%;" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col"><center>SSID</center></th>
+					<th scope="col"><center>Rx Packets</center></th>
+					<th scope="col"><center>Rx bytes</center></th>
+					<th scope="col"><center>Tx Packets</center></th>
+					<th scope="col"><center>Tx bytes</center></th>
+					<th scope="col"><center>연결된 단말 수</center></th>
+				</tr>
+			</thead>
+			<tbody id="stat_5g" name="stat_5g">
+				
+			</tbody>
+		</table>
+	</div>
+	
+	<h2 class="title_style_2">무선 2.4Ghz 통계</h2>
+	<div class="tb_style_1 scroll">
+		<table>
+			<colgroup>
+				<col style="width:16%;" />
+				<col style="width:16%;" />
+				<col style="width:16%;" />
+				<col style="width:16%;" />
+				<col style="width:16%;" />
+				<col style="width:16%;" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col"><center>SSID</center></th>
+					<th scope="col"><center>Rx Packets</center></th>
+					<th scope="col"><center>Rx bytes</center></th>
+					<th scope="col"><center>Tx Packets</center></th>
+					<th scope="col"><center>Tx bytes</center></th>
+					<th scope="col"><center>연결된 단말 수</center></th>
+				</tr>
+			</thead>
+			<tbody id="stat_2g" name="stat_2g">
+				
+			</tbody>
+		</table>
+	</div>
+	<input type="hidden" value="" name="user_name" id="user_name">
+</div>
+</form>
+</body>
+</html>

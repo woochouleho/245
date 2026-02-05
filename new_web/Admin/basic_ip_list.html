@@ -1,0 +1,361 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/portName.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+
+var mac_no_nick_list = [
+[ "a8:2b:b9:09:3b:8c","Galaxy-S8" ]];
+
+var nick_name_list = [
+[ "a8:2b:b9:00:00:01","엄마_핸드폰" ],
+[ "a8:2b:b9:00:00:02","큰아들_핸드폰" ],
+[ "a8:2b:b9:09:3b:8c","Galaxy-S8" ]];
+
+
+var sessionKey = 1134750804;
+var loc   = '';
+var query = '';
+
+/*
+	웹 페이지 레이아웃 변경 관련 함수
+*/
+function change_mac_input() {
+	var val = document.getElementById('w_nick_add_mac').value;
+
+	if(val == "100") {
+        document.getElementById('w_nick_add_mac').style.width = "35%"
+        document.getElementById('w_nick_add_mac_data').style.display = "";
+        document.getElementById('w_nick_add_mac_data').style.width = "60%";
+        document.getElementById('w_nick_add_mac_data').value = "";
+	}
+	else {
+		document.getElementById('w_nick_add_mac').style.width = "100%"
+        document.getElementById('w_nick_add_mac_data').style.display = "none";
+
+        if(val != "0") {
+            document.getElementById('w_nick_add_mac_data').value = val;
+        }
+	}
+}
+
+function btnDel() {
+	var p = 0;
+	var str ='';
+	for(p = 0; p < nick_name_list.length; p++)
+	{
+		str = 'mac_nick_rm_' + p;
+		if(document.getElementById(str).checked == true)
+			query += document.getElementById(str).value+",";
+	}
+}
+
+function btnAdd() {
+    var p = 0;
+    var str ='';
+	var mac  = document.getElementById('w_nick_add_mac_data').value;
+	var nick = document.getElementById('w_nick_add_desc').value;
+
+    /* check value */
+    if(nick_name_list.length >= 32) {
+        webAlert('남은 엔트리가 없습니다');
+        return false;
+    }
+
+    str = mac;
+    if(str.indexOf(' ') != -1) {
+        webAlert('MAC주소에 공백을 사용할수 없습니다');
+        return false;
+    }
+
+    str = nick
+    if(str.indexOf(' ') != -1 ) {
+        webAlert('닉네임에 공백을 사용할수 없습니다');
+        return false;
+    }
+    else if( str.indexOf('|') != -1 ) {
+        webAlert('문자 | 을 사용할수 없습니다');
+        return false;
+    }
+    else if(str == '') {
+        webAlert('닉네임이 없습니다');
+        return false;
+    }
+
+	if(isValidMacAddress(mac) == false )
+	{
+		webAlert('유효하지 않는 MAC주소입니다 ' +'Ex) 00:23:AA:00:00:00');
+		return false;
+	}
+	/* check value end */
+
+	for(p = 0; p < nick_name_list.length; p++)
+	{
+		if(nick_name_list[p][0] == mac)
+		{
+			webAlert('중복되는 MAC주소가 있습니다');
+			return false;
+		}
+	}
+
+	query += mac  + '|';
+	query += nick + '|,';
+
+	return true;
+}
+
+/*
+	웹 페이지 데이터 get, set 함수
+*/
+function btnApplySave(save_type) {
+	var code = '';
+
+	loc = 'basic_ip_list.cgi?';
+	query = '';
+
+	switch(save_type) {
+		case 0:
+			loc += 'common_action=remove';
+			btnDel();
+			loc += '&common_query=' + query;
+			break;
+		case 1:
+			loc += 'common_action=add';
+			if(btnAdd() == false)
+				return;
+			loc += '&common_query=' + query;
+			break;
+
+		default:
+			return;
+	}
+
+	loc += '&sessionKey=' + sessionKey;
+	code = 'location="' + loc + '"';
+	eval(code);
+
+	return;
+}
+
+function wl_repeater_master_del()
+{
+	var ssid_5g="SK_WiFiGIGAA101_5G";
+	var ssid_2g="SK_WiFiGIGAA101";
+	var i=0;
+	var sta_list_tr = $( "#wl_connect_list tr" ); 
+
+	if ( "ap" == "wet" )
+	{
+		for ( i = 0 ;i < sta_list_tr.length;i ++ )
+		{
+			var sta_tr = sta_list_tr.eq( i ); 
+			if ( ssid_5g == sta_tr.find( "td" ).eq(4).text() )
+			{
+				if ( sta_tr.find( "td" ).eq(1).text() == "0.0.0.0")
+					sta_list_tr.eq( i ).remove();
+			}
+		}
+	}
+	if ( "ap" == "wet" )
+	{
+		for ( i = 0 ;i < sta_list_tr.length;i ++ )
+		{
+			var sta_tr = sta_list_tr.eq( i ); 
+			if ( ssid_2g == sta_tr.find( "td" ).eq(3).text() )
+			{
+				if ( sta_tr.find( "td" ).eq(4).text() == "0.0.0.0")
+					sta_list_tr.eq( i ).remove();
+			}
+		}
+	}
+}
+
+function frmLoad() {
+	wl_repeater_master_del();
+}
+</script>
+</head>
+
+<body onload="frmLoad()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>기본설정</li>
+			<li>접속 단말 정보</li>
+		</ul>
+	</div>
+	<h1 class="title_style_1">접속 단말 정보</h1>
+	<p>접속된 단말 정보를 확인합니다.</p>
+	<hr>
+	<h2 class="title_style_2">유선 접속 단말 정보</h2>
+	<div class="tb_style_2">
+		<table>
+		<colgroup>
+			<col style="width:25%;"/>
+			<col style=""/>
+		</colgroup>
+		<thead>
+			<tr>
+				<th scope="row"><span>MAC</span></th>
+				<th scope="row"><span>IP</span></th>
+				<th scope="row"><span>Interface</span></th>
+				<th scope="row"><span>HostName</span></th>
+				<th scope="row"><span>Traffic</span></th>
+			</tr>
+			<tr>
+				<td style='text-align:center'><span>a8:2b:b9:09:8a:00</span></td>
+				<td style='text-align:center'><span>192.168.45.80</span></td>
+				<td style='text-align:center'><span>LAN1</span></td>
+				<td style='text-align:center'><span>-</span></td>
+				<td style='text-align:center'><span>-</span></td>
+			</tr>
+		</thead>
+		<tbody>
+			
+		</tbody>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">무선 접속 단말 정보</h2>
+	<div class="tb_style_4" style="overflow-x:scroll; overflow-y:hidden;">
+		<table>
+			<colgroup>
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col width="12%"/>
+				<col/>
+				<col />
+		</colgroup>
+		<thead>
+			<tr>
+				<th scope="col" ><center>MAC</center></th>
+				<th scope="col" ><center>IP</center></th>
+				<th scope="col" ><center>Interface </center></th>
+				<th scope="col" ><center>Host Name</center></th>
+				<th scope="col" ><center>SSID</center></th>
+				<th scope="col" ><center>Mode</center></th>
+				<th scope="col" ><center>11V</center></th>
+				<th scope="col" ><center>New Handover</center></th>
+				<th scope="col" ><center>Rate Tx/Rx (Mbps)</center></th>
+				<th scope="col" ><center>Conn Time </center></th>
+				<th scope="col" ><center>Traffic </center></th>
+			</tr>
+		</thead>
+		<tbody id = "wl_connect_list">
+                
+	<tr class='wl0_1' style="text-align:center">
+			<td style='text-align:center' ><label style="margin:0" for="mac">A8:2B:B9:09:3B:8C</label></td>
+			<td style='text-align:center' ><label style="margin:0" for="ip">192.168.45.82</label></td>
+			<td style='text-align:center' ><label style="margin:0" for="interface">5G</label></td>
+			<td style='text-align:center' ><label style="margin:0" for="host_name">Galaxy-S8</label></td>
+			<td style='text-align:center' ><label style="margin:0" for="SSID">SK_WiFiGIGAA101</label></td>
+			<td style='text-align:center' ><label style="margin:0" for="mode">AC</label></td>
+			<td style='text-align:center' ><label style="margin:0" for="11v">Y</label></td>
+			<td style='text-align:center' ><label style="margin:0" for="new_handover">Yes</label></td>
+			<td style='text-align:center' ><label style="margin:0" for="rate">585.0/585.0</label></td>
+			<td style='text-align:center' nowrap><label style="margin:0" for="Conn Time">8 초</label></td>
+			<td style='text-align:center' ><label style="margin:0" for="Traffic">0bps</label></td>
+		</tr>
+		</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c pt_20">
+		<input type="button"  onclick="window.location.reload();" value="새로고침" class="basic-btn01 btn-gray-bg2 mr_20" >
+	</div>
+
+	<h2 class="title_style_2">MAC 닉네임</h2>
+	<div class="tb_style_2">
+		<table>
+		<colgroup>
+			<col style="width:10%;"/>
+			<col style="width:40%;"/>
+			<col style=""/>
+		</colgroup>
+		<thead>
+			<tr>
+				<th scope="row"><span>선택</span></th>
+				<th scope="row"><span>MAC</span></th>
+				<th scope="row"><span>닉네임</span></th>
+			</tr>
+		</thead>
+		<tbody id="w_nick_list" style="text-align:center;">
+			<script language="javascript">
+				var i = 0;
+
+				for(i = 0; i < nick_name_list.length; i++) {
+					if(nick_name_list[i][0] != '') {
+						document.writeln("<tr><td>\n");
+						document.writeln("<input type='checkbox' name='mac_nick_rm_" + i + "'");
+						document.writeln("id='mac_nick_rm_" + i + "'");
+						document.writeln("value='" + nick_name_list[i][0] + "|" + nick_name_list[i][1] + "'></td>\n");
+						document.writeln("<td>" + nick_name_list[i][0] + "</td>\n");
+						document.writeln("<td>" + nick_name_list[i][1] + "</td>\n");
+						document.writeln("</tr>\n");
+					}
+				}
+			</script>
+		</tbody>
+		<tbody>
+			<tr style="text-align:center;">
+				<th scope="row"><center>리스트 추가</center></th>
+				<td>
+					<select style='width:100%;' name='w_nick_add_mac' id='w_nick_add_mac' onchange='change_mac_input()'>
+						<option value="0">MAC Address</option>
+						<script language="javascript">
+							var idx;
+							for(var i = 0; i <= 64; i++) {
+								idx = i + 1;
+								if(mac_no_nick_list.length) {
+									if(typeof mac_no_nick_list[i] != "undefined") {
+										document.write("<option value="+ mac_no_nick_list[i][0] + ">"
+											+ mac_no_nick_list[i][0] + "</option>");
+									}
+								}
+							}
+						</script>
+						<option value="100">직접입력</option>
+					</select>
+					<input type="text" id='w_nick_add_mac_data' name='w_nick_add_mac_data' style="width:60%; display:none;">
+				</td>
+				<td>
+					<input type="text" id='w_nick_add_desc' name='w_nick_add_mac_desc'>
+				</td>
+			</tr>
+		</tbody>
+		</table>
+		<p style="font-size:8pt">※ 닉네임은 최대 32자 까지 가능합니다.</p>
+	</div>
+	<div class="txt_c mb_20">
+		<input onclick="btnApplySave(1)" type="button" value="추가" class="basic-btn01 btn-gray-bg mr_20">
+		<input onclick="btnApplySave(0)" type="button" value="삭제" class="basic-btn01 btn-gray-bg2">
+	</div>
+</div>
+</body>
+</html>

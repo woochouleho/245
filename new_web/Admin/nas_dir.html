@@ -1,0 +1,97 @@
+<html>
+	<head>
+		<title></title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<meta name="description" content=""/>
+		<meta name="keywords" content=""/>
+		<link rel="stylesheet" href="css/common.css"/>
+		<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+		<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+		<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+		<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+		<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+		<script language="javascript" src="js/util.js"></script>
+		<script language="javascript" src="js/portName.js"></script>
+<style>
+	select:disabled{background: #e5e8ea}
+</style>
+</head>
+	<body>
+	<div class="header_bg">
+		<div class="top_wrap">
+			<div class="top_area clfx">
+				<div class="logo">
+					<img src="img/new/logo.png" alt="SK broadband." /> <span>H854AX</span>
+			</div>
+			<div class="util web clfx">
+			<span>test</span>
+			<button class="btn_logout">로그아웃</button>
+			</div>
+		</div>
+		<!-- //top_wrap -->		
+	</div>
+	<!-- //header_bg -->
+	<div class="container">
+	 	<h1 class="title_style_1">USB BROWSING</h1>
+		
+	<div><h3 class="title_style_3"><img src="img/usb.gif"/> USB</h3></div>
+	
+	<form onsubmit="return Upload()" >
+		<div>
+		<hr>
+		<table>
+			<tbody>
+			<tr>
+				<td width="35%"><input type="file" name="select_file" id="select_file"></td>
+				<td align="center" width="10%"><input type="submit" value="Upload"></td>
+				<td></td>
+			</tr>
+			</tbody>
+		</table>
+		<hr>
+		</div>
+	</form>
+	<form>
+		<div>
+			<table>
+			<colgroup>
+				<col style="width:35%;"/>
+				<col style="width:10%;"/>
+				<col style="width:55%;"/>
+			</colgroup>
+				<tbody>
+						<tr>
+							<td>Name</td>
+							<td align="center">Function</td>
+							<td></td>
+						</tr>
+						<tr>
+							<td><img src="img/folder.gif"/> <a href="#" onclick="javascript:loadDir('/mnt/disk1_1/boot');">MyDir</a></td>
+							<td align="center"><img src="img/delete.gif" style="cursor:pointer" onclick="Delete('/mnt/disk1_1','boot');"></td>
+						</tr>						
+						<tr>
+							<td><img src="img/file.gif"/> <a href="#">Pharrell Williams - Happy (Official Music Video).mp4</a></td><td align="center">
+							<img src="img/play.gif" style="cursor:pointer" target="_blank">
+							<img src="img/delete.gif" style="cursor:pointer"></td>
+						</tr>
+				</tbody>
+			</table>
+		</div>
+		<hr>
+		<div>
+			<table>
+			<tbody>
+				<td width="35%">Dir Name <input type="text" id="d_name" name="d_name" size="23"></td>
+				<td align="center" width="10%"><input type="button" value="Create" onclick="mkdir('/mnt/disk1_1');"></td>
+				<td></td></tr>
+			</tbody>
+			</table>
+		</div>
+				<input  type="hidden" name="path" id="path">
+	</form>
+	 
+	</div>
+	 </body>
+</html>

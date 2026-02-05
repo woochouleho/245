@@ -1,0 +1,231 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/portName.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+
+
+var sessionKey='716470195';
+var cur_user = '';
+function onLoad() {
+	$('#user_name').val(cur_user);
+	var new_enable, old_nable, new_rssi, old_rssi, old_packet_monitor_sec, old_packet_per_sec;
+	var band_2g, band_5g, handover_ssid_2g, handover_ssid_5g;
+	
+	new_enable = '1';
+	old_enable = '1';
+	new_rssi = '75';
+	old_rssi = '80';
+	old_packet_monitor_sec = '3';
+	old_packet_per_sec = '1';
+
+	band_5g = 1;
+	band_2g = 1;
+	handover_ssid_5g = 1;
+	handover_ssid_2g = 1;
+	
+	$('#handover_old_enable').val(old_enable);
+	$('#handover_new_enable').val(new_enable);
+
+	if ( new_rssi >= 80 )
+		document.getElementById("NEW_rssi").selectedIndex = 0;
+	else if ( new_rssi >= 75 )
+		document.getElementById("NEW_rssi").selectedIndex = 1;
+	else if ( new_rssi >= 70 )
+		document.getElementById("NEW_rssi").selectedIndex = 2;
+	else if ( new_rssi >= 65 )
+		document.getElementById("NEW_rssi").selectedIndex = 3;
+	else if ( new_rssi >= 60 )
+		document.getElementById("NEW_rssi").selectedIndex = 4;
+	else 
+		document.getElementById("NEW_rssi").selectedIndex = 5;
+
+	if ( old_rssi >= 80 )
+		document.getElementById("OLD_rssi").selectedIndex = 0;
+	else if ( old_rssi >= 75 )
+		document.getElementById("OLD_rssi").selectedIndex = 1;
+	else if ( old_rssi >= 70 )
+		document.getElementById("OLD_rssi").selectedIndex = 2;
+	else if ( old_rssi >= 65 )
+		document.getElementById("OLD_rssi").selectedIndex = 3;
+	else if ( old_rssi >= 60 )
+		document.getElementById("OLD_rssi").selectedIndex = 4;
+	else if ( old_rssi >= 55 )
+		document.getElementById("OLD_rssi").selectedIndex = 5;
+	else if ( old_rssi >= 50 )
+		document.getElementById("OLD_rssi").selectedIndex = 6;
+	else 
+		document.getElementById("OLD_rssi").selectedIndex = 7;
+		
+	document.getElementById("packet_monitor_sec").value = old_packet_monitor_sec;
+	document.getElementById("packet_per_sec").value = old_packet_per_sec;
+/*
+	if (!(band_5g && band_2g && handover_ssid_5g && handover_ssid_2g)) {
+		document.getElementById("NEW_enable").disabled = true;
+		document.getElementById("NEW_disable").disabled = true;
+
+		document.getElementById("NEW_rssi").disabled = true;
+
+		document.getElementById("OLD_enable").disabled = true;
+		document.getElementById("OLD_disable").disabled = true;
+
+		document.getElementById("OLD_rssi").disabled = true;
+		document.getElementById("packet_monitor_sec").disabled = true;
+		document.getElementById("packet_per_sec").disabled = true;
+	}
+*/
+	if (cur_user == "admin") {
+		$("#new_treshold").hide();
+		$("#old_treshold").hide();
+		$("#old_packet_1").hide();
+		$("#old_packet_2").hide();
+	}
+}
+
+function validate_check() {
+	var hostname_num, nvram_str, hostname, cur_hostname;
+	var flag =1;
+	var packet_monitor_sec = document.getElementById("packet_monitor_sec").value;
+	var packet_per_sec = document.getElementById("packet_per_sec").value;
+
+	if( document.getElementById("cmd").value == "save") {
+		if(parseInt(packet_monitor_sec) < 0 || parseInt(packet_monitor_sec) > 100 || 
+		     isValidDecNum(packet_monitor_sec) == false || packet_monitor_sec=="" ){
+			webAlert("Handover 패킷 감시 시간은 0 ~ 100입니다.");
+			flag = 0;
+			return false;
+		}
+    
+		if(parseInt(packet_per_sec) < 1 || parseInt(packet_per_sec) > 100 || 
+		     isValidDecNum(packet_per_sec) == false || packet_per_sec=="" ){
+			webAlert("Handover 초당 발생 패킷 수는 1 ~ 100입니다.");
+			flag = 0;
+			return false;
+		}
+	} else if ( document.getElementById("cmd").value == "add") {
+		if(document.getElementById("HostName").value == "") {
+			webAlert("Host Name을 입력하세요.");
+			flag = 0;
+			return false;
+		}
+
+		hostname_num = '23';
+		if (parseInt(hostname_num) >= 64) {
+			webAlert("Host Name은 최대 64개까지 등록 가능합니다.");
+			flag = 0;
+			return false;
+		}
+		$('#HostNameTable tr').each(function() {
+			var hostname = this.cells[1].innerHTML;
+			cur_hostname = document.getElementById("HostName").value;
+			if (cur_hostname == hostname){
+				webAlert("이미 동일한 항목이 존재합니다.");
+				flag = 0;
+				return false;
+			}
+		});
+	}
+
+	if ( flag ) {
+		document.formHandover.submit();					 
+	}
+	return true;
+}
+
+
+</script>	
+</head>
+<body onload="onLoad();">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<div class="container">
+<form id="formHandover" name="formHandover" action="">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>WiFi</li>
+			<li>핸드오버 설정</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">핸드오버 설정</h1>
+	<p> Handover 기본 정보를 설정합니다.</p>
+	<hr>
+	<h2 class="title_style_2">NEW Handover 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				</tr>
+				<tr>
+					<th scope="row" style="width:18%">NEW Handover</th>
+					<td>
+						<select name="handover_new_enable" id='handover_new_enable'>
+							<option value='0'>비활성화</option>
+							<option value='1'>활성화</option>
+						</select>
+<!--						
+						<input type="radio" name="NEW_disable" id="NEW_disable" value="0" />
+						<label for="NEW">비활성화</label>
+						<input type="radio" name="NEW_disable" id="NEW_enable" value="1" />
+						<label for="NEW">활성화</label>
+-->						
+					</td>
+					<td style="width:25%; font-size:13; font-weight:bold">활성화</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">OLD Handover</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				</tr>
+				<tr>
+					<th scope="row" style="width:18%">OLD Handover</th>
+					<td>
+						<select name="handover_old_enable" id='handover_old_enable'>
+							<option value='0'>비활성화</option>
+							<option value='1'>활성화</option>
+						</select>							
+<!--					
+						<input type="radio" name="OLD_disable" id="OLD_disable" value="0"/>
+						<label for="OLD">비활성화</label>
+						<input type="radio" name="OLD_disable" id="OLD_enable" value="1"/>
+						<label for="OLD">활성화</label>
+-->						
+					</td>
+					<td style="width:25%; font-size:13; font-weight:bold">활성화</td>
+				</tr>		
+			</tbody>
+		</table>
+	<div class="txt_c pt_20">
+		<input type="button"  value="저장" class="basic-btn01 btn-blue-bg" onclick="document.formHandover.cmd.value='save';validate_check();" >
+	</div>
+	</div>
+	
+</form>
+</div>
+<!-- //wrap -->
+
+</body>
+</html>

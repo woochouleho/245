@@ -1,0 +1,4340 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/portName.js"></script>
+	<script language="javascript" src="js/popup.js"></script>	
+	<script language="javascript" src="js/prv_util.js"></script>
+	<style type='text/css'>
+.u_popup_bg{position:fixed; left:0; top:0; bottom:0; z-index:10; width:100%; height:100%; background:rgba(0,0,0,0.1);}
+
+.u_progressive_bar_popup{position:fixed; left:50%; top:50%; z-index:12; margin:-50px 0 0 -206px; padding:40px 25px; width:412px; box-sizing:border-box; background-color:#fff; border-radius:5px; box-shadow:5px 5px 5px rgba(0,0,0,0.2);}
+</style>
+
+<script language="javascript">
+
+var cur_user = 'admin';
+var confirm_msg = "Main SSID 동작 해제시에 해당 대역의 모든 SSID가 비활성됩니다.";
+
+function save_bw_2g_web( bw_2g_val )
+{
+	$("#bw_2g_web").val(bw_2g_val);
+}
+
+$(function() {
+var user_mssid_flag;
+	$('#user_name').val(cur_user);
+	$("#add_user_mssid").click(function () {
+		if (document.getElementById("wl_radio_sel").value == "0") {
+			var prefix = "wl0";
+			var max_ssid = 8;
+			user_mssid_flag = $('#mssid_table_wl0').find('tr').length-1;
+		} else {
+			var prefix = "wl1";
+			var max_ssid = 8;
+			max_ssid = max_ssid - 1;
+			user_mssid_flag = $('#mssid_table_wl1').find('tr').length-1;
+		}
+
+		// except T wifi home ssid
+		if (cur_user != "root")
+			max_ssid = max_ssid - 1;
+	
+		if (user_mssid_flag < max_ssid) {
+			var vif_name = prefix + "." + user_mssid_flag;
+			if (prefix == "wl1") {
+				var wl1_idx = 0;
+
+				// except T wifi home ssid
+				if (cur_user != "root") {
+					wl1_idx = user_mssid_flag + 2;
+					vif_name = prefix + "." + wl1_idx;
+				}
+				else {
+					if (user_mssid_flag > 1) {
+						wl1_idx = user_mssid_flag + 1;
+						vif_name = prefix + "." + wl1_idx;
+					}
+				}
+			}
+			else {
+				if (cur_user != "root")
+					vif_name = prefix + "." + (user_mssid_flag + 1);
+			}
+
+			var row = "<tr>" +
+					  "<td style='text-align:center;'>" + user_mssid_flag +"</td>" +
+					  "<td><input id='t_" + vif_name + "_radio' name='t_" + vif_name +"_radio' type='checkbox' checked></td>" +
+					  "<td><input type='text' name='t_"+ vif_name + "_ssid' id='t_" + vif_name + "_ssid'"+
+					  " oninput='check_keyup_ssid_length(this);' onKeydown='save_keydown_str(this);'></td>" +
+					  "<td><input type='text' name='t_"+ vif_name + "_ssid_ext' id='t_" + vif_name + "_ssid_ext' placeholder='설명 입력' maxlength='32'></td>" +
+					  "<td><input id='t_" + vif_name + "_ssid_hide' name='t_" + vif_name + "_ssid_hide' type='checkbox' checked></td>" +
+					  "<td><input type='text' name='t_" + vif_name + "_max' id='t_" + vif_name + "_max' value='124'></td>" +
+					  "<td><input type='text' name='t_" + vif_name + "_pod' id='t_" + vif_name + "_pod' value='300'></td>" +
+					  "<td>" +
+					  "<select name='t_"+vif_name+"_access' id='t_"+vif_name+"_access'>" +
+							"<option value='0'>WAN+LAN</option>" +
+							"<option value='1' selected >WAN</option>" +
+					  "</select>" +
+					  "</td>" +
+					  "<td><input type='text' name='t_"+vif_name+"_rssi' id='t_"+vif_name+"_rssi' value='0'></td>" +
+					  "<td><input type='text' name='t_"+vif_name+"_dn' id='t_"+vif_name+"_dn' value='0'></td>" +
+					  "<td><input type='text' name='t_"+vif_name+"_up' id='t_"+vif_name+"_up' value='0'></td>" +
+				   	  "</tr>"
+			if (document.getElementById("wl_radio_sel").value == "0") {
+				$("#mssid_table_wl0").append(row);
+			} else {
+				$("#mssid_table_wl1").append(row);
+			}
+			user_mssid_flag++;
+		} else {
+			if (cur_user != "root")
+				webAlert("더 이상 추가할 수 없습니다. 5GHz-7개, 2.4GHz-6개 까지 가능합니다.");
+			else
+				webAlert("더 이상 추가할 수 없습니다. 5GHz-8개, 2.4GHz-7개 까지 가능합니다.");
+		}
+	});
+			
+	$("#delete_user_mssid").click(function() {
+		if (document.getElementById("wl_radio_sel").value == "0") {
+			user_mssid_flag = $('#mssid_table_wl0').find('tr').length-1;
+
+			if (cur_user != "root")
+				user_mssid_flag = user_mssid_flag + 1;
+
+			if(user_mssid_flag > 3){
+				user_mssid_flag--;
+				$("#mssid_table_wl0  tr:last").remove();
+			} else {
+				webAlert("더 이상 삭제할 수 없습니다.");
+			}
+		} else {
+			user_mssid_flag = $('#mssid_table_wl1').find('tr').length-1;
+
+			if (cur_user != "root")
+				user_mssid_flag = user_mssid_flag + 1;
+
+			if(user_mssid_flag > 3){
+				user_mssid_flag--;
+				$("#mssid_table_wl1  tr:last").remove();
+			} else {
+				webAlert("더 이상 삭제할 수 없습니다.");
+			}
+		}
+	});
+
+	if ( cur_user == "admin" )
+	{
+		for ( var i = 1 ;i <= 8; i = i * 2 )
+		{
+			var acs_list_id;
+
+			acs_list_id = "acs_" + String( i ) + "0_c";
+			for ( var j = 132 ;j <= 144 ;j = j + 4 )
+				acs_channel_del ( acs_list_id ,j );
+			acs_br_control( acs_list_id );
+
+			acs_list_id = "acs_" + String( i ) + "0_d";
+			acs_channel_del ( acs_list_id ,165 );
+
+		}
+	}
+});
+
+function change_redir_fb_op(ifname) {
+	var redir_val = $("input[name=redir_op_" + ifname + "]:checked").val();
+	var first_val	= $("input[name=first_op_" + ifname + "]:checked").val();
+		
+	if (redir_val == "1") {
+		document.getElementById("redir_url_" + ifname).disabled = false;
+	} else {
+		document.getElementById("redir_url_" + ifname).disabled = true;
+	}
+
+	if (first_val == "1") {
+		document.getElementById("first_url_" + ifname).disabled = false;
+	} else {
+		document.getElementById("first_url_" + ifname).disabled = true;
+	}
+
+}
+
+function Display_rateset(form) {
+	var i;
+	var band;
+	var mcs_val;
+	var rate_val;
+	var idx=0;
+
+	if (document.getElementById("wl_radio_sel").value == "0") {
+		i = form.elements["wireless_mode_5g"].selectedIndex;
+		band = form.elements["wireless_mode_5g"].options[i].value;
+		mcs_val = "-1";
+		rate_val = "0";
+	} else {
+		i = form.elements["wireless_mode_2g"].selectedIndex;
+		band = form.elements["wireless_mode_2g"].options[i].value;
+		mcs_val = "-1";
+		rate_val = "0";
+	}
+
+	form.elements["TxRate"].length=0;
+	form.elements["TxRate"].options[idx++] = new Option("Auto", "-1");
+	if (band == 1 || band == 3 || band == 11) { //b, b+g, b+g+n
+		form.elements["TxRate"].options[idx++] = new Option("1M", "1000000");
+		form.elements["TxRate"].options[idx++] = new Option("2M", "2000000");
+		form.elements["TxRate"].options[idx++] = new Option("5.5M","5500000");
+		form.elements["TxRate"].options[idx++] = new Option("11M", "11000000");
+	}
+
+	if (band == 10 || band == 11 || band == 2 || band == 3 //g+n, b+g+n, g, b+g
+			|| band == 4 || band == 12 || band == 28 || band == 60 	) { //a, a+n, a+n+ac, a+n+ac+ax
+		form.elements["TxRate"].options[idx++] = new Option("6M", "6000000");
+		form.elements["TxRate"].options[idx++] = new Option("9M", "9000000");
+		form.elements["TxRate"].options[idx++] = new Option("12M", "12000000");
+		form.elements["TxRate"].options[idx++] = new Option("18M", "18000000");
+		form.elements["TxRate"].options[idx++] = new Option("24M", "24000000");
+		form.elements["TxRate"].options[idx++] = new Option("36M", "36000000");
+		form.elements["TxRate"].options[idx++] = new Option("48M", "48000000");
+		form.elements["TxRate"].options[idx++] = new Option("54M", "54000000");
+	}
+
+	if (band == 8 || band == 10 || band == 11 //n, g+n, b+g+n
+			|| band == 12 || band == 16 || band == 24 || band == 28
+			|| band == 32 || band == 42 || band == 43 || band == 56 || band == 60) { 
+		form.elements["TxRate"].options[idx++] = new Option("MCS0", "0");
+		form.elements["TxRate"].options[idx++] = new Option("MCS1", "1");
+		form.elements["TxRate"].options[idx++] = new Option("MCS2", "2");
+		form.elements["TxRate"].options[idx++] = new Option("MCS3", "3");
+		form.elements["TxRate"].options[idx++] = new Option("MCS4", "4");
+		form.elements["TxRate"].options[idx++] = new Option("MCS5", "5");
+		form.elements["TxRate"].options[idx++] = new Option("MCS6", "6");
+		form.elements["TxRate"].options[idx++] = new Option("MCS7", "7");
+		form.elements["TxRate"].options[idx++] = new Option("MCS8", "8");
+		form.elements["TxRate"].options[idx++] = new Option("MCS9", "9");
+		form.elements["TxRate"].options[idx++] = new Option("MCS10", "10");
+		form.elements["TxRate"].options[idx++] = new Option("MCS11", "11");
+		form.elements["TxRate"].options[idx++] = new Option("MCS12", "12");
+		form.elements["TxRate"].options[idx++] = new Option("MCS13", "13");
+		form.elements["TxRate"].options[idx++] = new Option("MCS14", "14");
+		form.elements["TxRate"].options[idx++] = new Option("MCS15", "15");
+	}
+
+	if (mcs_val == -1) {
+		form.elements["TxRate"].selectedIndex = 0;
+	} else if (mcs_val == -2) {
+		for (i=0; i<idx; i++) {
+			if (form.elements["TxRate"].options[i].value == rate_val) {
+				form.elements["TxRate"].selectedIndex = i;
+				break;
+			}
+		}
+	} else {
+		for (i=0; i<idx; i++) {
+			if (form.elements["TxRate"].options[i].value == mcs_val) {
+				form.elements["TxRate"].selectedIndex = i;
+				break;
+			}
+		}
+	}
+}
+
+function checkPwdComplex(value) {
+	var num_check = /[0-9]/g.test(value);
+	var lower_check = /[a-z]/g.test(value);
+	var upper_check = /[A-Z]/g.test(value);
+	var not_spe_check = /^[a-zA-Z0-9]*$/.test(value);
+	var count = 0;
+
+	if ( num_check ) count++;
+	if ( upper_check ) count++;
+	if ( lower_check ) count++;
+	if ( not_spe_check == false ) count++;
+
+	if( count >= 3 )
+		return true;
+	else 
+		return false;
+}
+
+function checkHex(value) {
+	var hex_check = /^[0-9a-fA-F]*$/.test(value);
+
+	if (hex_check)
+		return true;
+	else
+		return false;
+}
+
+function checkPercent(value) {
+	var check = /%/g.test(value);
+
+	if (check)
+		return true;
+	else
+		return false;
+}
+
+// #29 - modify validating rssi value in wep
+function rssi_able_change(user) {
+	var rssi_able_bool = user.checked;
+
+	if(user.id == "rssi_limit_op_on")
+		document.getElementById("rssi_limit_threshold").disabled = !rssi_able_bool;
+	else if( user.id == "rssi_limit_op_off")
+		document.getElementById("rssi_limit_threshold").disabled = rssi_able_bool;
+}
+
+function btnApplySave() {
+	var beacon = document.getElementById("beacon").value;
+	var dtim = document.getElementById("dtim").value;
+	var rts = document.getElementById("rts").value;
+	var fragment = document.getElementById("fragment").value;
+	var eap_op = 0;
+	
+	if( document.getElementById("cmd").value == "basic") {
+		if(check_ssid_length(document.getElementById("ssid").value) == "over")
+		{
+			webAlert('SSID 제한길이(32byte)를 초과하였습니다.');
+			return false;
+		}
+		if(check_ssid_length(document.getElementById("ssid").value) == "empty")
+		{
+			webAlert('SSID는 비어있을 수 없습니다.');
+			return false;
+		}
+		if(document.getElementById("ssid").value.length > 32 )
+		{
+			webAlert('SSID 설명 제한길이(32자)를 초과하였습니다.');
+			return false;
+		}
+	}else if( document.getElementById("cmd").value == "advanced") {
+
+		if(parseInt(beacon) < 50 || parseInt(beacon) > 1024 || 
+		     isValidDecNum(beacon) == false || beacon=="" ){
+			webAlert("Beacon 주기는 50 ~ 1024입니다.");
+			return false;
+		}
+		if(parseInt(dtim) < 1 || parseInt(dtim) > 255 || 
+		     isValidDecNum(dtim) == false || dtim=="" ){
+			webAlert("DTIM Interval은 1 ~ 255입니다.");
+			return false;
+		}
+		if(parseInt(rts) < 1 || parseInt(rts) > 2347 || 
+		     isValidDecNum(rts) == false || rts=="" ){
+			webAlert("RTS Threshold는 1 ~ 2347입니다.");
+			return false;
+		}
+		if(parseInt(fragment) < 256 || parseInt(fragment) > 2346 || 
+		     isValidDecNum(fragment) == false || fragment=="" ){
+			webAlert("Fragment Threshold는 1 ~ 2347입니다.");
+			return false;
+		}
+		
+	} else if (document.getElementById("cmd").value == "security") {
+		var passphrase, auth_ip, acct_ip, auth_port, acct_port, auth_type, acct_op, sec_mode;
+		var prefix, wep_key, i;
+
+		if (document.getElementById("wl_radio_sel").value == "0") {
+			prefix = "wl0";
+			passphrase = document.getElementById("passphrase_wl0").value;
+			auth_ip = document.getElementById("auth_ip_wl0").value;
+			acct_ip = document.getElementById("acct_ip_wl0").value;
+			auth_port = document.getElementById("auth_port_wl0").value;
+			acct_port = document.getElementById("acct_port_wl0").value;
+			auth_type = document.getElementById("auth_type_wl0").value;
+			acct_op = $("input[name='acct_op_wl0']:checked").val();
+			sec_mode = document.getElementById("sec_mode_wl0").value;
+			eap_op = document.getElementById("eap_op_wl0");
+			key1 = document.getElementById("wl0_key1");
+		} else {
+			prefix = "wl1";
+			passphrase = document.getElementById("passphrase_wl1").value;
+			auth_ip = document.getElementById("auth_ip_wl1").value;
+			acct_ip = document.getElementById("acct_ip_wl1").value;
+			auth_port = document.getElementById("auth_port_wl1").value;
+			acct_port = document.getElementById("acct_port_wl1").value;
+			auth_type = document.getElementById("auth_type_wl1").value;
+			acct_op = $("input[name='acct_op_wl1']:checked").val();
+			sec_mode = document.getElementById("sec_mode_wl1").value;
+			eap_op = document.getElementById("eap_op_wl1");
+		}
+
+		if ( sec_mode == 'wpa3' || sec_mode == 'wpa3wpa2'
+				|| sec_mode == 'wpa2wpa' || sec_mode == 'wpa2' 
+				|| sec_mode == 'wpa'
+				|| (sec_mode == 'none' && eap_op.checked)) {
+			if(sec_mode != 'none' && auth_type == 'psk') { 
+				if (passphrase.length < 8 || passphrase.length > 64 || passphrase == "") {
+					webAlert("Key Passphrase의 길이는 8 ~ 64자 입니다. ");
+					return false;
+				} else if (passphrase.length == 64) {
+					if (!checkHex(passphrase)) {
+						webAlert("64자리의 Hex 값으로만 이루어져야 합니다. ");
+						return false;
+					}
+				} else {
+					if (!checkPwdComplex(passphrase)) {
+						webAlert("대문자, 소문자, 숫자, 특수문자 중 3개 이상 포함되어야 합니다. ");
+						return false;
+					} else if (checkPercent(passphrase)) {
+						webAlert("'%'는 사용할 수 없습니다. ");
+						return false;
+					}
+				}
+			}
+			if(auth_type != 'psk') {
+				if((isValidIpAddress(auth_ip) == false) || auth_ip == "") {
+					webAlert("유효하지 않은 인증 IP 입니다 ");
+					return false;
+				}
+				if(parseInt(auth_port) < 1 || parseInt(auth_port) > 65535 
+					|| isValidDecNum(auth_port) == false || auth_port == "" ) {
+					webAlert("인증 Port의 범위는 1 ~ 65535입니다. ");
+					return false;
+				}
+			}
+			if(acct_op == "1") {
+				if((isValidIpAddress(acct_ip) == false) || acct_ip == "") {
+					webAlert("유효하지 않은 과금 IP 입니다 ");
+					return false;
+				}
+				if(parseInt(acct_port) < 1 || parseInt(acct_port) > 65535 
+					|| isValidDecNum(acct_port) == false || acct_port == "" ) {
+					webAlert("과금 Port의 범위는 1 ~ 65535입니다. ");
+					return false;
+				}
+			}
+		} else if (sec_mode == 'wep') {
+			for (i=1; i<=4; i++) {
+				wep_key = document.getElementById(prefix + "_key" + i);
+				if (wep_key.value.length == 10 || wep_key.value.length == 26) {
+					if (!checkHex(wep_key.value)) {
+						webAlert("5, 13자리의 ASCII이거나 10, 26자리의 Hex로만 이루어져야 합니다.");
+						wep_key.focus();
+						return false;
+					}
+				} else if (!(wep_key.value.length == 5 || wep_key.value.length == 13)) {
+					webAlert("5, 13자리의 ASCII이거나 10, 26자리의 Hex로만 이루어져야 합니다.");
+					wep_key.focus();
+					return false;
+				}
+			}
+		}
+
+		if ( document.getElementById("wl_radio_sel").value == "0" ) {
+			if ($('input[name="redir_op_wl0"]:checked').val() == "1") {
+				if(document.getElementById("redir_url_wl0").value == "") {
+					webAlert("URL을 입력하세요.");
+					return false;
+				}
+			}
+
+			if ($('input[name="first_op_wl0"]:checked').val() == "1") {
+				if(document.getElementById("first_url_wl0").value == "") {
+					webAlert("URL을 입력하세요.");
+					return false;
+				}
+			}
+		} else {
+			if ($('input[name="redir_op_wl1"]:checked').val() == "1") {
+				if(document.getElementById("redir_url_wl1").value == "") {
+					webAlert("URL을 입력하세요.");
+					return false;
+				}
+			}
+
+			if ($('input[name="first_op_wl1"]:checked').val() == "1") {
+				if(document.getElementById("first_url_wl1").value == "") {
+					webAlert("URL을 입력하세요.");
+					return false;
+				}
+			}
+		}
+
+//  #29 - modify rssi limit WEP UI
+	} else if (document.getElementById("cmd").value == "mssid") {
+		if (document.getElementById("wl_radio_sel").value == "0") {
+			if (check_maxassoc_limit('wl0') == false)
+			{
+				webAlert("최대단말의 범위는 1 ~ 124입니다. ");
+				return false;
+			}
+
+			if (check_rssi_limit('wl0') == false)
+			{
+				webAlert("RSSI Threshold는 -100 ~ 0입니다.");
+				return false;
+			}
+
+			if (check_rate_limit('wl0') == false)
+			{
+				return false;
+			}
+
+			if (check_pod_limit('wl0') == false)
+			{
+				webAlert("Station timeout 범위는 0 ~ 300입니다. ");
+				return false;
+			}
+
+			if (check_mssid_length('wl0') == "over") 
+			{
+				webAlert('SSID 제한길이(32byte)를 초과하였습니다.');
+				return false;
+			}
+			else if (check_mssid_length('wl0') == "empty") 
+			{
+				webAlert('SSID는 비어있을 수 없습니다.');
+				return false;
+			}
+		
+			if(check_mssid_ext_length('wl0') == false )
+			{
+				webAlert('SSID 설명 제한길이(32자)를 초과하였습니다.');
+				return false;
+			}
+
+			if (cur_user != "root")
+				document.formWifiSet.mssid_idx.value = $('#mssid_table_wl0').find('tr').length - 1 + 1;
+			else
+				document.formWifiSet.mssid_idx.value = $('#mssid_table_wl0').find('tr').length - 1;
+		} else {
+			if (check_maxassoc_limit('wl1') == false)
+			{
+				webAlert("최대단말의 범위는 1 ~ 124입니다. ");
+				return false;
+			}
+
+			if (check_rssi_limit('wl1') == false)
+			{
+				webAlert("RSSI Threshold는 -100 ~ 0입니다.");
+				return false;
+			}
+			
+			if (check_rate_limit('wl1') == false)
+			{
+				return false;
+			}
+			
+			if (check_mssid_length('wl1') == "over") 
+			{
+				webAlert('SSID 제한길이(32byte)를 초과하였습니다.');
+				return false;
+			}
+			else if (check_mssid_length('wl1') == "empty") 
+			{
+				webAlert('SSID는 비어있을 수 없습니다.');
+				return false;
+			}
+		
+			if(check_mssid_ext_length('wl1') == false )
+			{
+				webAlert('SSID 설명 제한길이(32자)를 초과하였습니다.');
+				return false;
+			}
+
+			if (check_pod_limit('wl1') == false)
+			{
+				webAlert("Station timeout 범위는 0 ~ 300입니다. ");
+				return false;
+			}
+			if (cur_user != "root")
+				document.formWifiSet.mssid_idx.value = $('#mssid_table_wl1').find('tr').length - 1 + 2; //SK_VoIP, T wifi home hidden
+			else
+				document.formWifiSet.mssid_idx.value = $('#mssid_table_wl1').find('tr').length - 1 + 1; //SK_VoIP hidden
+		}
+	}
+
+	if (sec_mode == "none") {
+		change_mac_auth();
+		set_eap_option(auth_type, eap_op);
+	}
+
+	if (document.getElementById("wl_radio_sel").value == "0") {
+		appendHidden(document.formWifiSet, "encrypt_type_wl0",
+				document.formWifiSet.encrypt_type_wl0.value);
+
+		appendHidden(document.formWifiSet, "auth_type_wl0",
+				document.formWifiSet.auth_type_wl0.value);
+	}
+	else {
+		appendHidden(document.formWifiSet, "encrypt_type_wl1",
+				document.formWifiSet.encrypt_type_wl1.value);
+
+		appendHidden(document.formWifiSet, "auth_type_wl1",
+				document.formWifiSet.auth_type_wl1.value);
+	}
+
+	document.formWifiSet.submit();					 
+
+	return true;
+}
+
+function check_rate_limit(ifname) {
+	var i;
+	var prefix = new String();
+	var id_name = new String();
+	var idx;
+	var reg=/^[-]?\d*$/;
+
+	// except T wifi home ssid
+	if (cur_user != "root") {
+		if (ifname == 'wl0') {
+			idx = $('#mssid_table_wl0').find('tr').length-1 + 1;
+		} else {
+			idx = $('#mssid_table_wl1').find('tr').length-1 + 2; // Skip SK_VoIP, T wifi home
+		}
+	}
+	else {
+		if (ifname == 'wl0') {
+			idx = $('#mssid_table_wl0').find('tr').length-1;
+		} else {
+			idx = $('#mssid_table_wl1').find('tr').length-1 + 1; // Skip SK_VoIP
+		}
+	}
+
+	for (i = 0 ; i < idx ; i++){
+		if (ifname == 'wl1') { //SK_VoIP fixed
+			if (i == 1)
+				continue;
+
+			// except T wifi home
+			if (cur_user != "root" && i == 2)
+				continue;
+		}
+		else {
+			// except T wifi home
+			if (cur_user != "root" && i == 2)
+				continue;
+		}
+
+		if( i != 0)
+			prefix = ifname+"."+String(i);
+		else
+			prefix = ifname;
+
+		id_name ="t_"+prefix+"_dn";
+		var dn_val = document.getElementById(id_name).value;
+		if ( parseInt(dn_val) < 0 || 900 < parseInt(dn_val)) {
+			webAlert("Rate Limit의 범위는 0 ~ 900입니다.");
+			return false;
+		}
+		
+		id_name ="t_"+prefix+"_up";
+		var up_val = document.getElementById(id_name).value;
+		if ( parseInt(up_val) < 0 || 900 < parseInt(up_val)) {
+			webAlert("Rate Limit의 범위는 0 ~ 900입니다.");
+			return false;
+		}
+	}
+}
+
+
+//  #29 - bss_maxassoc limit
+function check_maxassoc_limit(ifname) {
+	var i;
+	var prefix = new String();
+	var id_name = new String();
+	var idx;
+	var reg=/^[-]?\d*$/;
+
+	// except T wifi home ssid
+	if (cur_user != "root") {
+		if (ifname == 'wl0') {
+			idx = $('#mssid_table_wl0').find('tr').length-1 + 1;
+		} else {
+			idx = $('#mssid_table_wl1').find('tr').length-1 + 2; // Skip SK_VoIP, T wifi home
+		}
+	}
+	else {
+		if (ifname == 'wl0') {
+			idx = $('#mssid_table_wl0').find('tr').length-1;
+		} else {
+			idx = $('#mssid_table_wl1').find('tr').length-1 + 1; // Skip SK_VoIP
+		}
+	}
+
+	for (i = 0 ;i <idx; i++){
+		if (ifname == 'wl1') {
+			//SK_VoIP fixed
+			if (i == 1)
+				continue;
+
+			// except T wifi home
+			if (cur_user != "root" && i == 2)
+				continue;
+		}
+		else {
+			// except T wifi home
+			if (cur_user != "root" && i == 2)
+				continue;
+		}
+
+		if( i != 0)
+			prefix = ifname+"."+String(i);
+		else
+			prefix = ifname;
+
+		id_name ="t_"+prefix+"_max";
+		var max_val = document.getElementById(id_name).value;
+
+		if (max_val == "") {
+			return false;
+		}
+
+		if (parseInt(max_val) < 1 || parseInt(max_val) > 124) {
+			return false;
+		}
+	}
+}
+
+function check_mssid_length(ifname) {
+	var i;
+	var prefix = new String();
+	var id_name = new String();
+	var idx;
+
+	// except T wifi home ssid
+	if (cur_user != "root") {
+		if (ifname == 'wl0') {
+			idx = $('#mssid_table_wl0').find('tr').length-1 + 1;
+		} else {
+			idx = $('#mssid_table_wl1').find('tr').length-1 + 2; // Skip SK_VoIP, T wifi home
+		}
+	}
+	else {
+		if (ifname == 'wl0') {
+			idx = $('#mssid_table_wl0').find('tr').length-1;
+		} else {
+			idx = $('#mssid_table_wl1').find('tr').length-1 + 1; // Skip SK_VoIP
+		}
+	}
+
+	for (i = 0 ;i <idx; i++){
+		if (ifname == 'wl1') { //SK_VoIP fixed
+			if (i == 1)
+				continue;
+
+			// except T wifi home
+			if (cur_user != "root" && i == 2)
+				continue;
+		}
+		else {
+			// except T wifi home
+			if (cur_user != "root" && i == 2)
+				continue;
+		}
+
+		if( i != 0)
+			prefix = ifname+"."+String(i);
+		else
+			prefix = ifname;
+
+		id_name ="t_"+prefix+"_ssid";
+		var ssid_str = document.getElementById(id_name).value;
+
+		if ( check_ssid_length(ssid_str) != "true")
+			return check_ssid_length(ssid_str);
+
+	}
+}
+
+function check_mssid_ext_length(ifname) {
+	var i;
+	var prefix = new String();
+	var id_name = new String();
+	var idx;
+
+	// except T wifi home ssid
+	if (cur_user != "root") {
+		if (ifname == 'wl0') {
+			idx = $('#mssid_table_wl0').find('tr').length-1 + 1;
+		} else {
+			idx = $('#mssid_table_wl1').find('tr').length-1 + 2; // Skip SK_VoIP, T wifi home
+		}
+	}
+	else {
+		if (ifname == 'wl0') {
+			idx = $('#mssid_table_wl0').find('tr').length-1;
+		} else {
+			idx = $('#mssid_table_wl1').find('tr').length-1 + 1; // Skip SK_VoIP
+		}
+	}
+
+	for (i = 0 ;i <idx; i++){
+		if (ifname == 'wl1') { //SK_VoIP fixed
+			if (i == 1)
+				continue;
+
+			// except T wifi home
+			if (cur_user != "root" && i == 2)
+				continue;
+		}
+		else {
+			// except T wifi home
+			if (cur_user != "root" && i == 2)
+				continue;
+		}
+
+		if( i != 0)
+			prefix = ifname+"."+String(i);
+		else
+			prefix = ifname;
+
+		id_name ="t_"+prefix+"_ssid_ext";
+		var ssid_str_ext = document.getElementById(id_name).value;
+
+		if ( ssid_str_ext.length > 32)
+			return false;
+
+	}
+	return true;
+}
+
+//  #29 - rssi limit
+function check_rssi_limit(ifname) {
+	var i;
+	var prefix = new String();
+	var id_name = new String();
+	var idx;
+	var reg=/^[-]?\d*$/;
+
+	// except T wifi home ssid
+	if (cur_user != "root") {
+		if (ifname == 'wl0') {
+			idx = $('#mssid_table_wl0').find('tr').length-1 + 1;
+		} else {
+			idx = $('#mssid_table_wl1').find('tr').length-1 + 2; // Skip SK_VoIP, T wifi home
+		}
+	}
+	else {
+		if (ifname == 'wl0') {
+			idx = $('#mssid_table_wl0').find('tr').length-1;
+		} else {
+			idx = $('#mssid_table_wl1').find('tr').length-1 + 1; // Skip SK_VoIP
+		}
+	}
+
+	for (i = 0 ;i <idx; i++){
+		if (ifname == 'wl1') { //SK_VoIP fixed
+			if (i == 1)
+				continue;
+
+			// except T wifi home
+			if (cur_user != "root" && i == 2)
+				continue;
+		}
+		else {
+			// except T wifi home
+			if (cur_user != "root" && i == 2)
+				continue;
+		}
+
+		if( i != 0)
+			prefix = ifname+"."+String(i);
+		else
+			prefix = ifname;
+
+		id_name ="t_"+prefix+"_rssi";
+		var t_rssi_limit_threshold = document.getElementById(id_name).value;
+		if(parseFloat(t_rssi_limit_threshold) < -100
+			|| parseFloat(t_rssi_limit_threshold) > 0 || 
+			reg.test(t_rssi_limit_threshold)== false || 
+			t_rssi_limit_threshold=="" ){
+			return false;
+		}
+	}
+}
+
+function check_pod_limit(ifname) {
+	var i;
+	var prefix = new String();
+	var id_name = new String();
+	var idx;
+	var reg=/^[-]?\d*$/;
+
+	// except T wifi home ssid
+	if (cur_user != "root") {
+		if (ifname == 'wl0') {
+			idx = $('#mssid_table_wl0').find('tr').length-1 + 1;
+		} else {
+			idx = $('#mssid_table_wl1').find('tr').length-1 + 2; // Skip SK_VoIP, T wifi home
+		}
+	}
+	else {
+		if (ifname == 'wl0') {
+			idx = $('#mssid_table_wl0').find('tr').length-1;
+		} else {
+			idx = $('#mssid_table_wl1').find('tr').length-1 + 1; // Skip SK_VoIP
+		}
+	}
+
+	for (i = 0 ;i <idx; i++){
+		if (ifname == 'wl1') { //SK_VoIP fixed
+			if (i == 1)
+				continue;
+
+			// except T wifi home
+			if (cur_user != "root" && i == 2)
+				continue;
+		}
+		else {
+			// except T wifi home
+			if (cur_user != "root" && i == 2)
+				continue;
+		}
+
+		if( i != 0)
+			prefix = ifname+"."+String(i);
+		else
+			prefix = ifname;
+
+		id_name ="t_"+prefix+"_pod";
+		var t_pod_limit_threshold = document.getElementById(id_name).value;
+		if(parseInt(t_pod_limit_threshold) < 0
+			|| parseInt(t_pod_limit_threshold) > 300 || 
+			reg.test(t_pod_limit_threshold)== false || 
+			t_pod_limit_threshold=="" ){
+			return false;
+		}
+	}
+}
+//  #29 - modify ssid length check
+
+function get_byte_length(str)
+{
+	var b=0;
+	var i=0;
+	var c;
+    for(b=i=0;c=str.charCodeAt(i++);b+=c>>11?3:c>>7?2:1);
+    return b;
+}
+
+function check_ssid_length(ssid_str)
+{
+	if(get_byte_length(ssid_str) > 32)
+		return "over";
+	else if(get_byte_length(ssid_str) < 1)
+		return "empty";
+	else
+		return "true";
+}
+
+
+
+$(document).ready(function(){
+	document.getElementById("ssid").setAttribute("oninput","check_keyup_ssid_length(this);");
+	document.getElementById("ssid").setAttribute("onKeydown","save_keydown_str(this);");
+	var i=0;
+	var j=0;
+	var prefix = new String();
+	var ifname = new String();
+	var idx = 0;
+	for(j =0 ; j<2;j++)
+	{
+		if(j == 0)
+		{
+			ifname = "wl0";
+			idx = $('#mssid_table_wl0').find('tr').length-1;
+		}
+		else
+		{
+			ifname = "wl1";
+			if (cur_user != "root")
+				idx = $('#mssid_table_wl1').find('tr').length-1+2;
+			else
+				idx = $('#mssid_table_wl1').find('tr').length-1+1;
+		}
+
+		for(i =0 ;i <idx; i++)
+		{
+			if(i == 0)
+			{
+				prefix = ifname;
+			}
+			else
+			{
+				prefix = ifname+"."+String(i);
+			}
+
+			// SK_VoIP
+			if (prefix == "wl1.1")
+				continue;
+
+			// except T wifi home
+			if (cur_user != "root") {
+				if (prefix == "wl0.2" || prefix == "wl1.2")
+					continue;
+			}
+
+/*
+			var t_m_ssid =document.getElementById("t_"+prefix+"_ssid");
+			if (t_m_ssid != null || t_m_ssid != "") {
+				t_m_ssid.setAttribute("oninput","check_keyup_ssid_length(this);");
+				t_m_ssid.setAttribute("onKeydown","save_keydown_str(this);");
+			}
+*/
+		}
+	}
+}); 
+		
+var old_input_str = new String();
+
+function save_keydown_str(object)
+{
+	old_input_str = object.value;
+}
+
+function check_keyup_ssid_length(object)
+{
+	if (check_ssid_length(object.value) == "over") 
+	{
+		webAlert('SSID 제한길이(32byte)를 초과하였습니다.');
+		object.value = old_input_str;
+	}
+	else if (check_ssid_length(object.value) == "empty") 
+	{
+		webAlert('SSID는 비어있을 수 없습니다.');
+		object.value = old_input_str;
+	}
+}
+/* ssid length check end */
+
+/* auto channel list check start */
+$(document).ready(function(){ 
+	document.getElementById("acs_list_20").
+		setAttribute("onClick","check_acs_list(\"acs_list_20\",0)");		
+	document.getElementById("acs_list_40").
+		setAttribute("onClick","check_acs_list(\"acs_list_40\",0)");		
+	document.getElementById("acs_list_80").
+		setAttribute("onClick","check_acs_list(\"acs_list_80\",0)");		
+	document.getElementById("acs_list_160").
+		setAttribute("onClick","check_acs_list(\"acs_list_160\",0)");		
+	document.getElementById("acs_list_2g").
+		setAttribute("onClick","check_acs_list(\"acs_list_2g\",0)");		
+});
+
+function is_checkbox_empty(checkbox_id)
+{
+	var input_elem = document.getElementById(checkbox_id).getElementsByTagName("input");
+	return !$(input_elem).is(":checked");
+}
+
+function is_acs_list_dfs(acs_list_id)
+{
+	var acs_band_id = document.getElementById(acs_list_id).getElementsByTagName("tr");
+	for(var i=0; i < acs_band_id.length; i++)
+	{
+		if(acs_band_id[i].id.indexOf("_b") !=-1)
+		{
+			if(!is_checkbox_empty(acs_band_id[i].id))
+			{
+				return true;
+			}
+		}
+		else if(acs_band_id[i].id.indexOf("_c") !=-1)
+		{
+			if(!is_checkbox_empty(acs_band_id[i].id))
+			{
+				return true;
+			}
+		}
+	}
+	return false;
+}
+var old_acs_list_checked_id = new Array();
+
+function save_acs_list_checked_id(acs_list_checked_elems)
+{
+	old_acs_list_checked_id = new Array();
+	var i;
+
+	for(i=0; i< acs_list_checked_elems.length; i++)
+	{
+		old_acs_list_checked_id.push(acs_list_checked_elems[i].id);
+	}
+}
+
+function is_old_acs_list_checked_id_in_elems(elems)
+{
+	for(var i=0; i<old_acs_list_checked_id.length; i++)
+	{
+		if($(elems).is("#"+old_acs_list_checked_id[i]))
+			return true;
+	}
+	return false;
+}
+
+function is_old_disabled_acs_list(elems)
+{
+	if(is_old_acs_list_checked_id_in_elems(elems))
+	{
+		for(var i =0 ; i< old_acs_list_checked_id.length; i++)
+		{
+			if($(elems).filter("#"+old_acs_list_checked_id).is(":disabled"))
+				return true;
+		}
+	}
+	return false;
+}
+
+function check_acs_list(acs_list_id,dfs_chan)
+{
+	var acs_list_input = document.getElementById(acs_list_id).getElementsByTagName("input");
+	var acs_list_checked_elems = $(acs_list_input).filter(":checked");
+
+	if(!is_checkbox_empty(acs_list_id))
+		save_acs_list_checked_id(acs_list_checked_elems);
+		
+	if(is_checkbox_empty(acs_list_id))
+	{
+		if(!dfs_chan)
+			webAlert("하나 이상의 채널을 선택하세요");
+		if(!is_old_acs_list_checked_id_in_elems(acs_list_input))
+		{
+			acs_list_input[0].checked = true;
+		}
+		else if(old_acs_list_checked_id.length == 0 || dfs_chan)
+		{
+			acs_list_input[0].checked = true;
+		}
+		else if(is_old_disabled_acs_list(acs_list_input))
+		{
+			acs_list_input[0].checked = true;
+		}
+		else
+		{
+			arr_id_arr_checkbox_checked(old_acs_list_checked_id,acs_list_input);
+		}
+	}
+	if(document.getElementById(acs_list_id).style.display != "none")
+	{
+		if(acs_list_id.indexOf("_2g") == -1)
+			enable_dfs(is_acs_list_dfs(acs_list_id),true);
+	}
+}
+
+function arr_id_arr_checkbox_checked(arr_id,arr_cb)
+{
+	var i,j;
+
+	for(i=0; i<arr_id.length; i++)
+	{
+		for(j=0; j<arr_cb.length;j++)
+		{
+			id_checkbox_checked(arr_id[i],arr_cb[j]);
+		}
+	}
+}
+
+function id_checkbox_checked(id,cb)
+{
+	if(id == cb.id)
+	{
+		cb.checked = true;
+	}
+}
+
+function bw_5g_check_acs_list(bw)
+{
+	if (bw == '1')
+		check_acs_list("acs_list_20",1);
+	else if (bw == '3')
+		check_acs_list("acs_list_40",1);
+	else if (bw == '7')
+		check_acs_list("acs_list_80",1);
+	else if (bw == '15')
+		check_acs_list("acs_list_160",1);
+}
+/* auto channel list check end */
+
+function change_acs_list_at_dfs_ch ( elem ,val ,dfs )
+{
+	change_acs_list(val, dfs);
+	change_dfs_mode_to_ch_num(elem);
+}
+
+function change_dfs_mode_to_ch_num(elem)
+{
+	enable_dfs(is_dfs_ch_num(elem.id),true);
+}
+
+function enable_dfs(bool_dfs,on_change_ch)
+{
+	if(bool_dfs == "auto")
+		return;
+	else if(bool_dfs)
+	{
+		if(on_change_ch && ($("#dfs").val() == "0"))
+			webAlert("DFS 기능을 활성화합니다.<br> 부팅 시간이 더 길어질수 있습니다.");
+		$("#dfs").val("1");
+	}
+	else
+	{
+		if(on_change_ch && ($("#dfs").val() == "1"))
+			webAlert("DFS 기능을 종료합니다.");
+		$("#dfs").val("0");
+	}
+}
+
+function change_acct_op(ifname) {
+	var chk_val = $("input[name=acct_op_" + ifname + "]:checked").val();
+
+	if (chk_val == "1") {
+		document.getElementById("acct_ip_" + ifname).disabled = false;
+		document.getElementById("acct_port_" + ifname).disabled = false;
+		document.getElementById("acct_shared_" + ifname).disabled = false;
+	}
+	else {
+		document.getElementById("acct_ip_" + ifname).disabled = true;
+		document.getElementById("acct_port_" + ifname).disabled = true;
+		document.getElementById("acct_shared_" + ifname).disabled = true;
+	}
+}
+
+function change_auth(ifname) {
+	// TODO: Temporary variable redir_tmp
+	var redir_tmp = "";
+
+	if (document.getElementById("auth_type_" + ifname).value == 'psk') {
+		document.getElementById("passphrase_" + ifname).disabled = false;
+		document.getElementById("auth_ip_" + ifname).disabled = true;
+		document.getElementById("auth_port_" + ifname).disabled = true;
+		document.getElementById("auth_shared_" + ifname).disabled = true;
+		document.getElementById("ID_ACCT_TBL_" + ifname).disabled = true;
+		document.getElementById("encrypt_type_" + ifname).disabled = false;
+
+		change_acct_op(ifname);
+		$("#auth_acct_" + ifname).hide();
+
+		if (redir_tmp == "1") {
+			change_redir_fb_op(ifname);
+			$("#redir_fb_" + ifname).hide();
+		}
+	} else {
+		document.getElementById("passphrase_" + ifname).disabled = true;
+		document.getElementById("auth_ip_" + ifname).disabled = false;
+		document.getElementById("auth_port_" + ifname).disabled = false;
+		document.getElementById("auth_shared_" + ifname).disabled = false;
+		document.getElementById("ID_ACCT_TBL_" + ifname).disabled = false;
+
+		change_acct_op(ifname);
+		$("#auth_acct_" + ifname).show();
+
+		if (redir_tmp == "1") {
+			change_redir_fb_op(ifname);
+			$("#redir_fb_" + ifname).show();
+		}
+	}
+}
+
+function change_eap(ifname) {
+	if (document.getElementById("eap_op_" + ifname).checked == true) {
+		document.getElementById("mac_auth_" + ifname).disabled = false;
+		document.getElementById("auth_ip_" + ifname).disabled = false;
+		document.getElementById("auth_port_" + ifname).disabled = false;
+		document.getElementById("auth_shared_" + ifname).disabled = false;
+		document.getElementById("ID_ACCT_TBL_" + ifname).disabled = false;
+
+		document.getElementById("auth_type_" + ifname).value = "eap";
+
+		change_acct_op(ifname);
+
+		$("#mac_tr_" + ifname).show();
+		$("#auth_acct_" + ifname).show();
+
+		// TODO: when redirection function implement it's delete.
+		document.getElementById("mac_auth_" + ifname).checked = true;
+	} else {
+		document.getElementById("mac_auth_" + ifname).disabled = true;
+		document.getElementById("auth_ip_" + ifname).disabled = true;
+		document.getElementById("auth_port_" + ifname).disabled = true;
+		document.getElementById("auth_shared_" + ifname).disabled = true;
+		document.getElementById("ID_ACCT_TBL_" + ifname).disabled = true;
+		document.getElementById("acct_ip_" + ifname).disabled = true;
+		document.getElementById("acct_port_" + ifname).disabled = true;
+		document.getElementById("acct_shared_" + ifname).disabled = true;
+
+		document.getElementById("auth_type_" + ifname).value = "psk";
+
+		$("#mac_tr_" + ifname).hide();
+		$("#auth_acct_" + ifname).hide();
+
+		// TODO: when redirection function implement it's delete.
+		document.getElementById("mac_auth_" + ifname).checked = false;
+	}
+}
+
+function appendHidden(form_name, hidden_name, hidden_val)
+{
+	if (!form_name)
+		return;
+
+	var obj_hidden = document.createElement("input");
+	obj_hidden.type = "hidden";
+	obj_hidden.name = hidden_name;
+	obj_hidden.value = hidden_val;
+
+	form_name.appendChild(obj_hidden);
+}
+
+function reloadSecValue(crypto_type) {
+	var ath_mode, auth_type;
+	// TODO: Temporary variable redir_tmp
+	var redir_tmp = "";
+
+	if (document.getElementById("wl_radio_sel").value == "0") {
+		ath_mode = document.getElementById("sec_mode_wl0").value;
+		auth_type = document.getElementById("auth_type_wl0").value;
+		$("input:checkbox[id='showchk_wl0']").prop("checked", false);
+
+		switch (ath_mode) {
+			case 'wpa3wpa2':
+	            $("select#auth_type_wl0 option[value='psk']").html("SAE/PSK");
+				$("#wpa_wl0").show();
+				$("#wep_wl0").hide();
+				change_auth('wl0');
+				$("#none_wl0").hide();
+				$("#auth_acct_wl0").hide();
+				$("#redir_fb_wl0").hide();
+				show_pw('wl0');
+				break;
+
+			case 'wpa3':
+	            $("select#auth_type_wl0 option[value='psk']").html("SAE");
+				$("#wpa_wl0").show();
+				$("#wep_wl0").hide();
+				change_auth('wl0');
+				$("#none_wl0").hide();
+				$("#auth_acct_wl0").hide();
+				$("#redir_fb_wl0").hide();
+				show_pw('wl0');
+				break;
+
+			case 'wpa2wpa':
+			case 'wpa2':
+			case 'wpa':
+				$("select#auth_type_wl0 option[value='psk']").html("PSK");
+				$("#wpa_wl0").show();
+				$("#wep_wl0").hide();
+				change_auth('wl0');
+				$("#none_wl0").hide();
+
+				if (auth_type == "eap") {
+					$("#auth_acct_wl0").show();
+
+					$("#redir_fb_wl0").hide();
+					if (redir_tmp == "1")
+						$("#redir_fb_wl0").show();
+				} else {
+					$("#auth_acct_wl0").hide();
+					$("#redir_fb_wl0").hide();
+				}
+				show_pw('wl0');
+				break;
+
+			case 'wep':
+				$("#wpa_wl0").hide();
+				$("#wep_wl0").show();
+				$("#none_wl0").hide();
+				$("#auth_acct_wl0").hide();
+				$("#redir_fb_wl0").hide();
+				break;
+
+			case 'none':
+				$("#wpa_wl0").hide();
+				$("#wep_wl0").hide();
+				$("#none_wl0").show();
+
+				change_eap("wl0");
+
+				if (redir_tmp == "1")
+					$("#redir_fb_wl0").show();
+				else
+					$("#redir_fb_wl0").hide();
+				break;
+
+			default:
+				break;
+		}
+
+		// 1X menu print condition
+		if (ath_mode == "wpa" || ath_mode == "wpa2" || ath_mode == "wpa2wpa") {
+			$("select#auth_type_wl0").attr('disabled', false);
+		}
+		else {
+			document.formWifiSet.auth_type_wl0.selectedIndex = 0;
+			$("select#auth_type_wl0").attr('disabled', true);
+		}
+	} else {
+		ath_mode = document.getElementById("sec_mode_wl1").value;
+		auth_type = document.getElementById("auth_type_wl1").value;
+		$("input:checkbox[id='showchk_wl1']").prop("checked", false);
+
+		switch (ath_mode) {
+			case 'wpa3wpa2':
+	            $("select#auth_type_wl1 option[value='psk']").html("SAE/PSK");
+				$("#wpa_wl1").show();
+				$("#wep_wl1").hide();		
+				change_auth('wl1');
+				$("#none_wl1").hide();
+				$("#auth_acct_wl1").hide();
+				$("#redir_fb_wl1").hide();
+				show_pw('wl1');
+				break;
+
+			case 'wpa3':
+	            $("select#auth_type_wl1 option[value='psk']").html("SAE");
+				$("#wpa_wl1").show();
+				$("#wep_wl1").hide();		
+				change_auth('wl1');
+				$("#none_wl1").hide();
+				$("#auth_acct_wl1").hide();
+				$("#redir_fb_wl1").hide();
+				show_pw('wl1');
+				break;
+
+			case 'wpa2wpa':
+			case 'wpa2':
+			case 'wpa':
+				$("select#auth_type_wl1 option[value='psk']").html("PSK");
+				$("#wpa_wl1").show();
+				$("#wep_wl1").hide();		
+				change_auth('wl1');
+				$("#none_wl1").hide();
+				
+				if (auth_type == "eap") {
+					$("#auth_acct_wl1").show();
+
+					$("#redir_fb_wl1").hide();
+					if (redir_tmp == "1")
+						$("#redir_fb_wl1").show();
+				} else {
+					$("#auth_acct_wl1").hide();
+					$("#redir_fb_wl1").hide();
+				}
+
+				show_pw('wl1');
+				break;
+
+			case 'wep':
+				$("#wpa_wl1").hide();
+				$("#wep_wl1").show();
+				$("#none_wl1").hide();
+				$("#auth_acct_wl1").hide();
+				$("#redir_fb_wl1").hide();
+				break;
+
+			case 'none':
+				$("#wpa_wl1").hide();
+				$("#wep_wl1").hide();
+				$("#none_wl1").show();
+
+				change_eap("wl1");
+
+				if (redir_tmp == "1")
+					$("#redir_fb_wl1").show();
+				else
+					$("#redir_fb_wl1").hide();
+				break;
+
+			default:
+				break;
+		}
+
+		// 1X menu print condition
+		if (ath_mode == "wpa" || ath_mode == "wpa2" || ath_mode == "wpa2wpa") {
+			$("select#auth_type_wl1").attr('disabled', false);
+		}
+		else {
+			document.formWifiSet.auth_type_wl1.selectedIndex = 0;
+			$("select#auth_type_wl1").attr('disabled', true);
+		}
+	}
+
+	if (document.getElementById("wl_radio_sel").value == "0") {
+		if (ath_mode == "wpa3wpa2" || ath_mode == "wpa3") {
+			document.formWifiSet.encrypt_type_wl0.selectedIndex = 2;
+			$("select#encrypt_type_wl0").attr('disabled', true);
+			$("#passphrase_wl0").attr('disabled', false);
+		} else {
+			$("select#encrypt_type_wl0").attr('disabled', false);
+		}
+	} else {
+		if (ath_mode == "wpa3wpa2" || ath_mode == "wpa3") {
+			document.formWifiSet.encrypt_type_wl1.selectedIndex = 2;
+			$("select#encrypt_type_wl1").attr('disabled', true);
+			$("#passphrase_wl1").attr('disabled', false);
+		} else {
+			$("select#encrypt_type_wl1").attr('disabled', false);
+		}
+	}
+}
+
+function updateState() {
+	if (document.getElementById("wl_radio_sel").value == "0") {
+		var sel = document.getElementById("ssid_list_wl0").value;
+		var ifname = "wl0";
+		switch(sel) {
+			case '0':
+				var ath_mode = "wpa2wpa";
+				var eap_op = "";
+				var mac_op = "";
+				var auth_type = "psk";
+				var crypto_type = "tkip+aes";
+				var passphrase = html_code_to_script_str("a12345678!");
+				var wep_auth = "";
+				var wep_key1 = html_code_to_script_str("1234567890123");
+				var wep_key2 = html_code_to_script_str("1234567890123");
+				var wep_key3 = html_code_to_script_str("1234567890123");
+				var wep_key4 = html_code_to_script_str("1234567890123");
+				var wep_default = "1";
+				var auth_addr = "0.0.0.0";
+				var auth_port = "1812";
+				var auth_secret = "1234";
+				var acct_op = "";
+				var acct_ip = "";
+				var acct_port = "";
+				var acct_secret = "";
+				var redir_op = '';
+				var	redir_url = '';
+				var fb_op = '';
+				var	fb_url = '';
+				break;
+			case '1':
+				var ath_mode = "wpa2wpa";
+				var eap_op = ""
+				var mac_op = ""
+				var auth_type = "psk";
+				var crypto_type = "tkip+aes";
+				var passphrase = html_code_to_script_str("a12345678!");
+				var wep_auth = "";
+				var wep_key1 = html_code_to_script_str("1234567890123");
+				var wep_key2 = html_code_to_script_str("1234567890123");
+				var wep_key3 = html_code_to_script_str("1234567890123");
+				var wep_key4 = html_code_to_script_str("1234567890123");
+				var wep_default = "1";
+				var auth_addr = "0.0.0.0";
+				var auth_port = "1812";
+				var auth_secret = "1234";
+				var acct_op = "";
+				var acct_ip = "";
+				var acct_port = "";
+				var acct_secret = "";
+				var redir_op = '';
+				var	redir_url = '';
+				var fb_op = '';
+				var	fb_url = '';
+				break;
+			case '2':
+				var ath_mode = "wpa2wpa";
+				var eap_op = "1"
+				var mac_op = "1"
+				var auth_type = "eap";
+				var crypto_type = "tkip+aes";
+				var passphrase = html_code_to_script_str("a111111!");
+				var wep_auth = "";
+				var wep_key1 = html_code_to_script_str("1234567890123");
+				var wep_key2 = html_code_to_script_str("1234567890123");
+				var wep_key3 = html_code_to_script_str("1234567890123");
+				var wep_key4 = html_code_to_script_str("1234567890123");
+				var wep_default = "1";
+				var auth_addr = "180.134.255.8";
+				var auth_port = "1812";
+				var auth_secret = "wifizonetill2030";
+				var acct_op = "1";
+				var acct_ip = "180.134.255.8";
+				var acct_port = "1813";
+				var acct_secret = "wifizonetill2030";
+				var redir_op = '';
+				var	redir_url = '';
+				var fb_op = '';
+				var	fb_url = '';
+				break;
+			case '3':
+				var ath_mode = "wpa2wpa";
+				var eap_op = ""
+				var mac_op = ""
+				var auth_type = "psk";
+				var crypto_type = "tkip+aes";
+				var passphrase = html_code_to_script_str("a111111!");
+				var wep_auth = "";
+				var wep_key1 = html_code_to_script_str("1234567890123");
+				var wep_key2 = html_code_to_script_str("1234567890123");
+				var wep_key3 = html_code_to_script_str("1234567890123");
+				var wep_key4 = html_code_to_script_str("1234567890123");
+				var wep_default = "1";
+				var auth_addr = "0.0.0.0";
+				var auth_port = "1812";
+				var auth_secret = "1234";
+				var acct_op = "";
+				var acct_ip = "";
+				var acct_port = "";
+				var acct_secret = "";
+				var redir_op = '';
+				var	redir_url = '';
+				var fb_op = '';
+				var	fb_url = '';
+				break;
+			case '4':
+				var ath_mode = "wpa2wpa";
+				var eap_op = ""
+				var mac_op = ""
+				var auth_type = "psk";
+				var crypto_type = "tkip+aes";
+				var passphrase = html_code_to_script_str("a111111!");
+				var wep_auth = "";
+				var wep_key1 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key2 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key3 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key4 = html_code_to_script_str("49505152535455565748495051");
+				var wep_default = "1";
+				var auth_addr = "0.0.0.0";
+				var auth_port = "1812";
+				var auth_secret = "1234";
+				var acct_op = "";
+				var acct_ip = "";
+				var acct_port = "";
+				var acct_secret = "";
+				var redir_op = '';
+				var	redir_url = '';
+				var fb_op = '';
+				var	fb_url = '';
+				break;
+			case '5':
+				var ath_mode = "wpa2wpa";
+				var eap_op = ""
+				var mac_op = ""
+				var auth_type = "psk";
+				var crypto_type = "tkip+aes";
+				var passphrase = html_code_to_script_str("a111111!");
+				var wep_auth = "";
+				var wep_key1 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key2 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key3 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key4 = html_code_to_script_str("49505152535455565748495051");
+				var wep_default = "1";
+				var auth_addr = "0.0.0.0";
+				var auth_port = "1812";
+				var auth_secret = "1234";
+				var acct_op = "";
+				var acct_ip = "";
+				var acct_port = "";
+				var acct_secret = "";
+				var redir_op = '';
+				var	redir_url = '';
+				var fb_op = '';
+				var	fb_url = '';
+				break;
+			case '6':
+				var ath_mode = "wpa2wpa";
+				var eap_op = ""
+				var mac_op = ""
+				var auth_type = "psk";
+				var crypto_type = "tkip+aes";
+				var passphrase = html_code_to_script_str("a111111!");
+				var wep_auth = "";
+				var wep_key1 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key2 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key3 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key4 = html_code_to_script_str("49505152535455565748495051");
+				var wep_default = "1";
+				var auth_addr = "0.0.0.0";
+				var auth_port = "1812";
+				var auth_secret = "1234";
+				var acct_op = "";
+				var acct_ip = "";
+				var acct_port = "";
+				var acct_secret = "";
+				var redir_op = '';
+				var	redir_url = '';
+				var fb_op = '';
+				var	fb_url = '';
+				break;
+			case '7':
+				var ath_mode = "wpa2wpa";
+				var eap_op = ""
+				var mac_op = ""
+				var auth_type = "psk";
+				var crypto_type = "tkip+aes";
+				var passphrase = html_code_to_script_str("a111111!");
+				var wep_auth = "";
+				var wep_key1 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key2 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key3 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key4 = html_code_to_script_str("49505152535455565748495051");
+				var wep_default = "1";
+				var auth_addr = "0.0.0.0";
+				var auth_port = "1812";
+				var auth_secret = "1234";
+				var acct_op = "";
+				var acct_ip = "";
+				var acct_port = "";
+				var acct_secret = "";
+				var redir_op = '';
+				var	redir_url = '';
+				var fb_op = '';
+				var	fb_url = '';
+				break;
+			default :
+				break;
+		}
+
+		if (ath_mode == 'wpa3wpa2') {
+			document.formWifiSet.sec_mode_wl0.selectedIndex = 0;
+		} else if (ath_mode == 'wpa3') {
+			document.formWifiSet.sec_mode_wl0.selectedIndex = 1;
+		} else if (ath_mode == 'wpa2wpa') {
+			document.formWifiSet.sec_mode_wl0.selectedIndex = 2;
+		} else if (ath_mode == 'wpa2') {
+			document.formWifiSet.sec_mode_wl0.selectedIndex = 3;
+		} else if (ath_mode == 'wpa') {
+			document.formWifiSet.sec_mode_wl0.selectedIndex = 4;
+		}
+
+/* DISABLE WEP
+		else if (ath_mode == 'wep') {
+		   document.formWifiSet.sec_mode_wl0.selectedIndex = 3;
+		} else if (ath_mode == 'none') {
+		   document.formWifiSet.sec_mode_wl0.selectedIndex = 4;
+	    }
+*/
+		else if (ath_mode == 'none') {
+			document.formWifiSet.sec_mode_wl0.selectedIndex = 5;
+		}
+
+		if (eap_op == 1)
+			document.getElementById("eap_op_wl0").checked = true;
+		else
+			document.getElementById("eap_op_wl0").checked = false;
+	
+		if (mac_op == 1)
+			document.getElementById("mac_auth_wl0").checked = true;
+		else
+			document.getElementById("mac_auth_wl0").checked = false;
+
+		if (auth_type == 'psk')
+			document.formWifiSet.auth_type_wl0.selectedIndex = 0;
+		else if (auth_type == 'eap')
+			document.formWifiSet.auth_type_wl0.selectedIndex = 1;
+
+		if (crypto_type == 'tkip+aes')
+			document.formWifiSet.encrypt_type_wl0.selectedIndex = 0;
+		else if (crypto_type == 'tkip')
+			document.formWifiSet.encrypt_type_wl0.selectedIndex = 1;
+		else if (crypto_type == 'aes')
+			document.formWifiSet.encrypt_type_wl0.selectedIndex = 2;
+
+		document.getElementById("passphrase_wl0").value = passphrase;
+		document.getElementById("showpsk_wl0").value = passphrase;
+		
+		if (wep_auth == 'open')
+			document.formWifiSet.wep_sec_mode_wl0.selectedIndex = 0;
+		else if (wep_auth == 'share')
+			document.formWifiSet.wep_sec_mode_wl0.selectedIndex = 1;
+		else if (wep_auth == 'auto')
+			document.formWifiSet.wep_sec_mode_wl0.selectedIndex = 2;
+
+		document.getElementById("wl0_key1").value = wep_key1;
+		document.getElementById("wl0_key2").value = wep_key2;
+		document.getElementById("wl0_key3").value = wep_key3;
+		document.getElementById("wl0_key4").value = wep_key4;
+
+		if (wep_default == '1')
+			document.formWifiSet.wep_key_wl0.selectedIndex = 0;
+		else if (wep_default == '2')
+			document.formWifiSet.wep_key_wl0.selectedIndex = 1;
+		else if (wep_default == '3')
+			document.formWifiSet.wep_key_wl0.selectedIndex = 2;
+		else if (wep_default == '4')
+			document.formWifiSet.wep_key_wl0.selectedIndex = 3;
+
+		document.getElementById("auth_ip_wl0").value = auth_addr;
+		document.getElementById("auth_port_wl0").value = auth_port;
+		document.getElementById("auth_shared_wl0").value = auth_secret;
+		if (acct_op == 1) {
+			document.getElementById("acct_op_disable_wl0").checked = false;
+			document.getElementById("acct_op_enable_wl0").checked = true;
+		}
+		else {
+			document.getElementById("acct_op_enable_wl0").checked = false;
+			document.getElementById("acct_op_disable_wl0").checked = true;
+		}
+		document.getElementById("acct_ip_wl0").value = acct_ip;
+		document.getElementById("acct_port_wl0").value = acct_port;
+		document.getElementById("acct_shared_wl0").value = acct_secret;
+
+		if (redir_op == "1") {
+			document.getElementById("redir_op_enable_wl0").checked = true;
+			document.getElementById("redir_op_disable_wl0").checked = false;
+		} else {
+			document.getElementById("redir_op_enable_wl0").checked = false;
+			document.getElementById("redir_op_disable_wl0").checked = true;
+		}
+
+		document.getElementById("redir_url_wl0").value = redir_url;
+
+		if (fb_op == "1") {
+			document.getElementById("first_op_enable_wl0").checked = true;
+			document.getElementById("first_op_disable_wl0").checked = false;
+		} else {
+			document.getElementById("first_op_enable_wl0").checked = false;
+			document.getElementById("first_op_disable_wl0").checked = true;
+		}
+
+		document.getElementById("first_url_wl0").value = fb_url;
+	} else {
+		var sel = document.getElementById("ssid_list_wl1").value;
+		var ifname = "wl1";
+		switch(sel) {
+			case '0':
+				var ath_mode = "wpa2wpa";
+				var eap_op = "";
+				var mac_op = "";
+				var auth_type = "psk";
+				var crypto_type = "tkip+aes";
+				var passphrase = html_code_to_script_str("a12345678!");
+				var wep_auth = "";
+				var wep_key1 = html_code_to_script_str("1234567890123");
+				var wep_key2 = html_code_to_script_str("1234567890123");
+				var wep_key3 = html_code_to_script_str("1234567890123");
+				var wep_key4 = html_code_to_script_str("1234567890123");
+				var wep_default = "1";
+				var auth_addr = "0.0.0.0";
+				var auth_port = "1812";
+				var auth_secret = "1234";
+				var acct_op = "";
+				var acct_ip = "";
+				var acct_port = "";
+				var acct_secret = "";
+				var redir_op = '';
+				var	redir_url = '';
+				var fb_op = '';
+				var	fb_url = '';
+				break;
+			case '1':
+				var ath_mode = "wpa2";
+				var eap_op = ""
+				var mac_op = ""
+				var auth_type = "psk";
+				var crypto_type = "aes";
+				var passphrase = html_code_to_script_str("@wdc&#35;efv$rgb%thn^yjm&#38;uk,");
+				var wep_auth = "";
+				var wep_key1 = html_code_to_script_str("1234567890123");
+				var wep_key2 = html_code_to_script_str("1234567890123");
+				var wep_key3 = html_code_to_script_str("1234567890123");
+				var wep_key4 = html_code_to_script_str("1234567890123");
+				var wep_default = "1";
+				var auth_addr = "180.134.255.8";
+				var auth_port = "1812";
+				var auth_secret = "wifizonetill2030";
+				var acct_op = "1";
+				var acct_ip = "180.134.255.8";
+				var acct_port = "1813";
+				var acct_secret = "wifizonetill2030";
+				var redir_op = '';
+				var	redir_url = '';
+				var fb_op = '';
+				var	fb_url = '';
+				break;
+			case '2':
+				var ath_mode = "wpa2wpa";
+				var eap_op = "1"
+				var mac_op = "1"
+				var auth_type = "eap";
+				var crypto_type = "tkip+aes";
+				var passphrase = html_code_to_script_str("a111111!");
+				var wep_auth = "";
+				var wep_key1 = html_code_to_script_str("1234567890123");
+				var wep_key2 = html_code_to_script_str("1234567890123");
+				var wep_key3 = html_code_to_script_str("1234567890123");
+				var wep_key4 = html_code_to_script_str("1234567890123");
+				var wep_default = "1";
+				var auth_addr = "180.134.255.8";
+				var auth_port = "1812";
+				var auth_secret = "wifizonetill2030";
+				var acct_op = "1";
+				var acct_ip = "180.134.255.8";
+				var acct_port = "1813";
+				var acct_secret = "wifizonetill2030";
+				var redir_op = '';
+				var	redir_url = '';
+				var fb_op = '';
+				var	fb_url = '';
+				break;
+			case '3':
+				var ath_mode = "wpa2";
+				var eap_op = ""
+				var mac_op = ""
+				var auth_type = "psk";
+				var crypto_type = "aes";
+				var passphrase = html_code_to_script_str("@wdc&#35;efv$rgb%thn^yjm&#38;uk,");
+				var wep_auth = "";
+				var wep_key1 = html_code_to_script_str("1234567890123");
+				var wep_key2 = html_code_to_script_str("1234567890123");
+				var wep_key3 = html_code_to_script_str("1234567890123");
+				var wep_key4 = html_code_to_script_str("1234567890123");
+				var wep_default = "1";
+				var auth_addr = "0.0.0.0";
+				var auth_port = "1812";
+				var auth_secret = "1234";
+				var acct_op = "";
+				var acct_ip = "";
+				var acct_port = "";
+				var acct_secret = "";
+				var redir_op = '';
+				var	redir_url = '';
+				var fb_op = '';
+				var	fb_url = '';
+				break;
+			case '4':
+				var ath_mode = "wpa2wpa";
+				var eap_op = ""
+				var mac_op = ""
+				var auth_type = "psk";
+				var crypto_type = "tkip+aes";
+				var passphrase = html_code_to_script_str("a111111!");
+				var wep_auth = "";
+				var wep_key1 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key2 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key3 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key4 = html_code_to_script_str("49505152535455565748495051");
+				var wep_default = "1";
+				var auth_addr = "0.0.0.0";
+				var auth_port = "1812";
+				var auth_secret = "1234";
+				var acct_op = "";
+				var acct_ip = "";
+				var acct_port = "";
+				var acct_secret = "";
+				var redir_op = '';
+				var	redir_url = '';
+				var fb_op = '';
+				var	fb_url = '';
+				break;
+			case '5':
+				var ath_mode = "wpa2wpa";
+				var eap_op = ""
+				var mac_op = ""
+				var auth_type = "psk";
+				var crypto_type = "tkip+aes";
+				var passphrase = html_code_to_script_str("a111111!");
+				var wep_auth = "";
+				var wep_key1 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key2 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key3 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key4 = html_code_to_script_str("49505152535455565748495051");
+				var wep_default = "1";
+				var auth_addr = "0.0.0.0";
+				var auth_port = "1812";
+				var auth_secret = "1234";
+				var acct_op = "";
+				var acct_ip = "";
+				var acct_port = "";
+				var acct_secret = "";
+				var redir_op = '';
+				var	redir_url = '';
+				var fb_op = '';
+				var	fb_url = '';
+				break;
+			case '6':
+				var ath_mode = "wpa2wpa";
+				var eap_op = ""
+				var mac_op = ""
+				var auth_type = "psk";
+				var crypto_type = "tkip+aes";
+				var passphrase = html_code_to_script_str("a111111!");
+				var wep_auth = "";
+				var wep_key1 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key2 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key3 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key4 = html_code_to_script_str("49505152535455565748495051");
+				var wep_default = "1";
+				var auth_addr = "0.0.0.0";
+				var auth_port = "1812";
+				var auth_secret = "1234";
+				var acct_op = "";
+				var acct_ip = "";
+				var acct_port = "";
+				var acct_secret = "";
+				var redir_op = '';
+				var	redir_url = '';
+				var fb_op = '';
+				var	fb_url = '';
+				break;
+			case '7':
+				var ath_mode = "wpa2wpa";
+				var eap_op = ""
+				var mac_op = ""
+				var auth_type = "psk";
+				var crypto_type = "tkip+aes";
+				var passphrase = html_code_to_script_str("a111111!");
+				var wep_auth = "";
+				var wep_key1 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key2 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key3 = html_code_to_script_str("49505152535455565748495051");
+				var wep_key4 = html_code_to_script_str("49505152535455565748495051");
+				var wep_default = "1";
+				var auth_addr = "0.0.0.0";
+				var auth_port = "1812";
+				var auth_secret = "1234";
+				var acct_op = "";
+				var acct_ip = "";
+				var acct_port = "";
+				var acct_secret = "";
+				var redir_op = '';
+				var	redir_url = '';
+				var fb_op = '';
+				var	fb_url = '';
+				break;
+			default :
+				break;
+		}
+
+		if (ath_mode == 'wpa3wpa2') {
+			document.formWifiSet.sec_mode_wl1.selectedIndex = 0;
+		} else if (ath_mode == 'wpa3') {
+			document.formWifiSet.sec_mode_wl1.selectedIndex = 1;
+		} else if (ath_mode == 'wpa2wpa') {
+			document.formWifiSet.sec_mode_wl1.selectedIndex = 2;
+		} else if (ath_mode == 'wpa2') {
+			document.formWifiSet.sec_mode_wl1.selectedIndex = 3;
+		} else if (ath_mode == 'wpa') {
+			document.formWifiSet.sec_mode_wl1.selectedIndex = 4;
+		}
+
+/* DISABLE WEP
+		else if (ath_mode == 'wep') {
+		   document.formWifiSet.sec_mode_wl1.selectedIndex = 3;
+		} else if (ath_mode == 'none') {
+		   document.formWifiSet.sec_mode_wl1.selectedIndex = 4;
+	    }
+*/
+		else if (ath_mode == 'none') {
+			document.formWifiSet.sec_mode_wl1.selectedIndex = 5;
+		}
+
+		if (eap_op == 1)
+			document.getElementById("eap_op_wl1").checked = true;
+		else
+			document.getElementById("eap_op_wl1").checked = false;
+	
+		if (mac_op == 1)
+			document.getElementById("mac_auth_wl1").checked = true;
+		else
+			document.getElementById("mac_auth_wl1").checked = false;
+
+		if (auth_type == 'psk')
+			document.formWifiSet.auth_type_wl1.selectedIndex = 0;
+		else if (auth_type == 'eap')
+			document.formWifiSet.auth_type_wl1.selectedIndex = 1;
+
+		if (crypto_type == 'tkip+aes')
+			document.formWifiSet.encrypt_type_wl1.selectedIndex = 0;
+		else if (crypto_type == 'tkip')
+			document.formWifiSet.encrypt_type_wl1.selectedIndex = 1;
+		else if (crypto_type == 'aes')
+			document.formWifiSet.encrypt_type_wl1.selectedIndex = 2;
+
+		document.getElementById("passphrase_wl1").value = passphrase;
+		document.getElementById("showpsk_wl1").value = passphrase;
+
+		if (wep_auth == 'open')
+			document.formWifiSet.wep_sec_mode_wl1.selectedIndex = 0;
+		else if (wep_auth == 'share')
+			document.formWifiSet.wep_sec_mode_wl1.selectedIndex = 1;
+		else if (wep_auth == 'auto')
+			document.formWifiSet.wep_sec_mode_wl1.selectedIndex = 2;
+
+		document.getElementById("wl1_key1").value = wep_key1;
+		document.getElementById("wl1_key2").value = wep_key2;
+		document.getElementById("wl1_key3").value = wep_key3;
+		document.getElementById("wl1_key4").value = wep_key4;
+
+		if (wep_default == '1')
+			document.formWifiSet.wep_key_wl1.selectedIndex = 0;
+		else if (wep_default == '2')
+			document.formWifiSet.wep_key_wl1.selectedIndex = 1;
+		else if (wep_default == '3')
+			document.formWifiSet.wep_key_wl1.selectedIndex = 2;
+		else if (wep_default == '4')
+			document.formWifiSet.wep_key_wl1.selectedIndex = 3;
+
+		document.getElementById("auth_ip_wl1").value = auth_addr;
+		document.getElementById("auth_port_wl1").value = auth_port;
+		document.getElementById("auth_shared_wl1").value = auth_secret;
+		if (acct_op == 1) {
+			document.getElementById("acct_op_disable_wl1").checked = false;
+			document.getElementById("acct_op_enable_wl1").checked = true;
+		}
+		else {
+			document.getElementById("acct_op_enable_wl1").checked = false;
+			document.getElementById("acct_op_disable_wl1").checked = true;
+		}
+		document.getElementById("acct_ip_wl1").value = acct_ip;
+		document.getElementById("acct_port_wl1").value = acct_port;
+		document.getElementById("acct_shared_wl1").value = acct_secret;
+
+		if (redir_op == "1") {
+			document.getElementById("redir_op_enable_wl1").checked = true;
+			document.getElementById("redir_op_disable_wl1").checked = false;
+		} else {
+			document.getElementById("redir_op_enable_wl1").checked = false;
+			document.getElementById("redir_op_disable_wl1").checked = true;
+		}
+
+		document.getElementById("redir_url_wl1").value = redir_url;
+
+		if (fb_op == "1") {
+			document.getElementById("first_op_enable_wl1").checked = true;
+			document.getElementById("first_op_disable_wl1").checked = false;
+		} else {
+			document.getElementById("first_op_enable_wl1").checked = false;
+			document.getElementById("first_op_disable_wl1").checked = true;
+		}
+
+		document.getElementById("first_url_wl1").value = fb_url;
+	}
+
+	change_redir_fb_op(ifname);
+
+	reloadSecValue(crypto_type);
+
+}
+
+function change_radio_mode(ifname) {
+	if (ifname == "wl0") {
+		var radio_mode = document.getElementById("wireless_mode_5g").value;
+		var bw_cap = "7";
+
+		if (radio_mode == '4') {
+			$("#bw_cap_160").hide();
+			$("#bw_cap_40").show();
+			$("input[name='radio_bw_cap_40']").attr('disabled',true);
+			document.getElementsByName("radio_bw_cap_40")[1].checked = true;
+			change_bw_cap("40");
+		} else if (radio_mode == '8' || radio_mode == '12') {
+			$("#bw_cap_160").hide();
+			$("#bw_cap_40").show();
+			$("input[name='radio_bw_cap_40']").attr('disabled',false);
+			document.getElementsByName("radio_bw_cap_40")[0].disabled = true;
+
+			if (bw_cap == '1')
+				document.getElementsByName("radio_bw_cap_40")[1].checked = true;
+			else if (bw_cap == '3')
+				document.getElementsByName("radio_bw_cap_40")[2].checked = true;
+			else
+				document.getElementsByName("radio_bw_cap_40")[1].checked = true;
+
+			change_bw_cap("40");
+		} else {
+			$("#bw_cap_160").show();
+			$("#bw_cap_40").hide();
+			if (bw_cap == '1')
+				document.getElementsByName("radio_bw_cap_160")[0].checked = true;
+			else if (bw_cap == '3')
+				document.getElementsByName("radio_bw_cap_160")[1].checked = true;
+			else if (bw_cap == '7')
+				document.getElementsByName("radio_bw_cap_160")[2].checked = true;
+			else if (bw_cap == '15')
+				document.getElementsByName("radio_bw_cap_160")[3].checked = true;
+
+			change_bw_cap("160");
+		}
+	} else {
+		var bw_cap = "3";
+		var auto_bw = "1";
+		var radio_mode = document.getElementById("wireless_mode_2g").value;
+		$("#bw_cap_160").hide();
+		$("#bw_cap_40").show();
+		switch(radio_mode) {
+			case '1':
+			case '2':
+			case '3':
+				$("input[name='radio_bw_cap_40']").attr('disabled', false);
+				if (auto_bw == '1')
+					document.getElementsByName("radio_bw_cap_40")[0].checked = true;
+				else
+					document.getElementsByName("radio_bw_cap_40")[1].checked = true;
+				document.getElementsByName("radio_bw_cap_40")[2].disabled = true;
+
+				change_bw_cap("40");
+				break;
+			default :
+				$("input[name='radio_bw_cap_40']").attr('disabled', false);
+				if (auto_bw == '1')
+					document.getElementsByName("radio_bw_cap_40")[0].checked = true;
+				else if (bw_cap == '1')
+					document.getElementsByName("radio_bw_cap_40")[1].checked = true;
+				else if (bw_cap == '3')
+					document.getElementsByName("radio_bw_cap_40")[2].checked = true;
+				else 
+					document.getElementsByName("radio_bw_cap_40")[1].checked = true;
+
+				change_bw_cap("40");
+				break;
+		}
+	}
+
+	if (radio_mode >= 32) {
+		$("#bss_color").show();
+	} else {
+		$("#bss_color").hide();
+	}
+
+	Display_rateset(document.formWifiSet);
+}
+
+function tr_disable(tr, flag) {
+	for (var i=0; i<tr.childNodes.length; i++) {
+		if(tr.childNodes[i].nodeName=='TD') {
+			var td = tr.childNodes[i];
+			for (var j=0; j<td.childNodes.length; j++) {
+				var node = td.childNodes[j].nodeName;
+				if (node == 'INPUT' || node == 'SELECT' || node == 'TEXTAREA') {
+					td.childNodes[j].disabled = flag;
+					if (node == 'INPUT' && flag == true)
+						td.childNodes[j].checked = false;
+				}
+			}
+		}
+	}
+}
+
+function acs_channel_del ( acs_list_id ,ch_num )
+{
+	var acs_list = $( "#" + acs_list_id );
+	var acs_label = acs_list.find( "label" );
+	var acs_check_box = acs_list.find( "input" );
+	var acs_ch_str ,acs_ch_num;
+	var i ,j;
+
+	for ( i = 0 ;i < acs_label.length ;i ++ )
+	{
+		acs_ch_str = acs_label.eq( i ).text().split( " " );
+		
+		for ( j = 0 ;j < acs_ch_str.length ;j ++ )
+		{
+			acs_ch_num = Number(acs_ch_str[j]);
+			if( acs_ch_num == ch_num )
+			{
+				acs_label.eq( i ).remove();
+				acs_check_box.eq( i ).remove();
+				return;
+			}
+		}
+	}
+}
+
+function acs_br_control( acs_list_id )
+{
+	var acs_list = $( "#" + acs_list_id );
+	var acs_check_box = acs_list.find( "input" );
+	var acs_check_box_len = acs_check_box.length;
+
+	acs_list.find("br").remove();
+	acs_check_box.eq( acs_check_box_len/2 ).before( "<br>" );
+}
+
+function select_show_dfs_on_ch(val)
+{
+	switch (val) {
+		case '1':
+			$("#ch_20").show();
+			$("#ch_40").hide();
+			$("#ch_80").hide();
+			$("#ch_160").hide();
+			break;
+
+		case '3':
+			$("#ch_20").hide();
+			$("#ch_40").show();
+			$("#ch_80").hide();
+			$("#ch_160").hide();
+			break;
+
+		case '7':
+			$("#ch_20").hide();
+			$("#ch_40").hide();
+			$("#ch_80").show();
+			$("#ch_160").hide();
+			break;
+
+		case '15':
+			$("#ch_20").hide();
+			$("#ch_40").hide();
+			$("#ch_80").hide();
+			$("#ch_160").show();
+			break;
+
+		default :
+			break;
+	}
+}
+
+function select_show_dfs_off_ch(val)
+{
+	switch (val) {
+		case '1':
+			$("#ch_20_dfs_off").show();
+			$("#ch_40_dfs_off").hide();
+			$("#ch_80_dfs_off").hide();
+			$("#ch_160_dfs_off").hide();
+			break;
+
+		case '3':
+			$("#ch_20_dfs_off").hide();
+			$("#ch_40_dfs_off").show();
+			$("#ch_80_dfs_off").hide();
+			$("#ch_160_dfs_off").hide();			
+			break;
+
+		case '7':
+			$("#ch_20_dfs_off").hide();
+			$("#ch_40_dfs_off").hide();
+			$("#ch_80_dfs_off").show();
+			$("#ch_160_dfs_off").hide();		
+			break;
+
+		case '15':
+			$("#ch_20_dfs_off").hide();
+			$("#ch_40_dfs_off").hide();
+			$("#ch_80_dfs_off").hide();
+			$("#ch_160_dfs_off").show();	
+			break;
+
+		default :
+			break;
+	}
+}
+
+function change_bw_cap(bw_cap) {
+	var acs_20_b = document.getElementById("acs_20_b");
+	var acs_20_c = document.getElementById("acs_20_c");
+	var acs_40_b = document.getElementById("acs_40_b");
+	var acs_40_c = document.getElementById("acs_40_c");
+	var acs_80_b = document.getElementById("acs_80_b");
+	var acs_80_c = document.getElementById("acs_80_c");
+	var acs_160_c = document.getElementById("acs_160_c");
+
+	if (document.getElementById("wl_radio_sel").value == "0")
+		var ifname = "wl0";
+	else
+		var ifname = "wl1";
+
+	$("#acs_list_20").hide();
+	$("#acs_list_40").hide();
+	$("#acs_list_80").hide();
+	$("#acs_list_160").hide();
+
+	if (ifname == "wl0") {
+		if (bw_cap == '160') {
+			var val = $('input[name="radio_bw_cap_160"]:checked').val();
+			var user_val;
+			if (cur_user == 'root')
+			{
+				select_show_dfs_on_ch(val)
+				user_val = '1';
+			}
+			else if(cur_user == 'admin')
+			{
+				select_show_dfs_off_ch(val)
+				user_val = '0';
+			}
+			bw_5g_check_acs_list(val);
+			change_acs_list(val, user_val);
+		} else {
+			var val = $('input[name="radio_bw_cap_40"]:checked').val();
+			var user_val;
+			if (cur_user == 'root')
+			{
+				select_show_dfs_on_ch(val)
+				user_val = '1';
+			}
+			else if(cur_user == 'admin')
+			{
+				select_show_dfs_off_ch(val)
+				user_val = '0';
+			}
+			change_acs_list(val, user_val);
+			bw_5g_check_acs_list(val);
+		}
+	} else {
+		var val = $('input[name="radio_bw_cap_40"]:checked').val();
+		var bw_cap;
+		var cur_chan = "5/20M";
+		var bw = cur_chan.split('/');
+
+		if(bw[1] == "20M")
+			bw_cap = "1";
+		else if(bw[1] == "40M")
+			bw_cap = "3";
+		save_bw_2g_web( bw_cap );
+
+		var radio_mode = document.getElementById("wireless_mode_2g").value;
+		if (radio_mode == '1' || radio_mode == '2' || radio_mode == '3') {
+			$("#ch_20_2g").show();
+			$("#ch_40_2g").hide();
+			change_acs_list("2g_20", "0");
+		} else {
+			if (val == '0') {
+				if (bw_cap == '1') {
+					$("#ch_20_2g").show();
+					$("#ch_40_2g").hide();
+					change_acs_list("2g_20", "0");
+				} else if (bw_cap == '3') {
+					$("#ch_20_2g").hide();
+					$("#ch_40_2g").show();
+					change_acs_list("2g_40", "0");
+				} else {
+					$("#ch_20_2g").show();
+					$("#ch_40_2g").hide();
+					change_acs_list("2g_20", "0");
+					save_bw_2g_web( "1" );
+				}
+			} else if (val == '1') {
+				$("#ch_20_2g").show();
+				$("#ch_40_2g").hide();
+				change_acs_list("2g_20", "0");
+			} else if (val == '3') {
+				$("#ch_20_2g").hide();
+				$("#ch_40_2g").show();
+				change_acs_list("2g_40", "0");
+			} else {
+				$("#ch_20_2g").show();
+				$("#ch_40_2g").hide();
+				change_acs_list("2g_20", "0");
+			}
+		}
+	}
+}
+
+function change_acs_list(val, dfs) {
+	if (dfs == '1') {
+		switch (val) {
+			case '1':
+				if (document.getElementById("ch_20").value == '0')
+					$("#acs_list_20").show();
+				else
+					$("#acs_list_20").hide();
+				break;
+
+			case '3':
+				if (document.getElementById("ch_40").value == '0')
+					$("#acs_list_40").show();
+				else
+					$("#acs_list_40").hide();
+				break;
+
+			case '7':
+				if (document.getElementById("ch_80").value == '0')
+					$("#acs_list_80").show();
+				else
+					$("#acs_list_80").hide();
+				break;
+
+			case '15':
+				if (document.getElementById("ch_160").value == '0') 
+					$("#acs_list_160").show();
+				else
+					$("#acs_list_160").hide();
+				break;
+
+			default:
+				break;
+		}
+	} else {
+		switch (val) {
+			case '1':
+				if (document.getElementById("ch_20_dfs_off").value == '0')
+					$("#acs_list_20").show();
+				else
+					$("#acs_list_20").hide();
+				break;
+
+			case '3':
+				if (document.getElementById("ch_40_dfs_off").value == '0')
+					$("#acs_list_40").show();
+				else
+					$("#acs_list_40").hide();
+				break;
+
+			case '7':
+				if (document.getElementById("ch_80_dfs_off").value == '0')
+					$("#acs_list_80").show();
+				else
+					$("#acs_list_80").hide();
+				break;
+
+			case '15':
+				if (document.getElementById("ch_160_dfs_off").value == '0') 
+					$("#acs_list_160").show();
+				else
+					$("#acs_list_160").hide();
+				break;
+
+			case '2g_20':
+				if (document.getElementById("ch_20_2g").value == '0')
+					$("#acs_list_2g").show();
+				else
+					$("#acs_list_2g").hide();
+				break;
+
+			case '2g_40':
+				if (document.getElementById("ch_40_2g").value == '0')
+					$("#acs_list_2g").show();
+				else
+					$("#acs_list_2g").hide();
+				break;
+
+			default:
+				break;
+		}
+	}
+	var bw_index=1;
+	for(bw_index; bw_index<9; bw_index=bw_index*2)
+	{
+		if($("#acs_list_"+(bw_index*20)).css("display") != "none")
+			check_acs_list("acs_list_"+(bw_index*20),0);
+	}
+}
+
+function set_eap_option(auth_type, eap_op) {
+	if (auth_type == "eap") {
+		if (document.getElementById("wl_radio_sel").value == "0") 
+			document.getElementById("eap_op_wl0").checked = true;
+		else
+			document.getElementById("eap_op_wl1").checked = true;
+	}
+	else {
+		if (!eap_op.checked) {
+			if (document.getElementById("wl_radio_sel").value == "0") 
+				document.getElementById("eap_op_wl0").checked = false;
+			else
+				document.getElementById("eap_op_wl1").checked = false;
+
+			document.getElementById("mac_op").value = 0;
+		}
+	}
+}
+
+function change_mac_auth() {
+	var mac_auth, eap_op;
+
+	if (document.getElementById("wl_radio_sel").value == "0") {
+		mac_auth = document.getElementById("mac_auth_wl0");
+		eap_op = document.getElementById("eap_op_wl0");
+	}
+	else {
+		mac_auth = document.getElementById("mac_auth_wl1");
+		eap_op = document.getElementById("eap_op_wl1");
+	}
+
+	if (mac_auth.checked && eap_op.checked)
+		document.getElementById("mac_op").value = 1;
+	else
+		document.getElementById("mac_op").value = 0;
+}
+
+function show_pw(ifname) {
+	if (ifname == 'wl0') {
+		if ($("input:checkbox[name='showchk_wl0']").is(":checked") == true) {
+			document.getElementById("passphrase_wl0").setAttribute("type","text");
+		} else {
+			document.getElementById("passphrase_wl0").setAttribute("type","password");
+			$("#passphrase_wl0").show();
+			$("#showpsk_wl0").hide();
+		}
+	} else {
+		if ($("input:checkbox[name='showchk_wl1']").is(":checked") == true) {
+			document.getElementById("passphrase_wl1").setAttribute("type","text");
+		} else {
+			document.getElementById("passphrase_wl1").setAttribute("type","password");
+			$("#passphrase_wl1").show();
+			$("#showpsk_wl1").hide();
+		}
+	}
+}
+
+function change_dfs_mode() {
+	var radio_mode = document.getElementById("wireless_mode_5g").value;
+	if(cur_user == "root")
+	{
+		if (document.getElementById("dfs").value == '0') {
+			$("#5g_chan_dfs").show();
+			$("#5g_chan_dfs_off").hide();
+
+		} else {
+			$("#5g_chan_dfs").show();
+			$("#5g_chan_dfs_off").hide();
+		}
+	}
+	else if(cur_user == "admin")
+	{
+		$("#5g_chan_dfs").hide();
+		$("#5g_chan_dfs_off").show();
+
+	} else {
+		$("#5g_chan_dfs").show();
+		$("#5g_chan_dfs_off").hide();
+	}
+	if (radio_mode == '4' || radio_mode == '8' || radio_mode == '12')
+		change_bw_cap("40");
+	else
+		change_bw_cap("160");
+}
+
+function frmLoad() {
+	var params = getURLVars(window.location.href);
+	var band = params["band"] ? params["band"] : '0';
+	document.getElementById("wl_radio_sel").value = band;
+	change_radio();
+	if(cur_user != "root") {
+		document.getElementById('advanced_setting_title').style.display="none";
+		document.getElementById('advanced_setting_tbl').style.display="none";
+	}
+	document.getElementById('ul_ofdma').style.display="none";
+	document.getElementById('dl_ofdma').style.display="none";
+
+	document.getElementById('t_wl0_radio').setAttribute('onChange','chbox_off_confirm("t_wl0_radio", confirm_msg)');
+	document.getElementById('t_wl1_radio').setAttribute('onChange','chbox_off_confirm("t_wl1_radio", confirm_msg)');
+}
+
+function change_radio() {
+	with ( document.forms[0] ) {
+		if (document.getElementById("wl_radio_sel").value == "0") {
+			var ssid_val = html_code_to_script_str("SK_WiFiGIGA0001_5G");
+			var ssid_ext_val = html_code_to_script_str("메인 5G");
+			var radio_rf_enabled = "1";
+			var bcn_val = "100";
+			var dtim_val = "1";
+			var rts_val = "2347";
+			var frag_val = "2346";
+			var radio_mode_val_5g = "60";
+			var wme_val = "on";
+			var dfs_val = "0";
+			var preamble_val = "long";
+			var mu_mimo_val = "1";
+			var ofdma_val = "-1";
+			var bsscolor_val = "25";
+			var channel = "0";
+			var tx_val = "75";
+			var txmpc_val = "100";
+			var txbf_val = "15";
+
+			if (radio_mode_val_5g == '4')
+				document.formWifiSet.wireless_mode_5g.selectedIndex = 0;
+			else if (radio_mode_val_5g == '8')
+				document.formWifiSet.wireless_mode_5g.selectedIndex = 1;
+			else if (radio_mode_val_5g == '16')
+				document.formWifiSet.wireless_mode_5g.selectedIndex = 2;
+			else if (radio_mode_val_5g == '32')
+				document.formWifiSet.wireless_mode_5g.selectedIndex = 3;
+			else if (radio_mode_val_5g == '12')
+				document.formWifiSet.wireless_mode_5g.selectedIndex = 4;
+			else if (radio_mode_val_5g == '24')
+				document.formWifiSet.wireless_mode_5g.selectedIndex = 5;
+			else if (radio_mode_val_5g == '56')
+				document.formWifiSet.wireless_mode_5g.selectedIndex = 6;
+			else if (radio_mode_val_5g == '28')
+				document.formWifiSet.wireless_mode_5g.selectedIndex = 7;
+			else if (radio_mode_val_5g == '60')
+				document.formWifiSet.wireless_mode_5g.selectedIndex = 8;
+
+			if (tx_val == '30')
+				document.formWifiSet.tx_power.selectedIndex = 0;
+			else if (tx_val == '50')
+				document.formWifiSet.tx_power.selectedIndex = 1;
+			else if (tx_val == '75')
+				document.formWifiSet.tx_power.selectedIndex = 2;
+			else if (tx_val == '100')
+				document.formWifiSet.tx_power.selectedIndex = 3;
+
+			if (txmpc_val == '30')
+				document.formWifiSet.mpc_power.selectedIndex = 0;
+			else if (txmpc_val == '50')
+				document.formWifiSet.mpc_power.selectedIndex = 1;
+			else if (txmpc_val == '75')
+				document.formWifiSet.mpc_power.selectedIndex = 2;
+			else if (txmpc_val == '100')
+				document.formWifiSet.mpc_power.selectedIndex = 3;
+
+			if (dfs_val == '0')
+				document.formWifiSet.dfs.selectedIndex = 0;
+			else if (dfs_val == '1')
+				document.formWifiSet.dfs.selectedIndex = 1;
+
+			$("#radio_mode_5g").show();
+			$("#radio_mode_2g").hide();
+
+			$("#bssid_5g").show();
+			$("#bssid_2g").hide();
+
+			$("#reg_mode").show();
+			$("#dfs_tr").hide();
+
+			$("#mssid_table_wl0").show();
+			$("#mssid_table_wl1").hide();
+
+			$("#sec_div_wl0").show();
+			$("#sec_div_wl1").hide();
+
+			$("#5g_chan_dfs").show();
+			$("#5g_chan_dfs_off").show();
+			$("#2g_chanlist").hide();
+			$("#acs_list_2g").hide();
+			
+			$("#showpsk_wl0").hide();
+
+			change_radio_mode("wl0");
+			change_dfs_mode();
+			$("#mu_mimo").show();
+			
+			//document.getElementById("acs_149_15").disabled = true; // acsd 160mhz -> D band prevent
+
+		} else {
+
+			var ssid_val = html_code_to_script_str("SK_WiFiGIGA0001");
+			var ssid_ext_val = html_code_to_script_str("메인 2.4G");
+			var radio_rf_enabled = "1";
+			var bcn_val = "100";
+			var dtim_val = "1";
+			var rts_val = "2347";
+			var frag_val = "2346";
+			var radio_mode_val_2g = "43";
+			var wme_val = "on";
+			var preamble_val = "long";
+			var mu_mimo_val = "1";
+			var ofdma_val = "-1";
+			var bsscolor_val = "25";
+			var channel = "0";
+			var tx_val = "75";
+			var txmpc_val = "100";
+			var txbf_val = "15";
+
+			if (radio_mode_val_2g == '1')
+				document.formWifiSet.wireless_mode_2g.selectedIndex = 0;
+			else if (radio_mode_val_2g == '2')
+				document.formWifiSet.wireless_mode_2g.selectedIndex = 1;
+			else if (radio_mode_val_2g == '8')
+				document.formWifiSet.wireless_mode_2g.selectedIndex = 2;
+			else if (radio_mode_val_2g == '32')
+				document.formWifiSet.wireless_mode_2g.selectedIndex = 3;
+			else if (radio_mode_val_2g == '3')
+				document.formWifiSet.wireless_mode_2g.selectedIndex = 4;
+			else if (radio_mode_val_2g == '10')
+				document.formWifiSet.wireless_mode_2g.selectedIndex = 5;
+			else if (radio_mode_val_2g == '42')
+				document.formWifiSet.wireless_mode_2g.selectedIndex = 6;
+			else if (radio_mode_val_2g == '11')
+				document.formWifiSet.wireless_mode_2g.selectedIndex = 7;
+			else if (radio_mode_val_2g == '43')
+				document.formWifiSet.wireless_mode_2g.selectedIndex = 8;
+			
+			if (tx_val == '30')
+				document.formWifiSet.tx_power.selectedIndex = 0;
+			else if (tx_val == '50')
+				document.formWifiSet.tx_power.selectedIndex = 1;
+			else if (tx_val == '75')
+				document.formWifiSet.tx_power.selectedIndex = 2;
+			else if (tx_val == '100')
+				document.formWifiSet.tx_power.selectedIndex = 3;
+
+			if (txmpc_val == '30')
+				document.formWifiSet.mpc_power.selectedIndex = 0;
+			else if (txmpc_val == '50')
+				document.formWifiSet.mpc_power.selectedIndex = 1;
+			else if (txmpc_val == '75')
+				document.formWifiSet.mpc_power.selectedIndex = 2;
+			else if (txmpc_val == '100')
+				document.formWifiSet.mpc_power.selectedIndex = 3;
+
+			$("#radio_mode_5g").hide();
+			$("#radio_mode_2g").show();
+
+			$("#bssid_5g").hide();
+			$("#bssid_2g").show();
+
+			$("#reg_mode").hide();
+			$("#dfs_tr").hide();
+
+			$("#sec_div_wl1").show();
+			$("#sec_div_wl0").hide();
+
+			$("#mssid_table_wl0").hide();
+			$("#mssid_table_wl1").show();
+
+			$("#sec_div_wl0").hide();
+			$("#sec_div_wl1").show();
+			
+			$("#5g_chan_dfs").hide();
+			$("#5g_chan_dfs_off").hide();
+			$("#2g_chanlist").show();
+			$("#acs_list_2g").show();
+
+			$("#showpsk_wl1").hide();
+			
+			change_radio_mode("wl1");
+			$("#mu_mimo").hide();
+		}
+		
+	$('#wifi_enabled').val(radio_rf_enabled);		
+
+	document.getElementById("ssid").value = ssid_val;
+	document.getElementById("ssid_ext").value = ssid_ext_val;
+	
+	document.getElementById("beacon").value = bcn_val;
+	document.getElementById("dtim").value = dtim_val;
+	document.getElementById("rts").value = rts_val;
+	document.getElementById("fragment").value = frag_val;
+
+	
+	if (wme_val == 'on')
+		$('#wme_op').val('1');
+	else
+		$('#wme_op').val('0');
+
+	if (preamble_val == 'long')
+		document.getElementsByName("preamble")[0].checked = true;
+	else
+		document.getElementsByName("preamble")[1].checked = true;
+
+	if (Number(mu_mimo_val) == Number('0'))
+		document.formWifiSet.mu_mimo.selectedIndex = 0;
+	else if (Number(mu_mimo_val) == Number('1'))
+		document.formWifiSet.mu_mimo.selectedIndex = 1;
+	else if (Number(mu_mimo_val) == Number('0x8000'))
+		document.formWifiSet.mu_mimo.selectedIndex = 2;
+
+	if (Number(ofdma_val) & 8)
+		document.formWifiSet.ul_ofdma.selectedIndex = 1;
+	else 
+		document.formWifiSet.ul_ofdma.selectedIndex = 0;
+
+	if (Number(ofdma_val) & 4)
+		document.formWifiSet.dl_ofdma.selectedIndex = 1;
+	else 
+		document.formWifiSet.dl_ofdma.selectedIndex = 0;
+
+	document.formWifiSet.bss_color.selectedIndex = Number(bsscolor_val);
+
+
+	$('#txbf').val('1');
+	
+	updateState();
+   }
+}
+
+/*  channel recommendation */
+function acs_on_click(band){
+	var i = 0;
+	var span_text= new Array();
+	span_text[0] = "\"채널 추천\"시 무선 연결이 끊어질 수 있습니다.";
+	span_text[1] = "채널 추천 중";
+	span_text[2] = "추천 채널: "
+	var best_5g_chan_div= new Array();
+	best_5g_chan_div[0] = document.getElementById("5g_chan_dfs_best_chan");
+	best_5g_chan_div[1] = document.getElementById("5g_chan_dfs_off_best_chan");
+	var best_2g_chan_div = document.getElementById("2g_chanlist_best_chan");
+	var call_acs_url= window.location.protocol + '//' + window.location.host+'/wlacs.cgi';
+	var call_acs_date="Req=acs_on_click&Band="+band;
+	var bw_2g = $('input[name="radio_bw_cap_40"]:checked').val(); 
+	var bw_5g = $('input[name="radio_bw_cap_160"]:checked').val(); 
+	var bw_str = ""; 
+	
+	progress_fun();
+	if(band == "5G")
+	{
+		call_acs_date = call_acs_date+"&Bw="+String(bw_5g);
+		bw_str = String(bw_5g);
+	}
+	else if(band == "2G")
+	{
+		call_acs_date = call_acs_date+"&Bw="+String(bw_2g);
+		bw_str = String(bw_2g);
+	}
+
+	for( i=0; i < best_5g_chan_div.length; i++)
+	{
+		best_5g_chan_div[i].childNodes[3].innerHTML= span_text[1];
+		best_5g_chan_div[i].childNodes[3].style.color= "";
+		best_5g_chan_div[i].childNodes[1].disabled= true;
+	}
+	best_2g_chan_div.childNodes[3].innerHTML = span_text[1];
+	best_2g_chan_div.childNodes[3].style.color= "";
+	best_2g_chan_div.childNodes[1].disabled = true;
+ 	
+	acs_on_click_post(band, call_acs_url, call_acs_date, bw_str
+		,best_5g_chan_div, best_2g_chan_div);
+}
+
+
+function acs_on_click_post(band, call_acs_url, call_acs_date, bw_str,best_5g_chan_div, best_2g_chan_div)
+{
+	var i = 0;
+	var span_text= new Array();
+	span_text[0] = "\"채널 추천\"시 무선 연결이 끊어질 수 있습니다.";
+	span_text[1] = "채널 추천 중";
+	span_text[2] = "추천 채널: "
+
+	$.ajax ({
+		type : 'POST',
+		timeout : 25000,
+		url : call_acs_url,
+		data : call_acs_date,
+		success : function(data)
+		{
+			if(data == "repeater_mode")
+
+			{
+				webAlert("리피터 모드에서는 해당 기능을 지원하지 않습니다.");
+				return;
+			}
+			if(data== "over_time" )
+			{
+				var call_acs_re_date="Req=recommend_val&Band="+band+"&Bw="+bw_str;
+				acs_on_click_post(band, call_acs_url, call_acs_re_date, bw_str, 
+					best_5g_chan_div, best_2g_chan_div);
+			}
+			else 
+			{
+				for( i=0; i < best_5g_chan_div.length; i++)
+				{
+					best_5g_chan_div[i].childNodes[3].innerHTML= span_text[0];
+					best_5g_chan_div[i].childNodes[3].style.color= "";
+					best_5g_chan_div[i].childNodes[1].disabled= false;
+				}
+				best_2g_chan_div.childNodes[3].innerHTML = span_text[0];
+				best_2g_chan_div.childNodes[3].style.color= "";
+				best_2g_chan_div.childNodes[1].disabled = false;
+				if(band == "5G")
+				{
+					for( i=0; i < best_5g_chan_div.length; i++)
+					{
+						best_5g_chan_div[i].childNodes[3].innerHTML= span_text[2]+data;
+						best_5g_chan_div[i].childNodes[3].style.color= "#128a00";
+					}
+				}
+				else if(band == "2G")
+				{
+					var val = $('input[name="radio_bw_cap_40"]:checked').val();
+					if (val == '0') {
+						var bw = data.split('/');
+						if (bw[1] == '20M') {
+							$("#ch_20_2g").show();
+							$("#ch_40_2g").hide();
+							change_acs_list("2g_20", "0");
+							save_bw_2g_web("1");
+						} else if (bw[1] == '40M') {
+							$("#ch_20_2g").hide();
+							$("#ch_40_2g").show();
+							change_acs_list("2g_40", "0");
+							save_bw_2g_web("3");
+						}
+						else {
+							$("#ch_20_2g").show();
+							$("#ch_40_2g").hide();
+							change_acs_list("2g_20", "0");
+							save_bw_2g_web("1");
+						}
+
+						best_2g_chan_div.childNodes[3].innerHTML = span_text[2]+data;
+						best_2g_chan_div.childNodes[3].style.color= "#128a00";
+					} else {
+						best_2g_chan_div.childNodes[3].innerHTML = span_text[2]+data;
+						best_2g_chan_div.childNodes[3].style.color= "#128a00";
+					}
+				}
+				progress_fun_end();
+			}
+		}
+	})
+    .fail ( function ( )
+        {
+            webAlert("접속이 끊어져 페이지를 새로고침 합니다.");
+            location.reload();
+        });
+}
+
+function write_BSSColor(){
+	var n =0;
+	for(n = 0; n < 64; n++ )
+		document.write("<option value="+n+">"+n+"</option>\n");
+}
+
+/*  show for radius auth/acct shared secret */
+function show_auth_secret(ifname)
+{
+	var input_pwd_id = "auth_shared_" + ifname;
+	var checked = $("input:checkbox[name=show_auth_secret_" + ifname +"]").is(":checked");
+
+	if (checked == true)
+		document.getElementById(input_pwd_id).setAttribute("type", "text");
+	else
+		document.getElementById(input_pwd_id).setAttribute("type", "password");
+}
+
+function show_acct_secret(ifname)
+{
+	var input_pwd_id = "acct_shared_" + ifname;
+	var checked = $("input:checkbox[name=show_acct_secret_" + ifname +"]").is(":checked");
+
+	if (checked == true)
+		document.getElementById(input_pwd_id).setAttribute("type", "text");
+	else
+		document.getElementById(input_pwd_id).setAttribute("type", "password");
+
+}
+/*  show for radius auth/acct shared secret end */
+
+</script>	
+</head>
+<body onload='frmLoad();'>
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form id="formWifiSet" name="formWifiSet" action="">
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>WiFi</li>
+			<li>WiFi 설정</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">WiFi 설정</h1>
+	<p> 무선동작을 위한 정보 및 무선 SSID별 보안/인증 기능을 설정합니다. (고급 설정은 필요한 경우만 변경하는 것을 권장합니다.)</p>
+	<hr>
+	<h2 class="title_style_2">무선 대역 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row" style="width:20%;">무선 대역</th>
+					<td>
+						<select name="wl_radio_sel" id="wl_radio_sel" style="width:20%;" onChange="change_radio()">
+							<option value="0">5GHz </option>
+							<option value="1">2.4GHz</option>
+						</select>
+					</td>
+				</tr>				
+			</tbody>
+		</table>
+	</div>
+
+<h2 class="title_style_2">무선 기본 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row" style="width:20%;">무선 동작 설정</th>
+					<td>
+						<select name="wifi_enabled" id='wifi_enabled'>
+							<option value='0'>비활성화</option>
+							<option value='1'>활성화</option>
+						</select>					
+					</td>
+				</tr>
+				<tr id="radio_mode_5g">
+					<th scope="row">무선 모드</th>
+					<td><select name='wireless_mode_5g' id='wireless_mode_5g' style='width:30%;' onChange='change_radio_mode("wl0", "0")'><option value='4'>11a only </option><option value='8'>11n only</option><option value='16'>11ac only</option><option value='32'>11ax only</option><option value='12'>11a+n</option><option value='24'>11n+ac</option><option value='56'>11n+ac+ax</option><option value='28'>11a+n+ac</option><option value='60'>11a+n+ac+ax</option></select></td>
+				</tr>
+				<tr id="radio_mode_2g">
+					<th scope="row">무선 모드</th>
+					<td><select name='wireless_mode_2g' id='wireless_mode_2g' style='width:30%;' onChange='change_radio_mode("wl1", "0")'><option value='1'>11b only </option><option value='2'>11g only</option><option value='8'>11n only</option><option value='32'>11ax only</option><option value='3'>11b+g</option><option value='10'>11g+n</option><option value='42'>11g+n+ax</option><option value='11'>11b+g+n</option><option value='43'>11b+g+n+ax</option></select></td>
+				</tr>
+				<tr>
+					<th scope="row">SSID(네트워크 이름/설명)</th>
+					<td>
+						<input type="text" name="ssid" id="ssid" style="width:45%;" size="32" />/ 
+						<input type="text" name="ssid_ext" id="ssid_ext" style="width:45%;" size="32" maxlength="32" /> 
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">BSSID</th>
+					<td id="bssid_5g"><label for="bssid_5g">00:23:AA:00:00:03</label></td>
+					<td id="bssid_2g"><label for="bssid_2g">00:23:AA:00:00:04</label></td>
+				</tr>
+				<tr>
+					<th scope="row">채널 대역폭</th>
+					<td id="bw_cap_160">
+						<label><input type="radio" name="radio_bw_cap_160" value="1" onClick='change_bw_cap("160");'/>20MHz</label>
+						<label><input type="radio" name="radio_bw_cap_160" value="3" onClick='change_bw_cap("160");'/>40MHz</label>
+						<label><input type="radio" name="radio_bw_cap_160" value="7" onClick='change_bw_cap("160");'/>80MHz</label>
+						<label><input type="radio" name="radio_bw_cap_160" value="15" onClick='change_bw_cap("160");'/>160MHz</label>
+					</td>
+					<td id="bw_cap_40">
+						<label><input type="radio" name="radio_bw_cap_40" value="0" onClick='change_bw_cap("40");'/>Auto</label>
+						<label><input type="radio" name="radio_bw_cap_40" value="1" onClick='change_bw_cap("40");'/>20MHz</label>
+						<label><input type="radio" name="radio_bw_cap_40" value="3" onClick='change_bw_cap("40");'/>40MHz</label>
+					</td>
+				</tr>
+
+				<tr id="5g_chan_dfs">
+					<th scope="row">채널</th>
+					<td>
+						<select name="ch_20" id="ch_20" onChange='change_acs_list_at_dfs_ch ( this ,"1" ,"1" )'>
+							
+							<option value="0" selected="true">Auto</option>
+							<option value="36">36 (5,180 GHz)</option>
+							<option value="40">40 (5,200 GHz)</option>
+							<option value="44">44 (5,220 GHz)</option>
+							<option value="48">48 (5,240 GHz)</option>
+							<option value="52">52 (5,260 GHz)</option>
+							<option value="56">56 (5,280 GHz)</option>
+							<option value="60">60 (5,300 GHz)</option>
+							<option value="64">64 (5,320 GHz)</option>
+							<option value="100">100 (5,500 GHz)</option>
+							<option value="104">104 (5,520 GHz)</option>
+							<option value="108">108 (5,540 GHz)</option>
+							<option value="112">112 (5,560 GHz)</option>
+							<option value="116">116 (5,580 GHz)</option>
+							<option value="120">120 (5,600 GHz)</option>
+							<option value="124">124 (5,620 GHz)</option>
+							<option value="128">128 (5,640 GHz)</option>
+							<option value="132">132 (5,660 GHz)</option>
+							<option value="136">136 (5,680 GHz)</option>
+							<option value="140">140 (5,700 GHz)</option>
+							<option value="144">144 (5,720 GHz)</option>
+							<option value="149">149 (5,745 GHz)</option>
+							<option value="153">153 (5,765 GHz)</option>
+							<option value="157">157 (5,785 GHz)</option>
+							<option value="161">161 (5,805 GHz)</option>
+							<option value="165">165 (5,825 GHz)</option>
+						</select>
+						<select name="ch_40" id="ch_40" onChange='change_acs_list_at_dfs_ch ( this ,"3" ,"1" )'>
+							
+							<option value="0" selected="true">Auto</option>
+							<option value="40u">40 U (5,200 GHz)</option>
+							<option value="48u">48 U (5,240 GHz)</option>
+							<option value="56u">56 U (5,280 GHz)</option>
+							<option value="64u">64 U (5,320 GHz)</option>
+							<option value="104u">104 U (5,520 GHz)</option>
+							<option value="112u">112 U (5,560 GHz)</option>
+							<option value="120u">120 U (5,600 GHz)</option>
+							<option value="128u">128 U (5,640 GHz)</option>
+							<option value="136u">136 U (5,680 GHz)</option>
+							<option value="144u">144 U (5,720 GHz)</option>
+							<option value="153u">153 U (5,765 GHz)</option>
+							<option value="161u">161 U (5,805 GHz)</option>
+							<option value="36l">36 L (5,180 GHz)</option>
+							<option value="44l">44 L (5,220 GHz)</option>
+							<option value="52l">52 L (5,260 GHz)</option>
+							<option value="60l">60 L (5,300 GHz)</option>
+							<option value="100l">100 L (5,500 GHz)</option>
+							<option value="108l">108 L (5,540 GHz)</option>
+							<option value="116l">116 L (5,580 GHz)</option>
+							<option value="124l">124 L (5,620 GHz)</option>
+							<option value="132l">132 L (5,660 GHz)</option>
+							<option value="140l">140 L (5,700 GHz)</option>
+							<option value="149l">149 L (5,745 GHz)</option>
+							<option value="157l">157 L (5,785 GHz)</option>
+						</select>						
+						<select name="ch_80" id="ch_80" onChange='change_acs_list_at_dfs_ch ( this ,"7" ,"1" )'>
+							
+							<option value="0" selected="true">Auto</option>
+							<option value="36/80">36/80 (5,180 GHz)</option>
+							<option value="40/80">40/80 (5,200 GHz)</option>
+							<option value="44/80">44/80 (5,220 GHz)</option>
+							<option value="48/80">48/80 (5,240 GHz)</option>
+							<option value="52/80">52/80 (5,260 GHz)</option>
+							<option value="56/80">56/80 (5,280 GHz)</option>
+							<option value="60/80">60/80 (5,300 GHz)</option>
+							<option value="64/80">64/80 (5,320 GHz)</option>
+							<option value="100/80">100/80 (5,500 GHz)</option>
+							<option value="104/80">104/80 (5,520 GHz)</option>
+							<option value="108/80">108/80 (5,540 GHz)</option>
+							<option value="112/80">112/80 (5,560 GHz)</option>
+							<option value="116/80">116/80 (5,580 GHz)</option>
+							<option value="120/80">120/80 (5,600 GHz)</option>
+							<option value="124/80">124/80 (5,620 GHz)</option>
+							<option value="128/80">128/80 (5,640 GHz)</option>
+							<option value="132/80">132/80 (5,660 GHz)</option>
+							<option value="136/80">136/80 (5,680 GHz)</option>
+							<option value="140/80">140/80 (5,700 GHz)</option>
+							<option value="144/80">144/80 (5,720 GHz)</option>
+							<option value="149/80">149/80 (5,745 GHz)</option>
+							<option value="153/80">153/80 (5,765 GHz)</option>
+							<option value="157/80">157/80 (5,785 GHz)</option>
+							<option value="161/80">161/80 (5,805 GHz)</option>
+						</select>						
+						<select name="ch_160" id="ch_160" onChange='change_acs_list_at_dfs_ch ( this ,"15" ,"1" )'>
+							
+							<option value="0" selected="true">Auto</option>
+							<option value="36/160">36/160 (5,180 GHz)</option>
+							<option value="40/160">40/160 (5,200 GHz)</option>
+							<option value="44/160">44/160 (5,220 GHz)</option>
+							<option value="48/160">48/160 (5,240 GHz)</option>
+							<option value="52/160">52/160 (5,260 GHz)</option>
+							<option value="56/160">56/160 (5,280 GHz)</option>
+							<option value="60/160">60/160 (5,300 GHz)</option>
+							<option value="64/160">64/160 (5,320 GHz)</option>
+							<option value="100/160">100/160 (5,500 GHz)</option>
+							<option value="104/160">104/160 (5,520 GHz)</option>
+							<option value="108/160">108/160 (5,540 GHz)</option>
+							<option value="112/160">112/160 (5,560 GHz)</option>
+							<option value="116/160">116/160 (5,580 GHz)</option>
+							<option value="120/160">120/160 (5,600 GHz)</option>
+							<option value="124/160">124/160 (5,620 GHz)</option>
+							<option value="128/160">128/160 (5,640 GHz)</option>
+						</select>
+						<label>현재 채널 : 36/80M</label>
+						<div id="5g_chan_dfs_best_chan" class="mt_5">
+							<INPUT type="BUTTON" style value="채널 추천" onclick='acs_on_click("5G");'
+							class="basic-btn01 btn-blue-bg">
+							<SPAN>"채널 추천"시 무선 연결이 끊어질 수 있습니다.</SPAN>
+						</div>
+					</td>
+				</tr>
+				<tr id="5g_chan_dfs_off">
+					<th scope="row">채널</th>
+					<td>
+						<select name="ch_20_dfs_off" id="ch_20_dfs_off" onChange='change_acs_list_at_dfs_ch ( this ,"1" ,"0" )'>
+							
+							<option value="0" selected="true">Auto</option>
+							<option value="36">36 (5,180 GHz)</option>
+							<option value="40">40 (5,200 GHz)</option>
+							<option value="44">44 (5,220 GHz)</option>
+							<option value="48">48 (5,240 GHz)</option>
+							<option value="52">52 (5,260 GHz)</option>
+							<option value="56">56 (5,280 GHz)</option>
+							<option value="60">60 (5,300 GHz)</option>
+							<option value="64">64 (5,320 GHz)</option>
+							<option value="100">100 (5,500 GHz)</option>
+							<option value="104">104 (5,520 GHz)</option>
+							<option value="108">108 (5,540 GHz)</option>
+							<option value="112">112 (5,560 GHz)</option>
+							<option value="116">116 (5,580 GHz)</option>
+							<option value="120">120 (5,600 GHz)</option>
+							<option value="124">124 (5,620 GHz)</option>
+							<option value="128">128 (5,640 GHz)</option>
+							<option value="149">149 (5,745 GHz)</option>
+							<option value="153">153 (5,765 GHz)</option>
+							<option value="157">157 (5,785 GHz)</option>
+							<option value="161">161 (5,805 GHz)</option>
+						</select>
+						<select name="ch_40_dfs_off" id="ch_40_dfs_off" onChange='change_acs_list_at_dfs_ch ( this ,"3" ,"0" )'>
+							
+							<option value="0" selected="true">Auto</option>
+							<option value="40u">40 U (5,200 GHz)</option>
+							<option value="48u">48 U (5,240 GHz)</option>
+							<option value="56u">56 U (5,280 GHz)</option>
+							<option value="64u">64 U (5,320 GHz)</option>
+							<option value="104u">104 U (5,520 GHz)</option>
+							<option value="112u">112 U (5,560 GHz)</option>
+							<option value="120u">120 U (5,600 GHz)</option>
+							<option value="128u">128 U (5,640 GHz)</option>
+							<option value="153u">153 U (5,765 GHz)</option>
+							<option value="161u">161 U (5,805 GHz)</option>
+							<option value="36l">36 L (5,180 GHz)</option>
+							<option value="44l">44 L (5,220 GHz)</option>
+							<option value="52l">52 L (5,260 GHz)</option>
+							<option value="60l">60 L (5,300 GHz)</option>
+							<option value="100l">100 L (5,500 GHz)</option>
+							<option value="108l">108 L (5,540 GHz)</option>
+							<option value="116l">116 L (5,580 GHz)</option>
+							<option value="124l">124 L (5,620 GHz)</option>
+							<option value="149l">149 L (5,745 GHz)</option>
+							<option value="157l">157 L (5,785 GHz)</option>
+						</select>						
+						<select name="ch_80_dfs_off" id="ch_80_dfs_off" onChange='change_acs_list_at_dfs_ch ( this ,"7" ,"0" )'>
+							
+							<option value="0" selected="true">Auto</option>
+							<option value="36/80">36/80 (5,180 GHz)</option>
+							<option value="40/80">40/80 (5,200 GHz)</option>
+							<option value="44/80">44/80 (5,220 GHz)</option>
+							<option value="48/80">48/80 (5,240 GHz)</option>
+							<option value="52/80">52/80 (5,260 GHz)</option>
+							<option value="56/80">56/80 (5,280 GHz)</option>
+							<option value="60/80">60/80 (5,300 GHz)</option>
+							<option value="64/80">64/80 (5,320 GHz)</option>
+							<option value="100/80">100/80 (5,500 GHz)</option>
+							<option value="104/80">104/80 (5,520 GHz)</option>
+							<option value="108/80">108/80 (5,540 GHz)</option>
+							<option value="112/80">112/80 (5,560 GHz)</option>
+							<option value="116/80">116/80 (5,580 GHz)</option>
+							<option value="120/80">120/80 (5,600 GHz)</option>
+							<option value="124/80">124/80 (5,620 GHz)</option>
+							<option value="128/80">128/80 (5,640 GHz)</option>
+							<option value="149/80">149/80 (5,745 GHz)</option>
+							<option value="153/80">153/80 (5,765 GHz)</option>
+							<option value="157/80">157/80 (5,785 GHz)</option>
+							<option value="161/80">161/80 (5,805 GHz)</option>
+						</select>						
+						<select name="ch_160_dfs_off" id="ch_160_dfs_off" onChange='change_acs_list_at_dfs_ch ( this ,"15" ,"0" )'>
+							
+							<option value="0" selected="true">Auto</option>
+							<option value="36/160">36/160 (5,180 GHz)</option>
+							<option value="40/160">40/160 (5,200 GHz)</option>
+							<option value="44/160">44/160 (5,220 GHz)</option>
+							<option value="48/160">48/160 (5,240 GHz)</option>
+							<option value="52/160">52/160 (5,260 GHz)</option>
+							<option value="56/160">56/160 (5,280 GHz)</option>
+							<option value="60/160">60/160 (5,300 GHz)</option>
+							<option value="64/160">64/160 (5,320 GHz)</option>
+							<option value="100/160">100/160 (5,500 GHz)</option>
+							<option value="104/160">104/160 (5,520 GHz)</option>
+							<option value="108/160">108/160 (5,540 GHz)</option>
+							<option value="112/160">112/160 (5,560 GHz)</option>
+							<option value="116/160">116/160 (5,580 GHz)</option>
+							<option value="120/160">120/160 (5,600 GHz)</option>
+							<option value="124/160">124/160 (5,620 GHz)</option>
+							<option value="128/160">128/160 (5,640 GHz)</option>
+						</select>
+						<label>현재 채널 : 36/80M</label>
+						<div id="5g_chan_dfs_off_best_chan" class="mt_5">
+							<INPUT type="BUTTON" style value="채널 추천" onclick='acs_on_click("5G");'
+							class="basic-btn01 btn-blue-bg">
+							<SPAN>"채널 추천"시 무선 연결이 끊어질 수 있습니다.</SPAN>
+						</div>
+					</td>
+				</tr>
+
+				<tr id="2g_chanlist">
+					<th scope="row">채널</th>
+					<td>
+						<select name="ch_20_2g" id="ch_20_2g" onChange='change_acs_list("2g_20", "0");'>
+							
+							<option value="0" selected="true">Auto</option>
+							<option value="1">1 (2,412 GHz)</option>
+							<option value="2">2 (2,417 GHz)</option>
+							<option value="3">3 (2,422 GHz)</option>
+							<option value="4">4 (2,427 GHz)</option>
+							<option value="5">5 (2,432 GHz)</option>
+							<option value="6">6 (2,437 GHz)</option>
+							<option value="7">7 (2,442 GHz)</option>
+							<option value="8">8 (2,447 GHz)</option>
+							<option value="9">9 (2,452 GHz)</option>
+							<option value="10">10 (2,457 GHz)</option>
+							<option value="11">11 (2,462 GHz)</option>
+							<option value="12">12 (2,467 GHz)</option>
+							<option value="13">13 (2,472 GHz)</option>
+						</select>			
+						<select name="ch_40_2g" id="ch_40_2g" onChange='change_acs_list("2g_40", "0");'>
+							
+							<option value="0" selected="true">Auto</option>
+							<option value="5u">5 U (2,432 GHz)</option>
+							<option value="6u">6 U (2,437 GHz)</option>
+							<option value="7u">7 U (2,442 GHz)</option>
+							<option value="8u">8 U (2,447 GHz)</option>
+							<option value="9u">9 U (2,452 GHz)</option>
+							<option value="10u">10 U (2,457 GHz)</option>
+							<option value="11u">11 U (2,462 GHz)</option>
+							<option value="12u">12 U (2,467 GHz)</option>
+							<option value="13u">13 U (2,472 GHz)</option>
+							<option value="1l">1 L (2,412 GHz)</option>
+							<option value="2l">2 L (2,417 GHz)</option>
+							<option value="3l">3 L (2,422 GHz)</option>
+							<option value="4l">4 L (2,427 GHz)</option>
+							<option value="5l">5 L (2,432 GHz)</option>
+							<option value="6l">6 L (2,437 GHz)</option>
+							<option value="7l">7 L (2,442 GHz)</option>
+							<option value="8l">8 L (2,447 GHz)</option>
+							<option value="9l">9 L (2,452 GHz)</option>
+						</select>
+						<label>현재 채널 : 5/20M</label>
+						<div id="2g_chanlist_best_chan" class="mt_5">
+							<INPUT type="BUTTON" style value="채널 추천" onclick='acs_on_click("2G");'
+							class="basic-btn01 btn-blue-bg">
+							<SPAN>"채널 추천"시 무선 연결이 끊어질 수 있습니다.</SPAN>
+						</div>
+					</td>
+				</tr>
+<!-- 2.4G  ACSD list -->
+				<tr id="acs_list_2g">
+					<th scope="row" style="width:20%">자동 채널 리스트</th>
+						<td>
+							
+							<input type="checkbox"id="acs_1_1" name="acs_1_1" checked/>
+							<label for="acs_1_1">Ch 1</label>
+							<input type="checkbox"id="acs_2_1" name="acs_2_1" checked/>
+							<label for="acs_2_1">Ch 2</label>
+							<input type="checkbox"id="acs_3_1" name="acs_3_1" checked/>
+							<label for="acs_3_1">Ch 3</label>
+							<input type="checkbox"id="acs_4_1" name="acs_4_1" checked/>
+							<label for="acs_4_1">Ch 4</label>
+							<input type="checkbox"id="acs_5_1" name="acs_5_1" checked/>
+							<label for="acs_5_1">Ch 5</label>
+							<input type="checkbox"id="acs_6_1" name="acs_6_1" checked/>
+							<label for="acs_6_1">Ch 6</label>
+							<input type="checkbox"id="acs_7_1" name="acs_7_1" checked/>
+							<label for="acs_7_1">Ch 7</label><br>
+							<input type="checkbox"id="acs_8_1" name="acs_8_1" checked/>
+							<label for="acs_8_1">Ch 8</label>
+							<input type="checkbox"id="acs_9_1" name="acs_9_1" checked/>
+							<label for="acs_9_1">Ch 9</label>
+							<input type="checkbox"id="acs_10_1" name="acs_10_1" checked/>
+							<label for="acs_10_1">Ch 10</label>
+							<input type="checkbox"id="acs_11_1" name="acs_11_1" checked/>
+							<label for="acs_11_1">Ch 11</label>
+							<input type="checkbox"id="acs_12_1" name="acs_12_1"/>
+							<label for="acs_12_1">Ch 12</label>
+							<input type="checkbox"id="acs_13_1" name="acs_13_1"/>
+							<label for="acs_13_1">Ch 13</label>
+						</td>
+				</tr>
+<!-- 2.4G  ACSD list end-->
+			</tbody>
+		</table>
+<!-- 20Mhz  ACSD list -->
+			<table id="acs_list_20">
+			<tbody>
+				<tr id="acs_20_a">
+					<th scope="row" style="width:20%">A Band</th>
+						<td>
+							
+							<input type="checkbox"id="acs_36_1" name="acs_36_1" checked/>
+							<label for="acs_36_1">Ch 36</label>
+							<input type="checkbox"id="acs_40_1" name="acs_40_1" checked/>
+							<label for="acs_40_1">Ch 40</label>
+							<input type="checkbox"id="acs_44_1" name="acs_44_1" checked/>
+							<label for="acs_44_1">Ch 44</label>
+							<input type="checkbox"id="acs_48_1" name="acs_48_1" checked/>
+							<label for="acs_48_1">Ch 48</label>
+						</td>
+				</tr>
+				<tr id="acs_20_b">
+					<th scope="row">B Band</th>
+						<td>
+							
+							<input type="checkbox"id="acs_52_1" name="acs_52_1"/>
+							<label for="acs_52_1">Ch 52</label>
+							<input type="checkbox"id="acs_56_1" name="acs_56_1"/>
+							<label for="acs_56_1">Ch 56</label>
+							<input type="checkbox"id="acs_60_1" name="acs_60_1"/>
+							<label for="acs_60_1">Ch 60</label>
+							<input type="checkbox"id="acs_64_1" name="acs_64_1"/>
+							<label for="acs_64_1">Ch 64</label>
+						</td>
+				</tr>
+				<tr id="acs_20_c">
+					<th scope="row">C Band</th>
+						<td>
+							
+							<input type="checkbox"id="acs_100_1" name="acs_100_1"/>
+							<label for="acs_100_1">Ch 100</label>
+							<input type="checkbox"id="acs_104_1" name="acs_104_1"/>
+							<label for="acs_104_1">Ch 104</label>
+							<input type="checkbox"id="acs_108_1" name="acs_108_1"/>
+							<label for="acs_108_1">Ch 108</label>
+							<input type="checkbox"id="acs_112_1" name="acs_112_1"/>
+							<label for="acs_112_1">Ch 112</label>
+							<input type="checkbox"id="acs_116_1" name="acs_116_1"/>
+							<label for="acs_116_1">Ch 116</label>
+							<input type="checkbox"id="acs_120_1" name="acs_120_1"/>
+							<label for="acs_120_1">Ch 120</label><br>
+							<input type="checkbox"id="acs_124_1" name="acs_124_1"/>
+							<label for="acs_124_1">Ch 124</label>
+							<input type="checkbox"id="acs_128_1" name="acs_128_1"/>
+							<label for="acs_128_1">Ch 128</label>
+							<input type="checkbox"id="acs_132_1" name="acs_132_1"/>
+							<label for="acs_132_1">Ch 132</label>
+							<input type="checkbox"id="acs_136_1" name="acs_136_1"/>
+							<label for="acs_136_1">Ch 136</label>
+							<input type="checkbox"id="acs_140_1" name="acs_140_1"/>
+							<label for="acs_140_1">Ch 140</label>
+							<input type="checkbox"id="acs_144_1" name="acs_144_1"/>
+							<label for="acs_144_1">Ch 144</label>
+						</td>
+				</tr>
+				<tr id="acs_20_d">
+					<th scope="row">D Band</th>
+						<td>
+							
+							<input type="checkbox"id="acs_149_1" name="acs_149_1" checked/>
+							<label for="acs_149_1">Ch 149</label>
+							<input type="checkbox"id="acs_153_1" name="acs_153_1" checked/>
+							<label for="acs_153_1">Ch 153</label>
+							<input type="checkbox"id="acs_157_1" name="acs_157_1" checked/>
+							<label for="acs_157_1">Ch 157</label>
+							<input type="checkbox"id="acs_161_1" name="acs_161_1" checked/>
+							<label for="acs_161_1">Ch 161</label>
+							<input type="checkbox"id="acs_165_1" name="acs_165_1"/>
+							<label for="acs_165_1">Ch 165</label>
+						</td>
+				</tr>
+			</tbody>
+			</table>
+<!-- 20Mhz  ACSD list end-->
+<!-- 40Mhz  ACSD list -->
+			<table id="acs_list_40">
+			<tbody>
+				<tr id="acs_40_a">
+					<th scope="row" style="width:20%">A Band</th>
+						<td>
+							
+							<input type="checkbox"id="acs_36_3" name="acs_36_3" checked/>
+							<label for="acs_36_3">Ch 36 Ch 40</label>
+							<input type="checkbox"id="acs_44_3" name="acs_44_3" checked/>
+							<label for="acs_44_3">Ch 44 Ch 48</label>
+						</td>
+				</tr>
+				<tr id="acs_40_b">
+					<th scope="row">B Band</th>
+						<td>
+							
+							<input type="checkbox"id="acs_52_3" name="acs_52_3"/>
+							<label for="acs_52_3">Ch 52 Ch 56</label>
+							<input type="checkbox"id="acs_60_3" name="acs_60_3"/>
+							<label for="acs_60_3">Ch 60 Ch 64</label>
+						</td>
+				</tr>
+				<tr id="acs_40_c">
+					<th scope="row">C Band</th>
+						<td>
+							
+							<input type="checkbox"id="acs_100_3" name="acs_100_3"/>
+							<label for="acs_100_3">Ch 100 Ch 104</label>
+							<input type="checkbox"id="acs_108_3" name="acs_108_3"/>
+							<label for="acs_108_3">Ch 108 Ch 112</label>
+							<input type="checkbox"id="acs_116_3" name="acs_116_3"/>
+							<label for="acs_116_3">Ch 116 Ch 120</label><br>
+							<input type="checkbox"id="acs_124_3" name="acs_124_3"/>
+							<label for="acs_124_3">Ch 124 Ch 128</label>
+							<input type="checkbox"id="acs_132_3" name="acs_132_3"/>
+							<label for="acs_132_3">Ch 132 Ch 136</label>
+							<input type="checkbox"id="acs_140_3" name="acs_140_3"/>
+							<label for="acs_140_3">Ch 140 Ch 144</label>
+						</td>
+				</tr>
+				<tr id="acs_40_d">
+					<th scope="row">D Band</th>
+						<td>
+							
+							<input type="checkbox"id="acs_149_3" name="acs_149_3" checked/>
+							<label for="acs_149_3">Ch 149 Ch 153</label>
+							<input type="checkbox"id="acs_157_3" name="acs_157_3" checked/>
+							<label for="acs_157_3">Ch 157 Ch 161</label>
+						</td>
+				</tr>
+			</tbody>
+			</table>
+<!-- 40Mhz  ACSD list end-->
+<!-- 80Mhz  ACSD list -->
+			<table id="acs_list_80">
+			<tbody>
+				<tr id="acs_80_a">
+					<th scope="row" style="width:20%">A Band</th>
+						<td>
+							
+							<input type="checkbox"id="acs_36_7" name="acs_36_7" checked/>
+							<label for="acs_36_7">Ch 36 Ch 40 Ch 44 Ch 48</label>
+						</td>
+				</tr>
+				<tr id="acs_80_b">
+					<th scope="row">B Band</th>
+						<td>
+							
+							<input type="checkbox"id="acs_52_7" name="acs_52_7"/>
+							<label for="acs_52_7">Ch 52 Ch 56 Ch 60 Ch 64</label>
+						</td>
+				</tr>
+				<tr id="acs_80_c">
+					<th scope="row">C Band</th>
+						<td>
+							
+							<input type="checkbox"id="acs_100_7" name="acs_100_7"/>
+							<label for="acs_100_7">Ch 100 Ch 104 Ch 108 Ch 112</label>
+							<input type="checkbox"id="acs_116_7" name="acs_116_7"/>
+							<label for="acs_116_7">Ch 116 Ch 120 Ch 124 Ch 128</label>
+							<input type="checkbox"id="acs_132_7" name="acs_132_7"/>
+							<label for="acs_132_7">Ch 132 Ch 136 Ch 140 Ch 144</label>
+						</td>
+				</tr>
+				<tr id="acs_80_d">
+					<th scope="row">D Band</th>
+						<td>
+							
+							<input type="checkbox"id="acs_149_7" name="acs_149_7" checked/>
+							<label for="acs_149_7">Ch 149 Ch 153 Ch 157 Ch 161</label>
+						</td>
+				</tr>
+			</tbody>
+			</table>
+<!-- 80Mhz  ACSD list end-->
+<!-- 160Mhz  ACSD list -->
+			<table id="acs_list_160">
+			<tbody>
+				<tr id="acs_160_a">
+					<th scope="row" style="width:20%">A B Band</th>
+						<td>
+							
+							<input type="checkbox"id="acs_36_15" name="acs_36_15" checked/>
+							<label for="acs_36_15">Ch 36 Ch 40 Ch 44 Ch 48 Ch 52 Ch 56 Ch 60 Ch 64</label>
+						</td>
+				</tr>
+				<tr id="acs_160_c">
+					<th scope="row">C Band</th>
+						<td>
+							
+							<input type="checkbox"id="acs_100_15" name="acs_100_15"/>
+							<label for="acs_100_15">Ch 100 Ch 104 Ch 108 Ch 112 Ch 116 Ch 120 Ch 124 Ch 128</label>
+						</td>
+				</tr>
+			</tbody>
+			</table>
+<!-- 160Mhz  ACSD list end-->
+
+			<table>
+			<tbody>
+				<tr id="dfs_tr">
+					<th scope="row">DFS</th>
+					<td>
+						<select name="dfs" id="dfs" style="width:20%;" onChange='change_dfs_mode()'>
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+						<label> 비활성화시 채널 B,C 대역 활성화불가</label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" style="width:20%">WMM 동작 설정</th>
+					<td>
+						<select name='wme_op' id='wme_op'>
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>							
+						</select>
+<!--
+						<input type="radio" name="wme_op" id="wme_op_off" value="off" />
+						<label for="wme_op_off">비활성화</label>
+						<input type="radio" name="wme_op" id="wme_op_on" value="on" />
+						<label for="wme_op_on">활성화</label>
+-->						
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">Data Rate</th>
+					<td>
+						<select name="TxRate">
+							<script>
+								Display_rateset(document.formWifiSet);
+							</script>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+			</table>
+			</tbody>
+		</table>
+	<div class="txt_c pt_20">
+		<input type="button" value="저장" onclick="document.formWifiSet.cmd.value='basic';btnApplySave()" class="basic-btn01 btn-blue-bg" >
+	</div>
+	</div>
+	<h2 id="advanced_setting_title" class="title_style_2">무선 고급 설정</h2>
+	<div id="advanced_setting_tbl" class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row" style="width:20%">Beacon 주기</th>
+					<td>
+						<input type="text" name="beacon" id="beacon" style="width:20%;"><label for="beacon">ms (50 ~ 1024), default:100</label></input>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">DTIM Interval</th>
+					<td>
+						<input type="text" name="dtim" id="dtim" style="width:20%;"><label for="dtim">(1~255)</label></input>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">RTS Threshold</th>
+					<td>
+						<input type="text" name="rts" id="rts" style="width:20%;"><label for="rts">bytes (1~2347), default:2347</label></input>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">Fragment Threshold</th>
+					<td>
+						<input type="text" name="fragment" id="fragment" style="width:20%;"><label for="fragment">bytes (256~2346), default:2346</label></input>
+					</td>
+				</tr>
+				<tr style="display:none;">
+					<th scope="row">Protection</th>
+					<td>
+						<select name="protection" id="protection" style="width:20%;">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+							<option value="2">자동</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">송신 파워</th>
+					<td>
+						<select name="tx_power" id="tx_power" style="width:20%;">
+							<option value="30">30</option>
+							<option value="50">50</option>
+							<option value="75">75</option>
+							<option value="100">100</option>
+						</select>
+						<label for="power">%, default:75</label>
+					</td>
+				</tr>
+
+				<tr>
+					<th scope="row">송신 파워(Management)</th>
+					<td>
+						<select name="mpc_power" id="mpc_power" style="width:20%;">
+							<option value="30">30</option>
+							<option value="50">50</option>
+							<option value="75">75</option>
+							<option value="100">100</option>
+						</select>
+						<label for="power">%, default:100</label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">Preamble 길이</th>
+					<td>
+						<input type="radio" name="preamble" id="preamble_long" value="long" />
+						<label for="preamble_long">Long Preamble</label>
+						<input type="radio" name="preamble" id="preamble_short" value="short" />
+						<label for="preamble_short">Short Preamble</label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">TxBF</th>
+					<td>
+						<select  name='txbf' id='txbf'>
+							<option value='0'>비활성화</option>
+							<option value='1'>활성화</option>
+						</select>
+<!--					
+						<label><input type="radio" name="txbf" id="txbf_off" value="0"/>비활성화</label>
+						<label><input type="radio" name="txbf" id="txbf_on" value="15" />활성화</label>
+-->						
+					</td>
+				</tr>
+				<tr id="mu_mimo">
+					<th scope="row">MU-MIMO</th>
+					<td>
+						<select name="mu_mimo" id="mu_mimo" style="width:20%;">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+							<option value="0x8000">자동</option>
+					</td>
+				</tr>
+				<tr id="ul_ofdma">
+					<th scope="row">UL OFDMA</th>
+					<td>
+						<select name="ul_ofdma" id="ul_ofdma" style="width:20%;">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+					</td>
+				</tr>
+				<tr id="dl_ofdma">
+					<th scope="row">DL OFDMA</th>
+					<td>
+						<select name="dl_ofdma" id="dl_ofdma" style="width:20%;">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+					</td>
+				</tr>
+				<tr id="bss_color">
+					<th scope="row">BSS Color</th>
+					<td>
+<script language="javascript">
+						document.write('<select name="bss_color" id="bss_color" style="width:20%;">\n');
+						write_BSSColor();
+						document.write('</select>\n');
+</script>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	<div class="txt_c pt_20">
+		<input type="button"  value="저장" onclick="document.formWifiSet.cmd.value='advanced';btnApplySave()" class="basic-btn01 btn-blue-bg" >
+	</div>
+	</div>
+
+	<h2 class='title_style_2'>무선 Multi-SSID</h2>
+	<div class='tb_style_2 scroll'>
+			<table id='mssid_table_wl0'>
+				<colgroup>
+					<col style='width:5%;' />
+					<col style='width:3%;' />
+					<col style='width:20%;' />
+					<col style='width:10%;' />
+					<col style='width:3%;' />
+					<col style='width:7%;' />
+					<col style='width:9%' />
+					<col style='width:9%;' />
+					<col style='width:9%;' />
+					<col style='width:6%;' />
+					<col style='width:6%;' />
+				</colgroup>
+				<thead>
+					<tr>
+						<th scope='col'>Index</th>
+						<th scope='col'>동작<br>설정</th>
+						<th scope='col'>SSID(네트워크이름)</th>
+						<th scope='col'>SSID(설명)</th>
+						<th scope='col'>SSID <br>알림</th>
+						<th scope='col'>최대단말<br>(1 ~ 124)</th>
+						<th scope='col'>Station Timeout<br>(POD)</th>
+						<th scope='col'>Access</th>
+						<th scope='col'>RSSI Threshold<br>(dBm)</th>
+						<th scope='col'>Rate Limit<br>(DN)</th>
+						<th scope='col'>Rate Limit<br>(UP)</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td style='text-align:center;'>0</td>
+						<td><input id="t_wl0_radio" name="t_wl0_radio" type="checkbox" checked></td>
+						<td><input type="text" name="t_wl0_ssid" id="t_wl0_ssid" value="SK_WiFiGIGA0001_5G"></td>
+						<td><input type="text" name="t_wl0_ssid_ext" id="t_wl0_ssid_ext" value="메인 5G" placeholder="설명 입력" maxlength="32"></td>
+						<td><input id="t_wl0_ssid_hide" name="t_wl0_ssid_hide" type="checkbox" checked></td>
+						<td><input type="text" name="t_wl0_max" id="t_wl0_max" value="124"></td>
+						<td><input type="text" name="t_wl0_pod" id="t_wl0_pod" value="300"></td>
+						<td><select name="t_wl0_access" id="t_wl0_access">
+								<option value="0" selected>WAN+LAN</option>
+								<option value="1">WAN</option>
+							</select></td>
+						<td><input type="text" name="t_wl0_rssi" id="t_wl0_rssi" value="0"></td>
+						<td><input type="text" name="t_wl0_dn" id="t_wl0_dn" value="0"></td>
+						<td><input type="text" name="t_wl0_up" id="t_wl0_up" value="0"></td>
+					</tr>
+					<tr>
+						<td style='text-align:center;'>1</td>
+						<td><input id="t_wl0.1_radio" name="t_wl0.1_radio" type="checkbox" checked></td>
+						<td><input type="text" name="t_wl0.1_ssid" id="t_wl0.1_ssid" value="SK_WiFiGIGA0001"></td>
+						<td><input type="text" name="t_wl0.1_ssid_ext" id="t_wl0.1_ssid_ext" value="핸드오버" placeholder="설명 입력" maxlength="32"></td>
+						<td><input id="t_wl0.1_ssid_hide" name="t_wl0.1_ssid_hide" type="checkbox" checked></td>
+						<td><input type="text" name="t_wl0.1_max" id="t_wl0.1_max" value="124"></td>
+						<td><input type="text" name="t_wl0.1_pod" id="t_wl0.1_pod" value="300"></td>
+						<td><select name="t_wl0.1_access" id="t_wl0.1_access">
+								<option value="0">WAN+LAN</option>
+								<option value="1" selected>WAN</option>
+							</select></td>
+						<td><input type="text" name="t_wl0.1_rssi" id="t_wl0.1_rssi" value="0"></td>
+						<td><input type="text" name="t_wl0.1_dn" id="t_wl0.1_dn" value="0"></td>
+						<td><input type="text" name="t_wl0.1_up" id="t_wl0.1_up" value="0"></td>
+					</tr>
+					<tr>
+						<td style='text-align:center;'>2</td>
+						<td><input id="t_wl0.2_radio" name="t_wl0.2_radio" type="checkbox"></td>
+						<td><input type="text" name="t_wl0.2_ssid" id="t_wl0.2_ssid" value="T wifi home" disabled></td>
+						<td><input type="text" name="t_wl0.2_ssid_ext" id="t_wl0.2_ssid_ext" value="" placeholder="설명 입력" maxlength="32"></td>
+						<td><input id="t_wl0.2_ssid_hide" name="t_wl0.2_ssid_hide" type="checkbox" checked></td>
+						<td><input type="text" name="t_wl0.2_max" id="t_wl0.2_max" value="124"></td>
+						<td><input type="text" name="t_wl0.2_pod" id="t_wl0.2_pod" value="300"></td>
+						<td><select name="t_wl0.2_access" id="t_wl0.2_access">
+								<option value="0">WAN+LAN</option>
+								<option value="1" selected>WAN</option>
+							</select></td>
+						<td><input type="text" name="t_wl0.2_rssi" id="t_wl0.2_rssi" value="-75"></td>
+						<td><input type="text" name="t_wl0.2_dn" id="t_wl0.2_dn" value="0"></td>
+						<td><input type="text" name="t_wl0.2_up" id="t_wl0.2_up" value="0"></td>
+					</tr>
+				</tbody>
+			</table>
+			<table id='mssid_table_wl1'>
+				<colgroup>
+					<col style='width:5%;' />
+					<col style='width:3%;' />
+					<col style='width:20%;' />
+					<col style='width:10%;' />
+					<col style='width:3%;' />
+					<col style='width:7%;' />
+					<col style='width:9%' />
+					<col style='width:9%;' />
+					<col style='width:9%;' />
+					<col style='width:6%;' />
+					<col style='width:6%;' />
+				</colgroup>
+				<thead>
+					<tr>
+						<th scope='col'>Index</th>
+						<th scope='col'>동작<br>설정</th>
+						<th scope='col'>SSID(네트워크이름)</th>
+						<th scope='col'>SSID(설명)</th>
+						<th scope='col'>SSID <br>알림</th>
+						<th scope='col'>최대단말<br>(1 ~ 124)</th>
+						<th scope='col'>Station Timeout<br>(POD)</th>
+						<th scope='col'>Access</th>
+						<th scope='col'>RSSI Threshold<br>(dBm)</th>
+						<th scope='col'>Rate Limit<br>(DN)</th>
+						<th scope='col'>Rate Limit<br>(UP)</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td style='text-align:center;'>0</td>
+						<td><input id="t_wl1_radio" name="t_wl1_radio" type="checkbox" checked></td>
+						<td><input type="text" name="t_wl1_ssid" id="t_wl1_ssid" value="SK_WiFiGIGA0001_2.4G"></td>
+						<td><input type="text" name="t_wl1_ssid_ext" id="t_wl1_ssid_ext" value="메인 2.4G" placeholder="설명 입력" maxlength="32"></td>
+						<td><input id="t_wl1_ssid_hide" name="t_wl1_ssid_hide" type="checkbox" checked></td>
+						<td><input type="text" name="t_wl1_max" id="t_wl1_max" value="124"></td>
+						<td><input type="text" name="t_wl1_pod" id="t_wl1_pod" value="300"></td>
+						<td><select name="t_wl1_access" id="t_wl1_access">
+								<option value="0" selected>WAN+LAN</option>
+								<option value="1">WAN</option>
+							</select></td>
+						<td><input type="text" name="t_wl1_rssi" id="t_wl1_rssi" value="0"></td>
+						<td><input type="text" name="t_wl1_dn" id="t_wl1_dn" value="0"></td>
+						<td><input type="text" name="t_wl1_up" id="t_wl1_up" value="0"></td>
+					</tr>
+						<td style='text-align:center;'>1</td>
+						<td><input id="t_wl1_radio" name="t_wl1_radio" type="checkbox" checked></td>
+						<td><input type="text" name="t_wl1_ssid" id="t_wl1_ssid" value="SK_WiFiGIGA0001"></td>
+						<td><input type="text" name="t_wl1_ssid_ext" id="t_wl1_ssid_ext" value="핸드오버" placeholder="설명 입력" maxlength="32"></td>
+						<td><input id="t_wl1_ssid_hide" name="t_wl1_ssid_hide" type="checkbox" checked></td>
+						<td><input type="text" name="t_wl1_max" id="t_wl1_max" value="124"></td>
+						<td><input type="text" name="t_wl1_pod" id="t_wl1_pod" value="300"></td>
+						<td><select name="t_wl1_access" id="t_wl1_access">
+								<option value="0" selected>WAN+LAN</option>
+								<option value="1">WAN</option>
+							</select></td>
+						<td><input type="text" name="t_wl1_rssi" id="t_wl1_rssi" value="0"></td>
+						<td><input type="text" name="t_wl1_dn" id="t_wl1_dn" value="0"></td>
+						<td><input type="text" name="t_wl1_up" id="t_wl1_up" value="0"></td>
+					</tr>					
+					<tr>
+						<td style='text-align:center;'>2</td>
+						<td><input id="t_wl1.2_radio" name="t_wl1.2_radio" type="checkbox"></td>
+						<td><input type="text" name="t_wl1.2_ssid" id="t_wl1.2_ssid" value="T wifi home" disabled></td>
+						<td><input type="text" name="t_wl1.2_ssid_ext" id="t_wl1.2_ssid_ext" value="" placeholder="설명 입력" maxlength="32"></td>
+						<td><input id="t_wl1.2_ssid_hide" name="t_wl1.2_ssid_hide" type="checkbox" checked></td>
+						<td><input type="text" name="t_wl1.2_max" id="t_wl1.2_max" value="124"></td>
+						<td><input type="text" name="t_wl1.2_pod" id="t_wl1.2_pod" value="300"></td>
+						<td><select name="t_wl1.2_access" id="t_wl1.2_access">
+								<option value="0">WAN+LAN</option>
+								<option value="1" selected>WAN</option>
+							</select></td>
+						<td><input type="text" name="t_wl1.2_rssi" id="t_wl1.2_rssi" value="-75"></td>
+						<td><input type="text" name="t_wl1.2_dn" id="t_wl1.2_dn" value="0"></td>
+						<td><input type="text" name="t_wl1.2_up" id="t_wl1.2_up" value="0"></td>
+					</tr>
+					<tr style='display:none;'>
+						<td style='text-align:center;'>3</td>
+						<td><input id="t_wl1.3_radio" name="t_wl1.3_radio" type="checkbox"></td>
+						<td><input type="text" name="t_wl1.3_ssid" id="t_wl1.3_ssid" value="SK_WiFi_w6370"></td>
+						<td><input type="text" name="t_wl1.3_ssid_ext" id="t_wl1.3_ssid_ext" value="" placeholder="설명 입력" maxlength="32"></td>
+						<td><input id="t_wl1.3_ssid_hide" name="t_wl1.3_ssid_hide" type="checkbox" checked></td>
+						<td><input type="text" name="t_wl1.3_max" id="t_wl1.3_max" value="124"></td>
+						<td><input type="text" name="t_wl1.3_pod" id="t_wl1.3_pod" value="300"></td>
+						<td><select name="t_wl1.3_access" id="t_wl1.3_access">
+								<option value="0">WAN+LAN</option>
+								<option value="1" selected>WAN</option>
+							</select></td>
+						<td><input type="text" name="t_wl1.3_rssi" id="t_wl1.3_rssi" value="0"></td>
+						<td><input type="text" name="t_wl1.3_dn" id="t_wl1.3_dn" value="0"></td>
+						<td><input type="text" name="t_wl1.3_up" id="t_wl1.3_up" value="0"></td>
+					</tr>
+				</tbody>
+			</table>
+			<p style="font-size:8pt">※ SSID(설명)은 최대 32자 까지 가능합니다.</p>
+			<div class="txt_c pt_20" id="add_mssid_div">
+				<input type="button" id="add_user_mssid" style="width:110;" value="추가" class="basic-btn01 btn-gray-bg mr_10">
+				<input type="button" id="delete_user_mssid" style="width:110;" value="삭제" class="basic-btn01 btn-gray-bg mr_10">
+				<input type="button" value="저장" onclick="document.formWifiSet.cmd.value='mssid';btnApplySave()" class="basic-btn01 btn-blue-bg">
+			</div>
+		</div>
+	
+	<h2 class="title_style_2">무선 보안/인증 설정</h2>
+		<div class='tb_style_2' id='sec_div_wl0'>
+		    <table id='sec_setup_wl0'>
+		        <tbody>
+		            <tr>
+		                <th scope='row' style='width:20%;'>SSID(네트워크이름 [설명])</th>
+		                <td><select name='ssid_list_wl0' id='ssid_list_wl0' style='width:45%;' onChange='updateState();'>
+		                        <option value='0'>SK_WiFiGIGA0001_5G [메인 5G]</option>
+		                        <option value='1'>SK_WiFiGIGA0001 [핸드오버]</option>
+		                    </select></td>
+		            </tr>
+		            <tr>
+		                <th scope='row' style='width:20%;'>보안 모드</th>
+		                <td><select name='sec_mode_wl0' id='sec_mode_wl0' style='width:45%;' onChange='reloadSecValue();'>
+		                        <option value='wpa3wpa2'>WPA3/WPA2</option>
+		                        <option value='wpa3'>WPA3</option>
+		                        <option value='wpa2wpa'>WPA2/WPA</option>
+		                        <option value='wpa2'>WPA2</option>
+		                        <option value='wpa'>WPA</option>
+		                        <option value='none'>None</option>
+		                </td>
+		            </tr>
+		        </tbody>
+		    </table>
+		    <table id='none_wl0'>
+		        <tr id='eap_tr_wl0'>
+		            <th scope='row' style='width:20%;'>EAP 동작</th>
+		            <td><input type='checkbox' id='eap_op_wl0' name='eap_op_wl0' onChange='change_eap("wl0");'>EAP 활성</td>
+		        </tr>
+		        <tr id='mac_tr_wl0'>
+		            <th scope='row' style='width:20%;'>MAC 인증</th>
+		            <td><input type='checkbox' id='mac_auth_wl0' name='mac_auth_wl0' onclick='return false;'>인증 활성</td>
+		        </tr>
+		    </table>
+		    <table id='wpa_wl0'>
+		        <tr>
+		            <th scope='row' style='width:20%;'>인증 타입</th>
+		            <td><select name='auth_type_wl0' id='auth_type_wl0' style='width:45%;' onChange='change_auth("wl0");'>
+		                    <option value='psk'>PSK</option>
+		                    <option value='eap'>Enterprise</option>
+		            </td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>암호화 타입</th>
+		            <td><select name='encrypt_type_wl0' id='encrypt_type_wl0' style='width:45%;'>
+		                    <option value='tkip+aes'>Auto</option>
+		                    <option value='tkip'>TKIP</option>
+		                    <option value='aes'>AES-CCMP</option>
+		            </td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>Key Passphrase</th>
+		            <td><input type='password' name='passphrase_wl0' id='passphrase_wl0' style='width:45%;' maxlength='64'><input type='text' name='showpsk_wl0' id='showpsk_wl0' style='width:45%;' maxlength='64'><br><label>(8~63자 : ASCII, 64자 : HEX)</label><input type='checkbox' name='showchk_wl0' id='showchk_wl0' onChange='show_pw("wl0");'>암호 보기</td>
+		        </tr>
+		    </table>
+		    <table id='wep_wl0'>
+		        <tr>
+		            <th scope='row' style='width:20%;'>인증 타입</th>
+		            <td><select name='wep_sec_mode_wl0' id='wep_sec_mode_wl0' style='width:45%;'>
+		                    <option value='open'>Open 시스템</option>
+		                    <option value='share'>공유 키</option>
+		                    <option value='auto'>Auto</option>
+		            </td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>Key 1</th>
+		            <td><input type='password' name='wl0_key1' id='wl0_key1' style='width:45%;'></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>Key 2</th>
+		            <td><input type='password' name='wl0_key2' id='wl0_key2' style='width:45%;'></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>Key 3</th>
+		            <td><input type='password' name='wl0_key3' id='wl0_key3' style='width:45%;'></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>Key 4</th>
+		            <td><input type='password' name='wl0_key4' id='wl0_key4' style='width:45%;'></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>기본키</th>
+		            <td><select name='wep_key_wl0' id='wep_key_wl0' style='width:45%;'>
+		                    <option value='1'>Key 1</option>
+		                    <option value='2'>Key 2</option>
+		                    <option value='3'>Key 3</option>
+		                    <option value='4'>Key 4</option>
+		            </td>
+		        </tr>
+		    </table>
+		    <table id='auth_acct_wl0'>
+		        <tr>
+		            <th scope='row' style='width:20%;'>인증 IP</th>
+		            <td><input type='text' name='auth_ip_wl0' id='auth_ip_wl0' style='width:45%;'></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>인증 Port</th>
+		            <td><input type='text' name='auth_port_wl0' id='auth_port_wl0' style='width:45%;'></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>인증 Shared Secret</th>
+		            <td><input type='password' name='auth_shared_wl0' id='auth_shared_wl0' style='width:45%;'><br><input type='checkbox' name='show_auth_secret_wl0' id='show_auth_secret_wl0' onChange='show_auth_secret("wl0");'>암호 보기</td>
+		        </tr>
+		        <tr id='ID_ACCT_TBL_wl0'>
+		            <th scope='row' style='width:20%;'>과금 동작</th>
+		            <td><input type='radio' name='acct_op_wl0' id='acct_op_disable_wl0' value='0' onChange='change_acct_op("wl0")' /><label>비활성화</label><input type='radio' name='acct_op_wl0' id='acct_op_enable_wl0' value='1' onChange='change_acct_op("wl0")' /><label>활성화</label></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>과금 IP</th>
+		            <td><input type='text' name='acct_ip_wl0' id='acct_ip_wl0' style='width:45%;'></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>과금 Port</th>
+		            <td><input type='text' name='acct_port_wl0' id='acct_port_wl0' style='width:45%;'></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>과금 Shared Secret</th>
+		            <td><input type='password' name='acct_shared_wl0' id='acct_shared_wl0' style='width:45%;'><br><input type='checkbox' name='show_acct_secret_wl0' id='show_acct_secret_wl0' onChange='show_acct_secret("wl0");'>암호 보기</td>
+		        </tr>
+		    </table>
+		    <table id='redir_fb_wl0'>
+		        <tr>
+		            <th scope='row' style='width:20%;'>웹 리다이렉션 활성</th>
+		            <td><input type='radio' name='redir_op_wl0' id='redir_op_disable_wl0' value='0' onChange='change_redir_fb_op("wl0")' /><label>비활성화</label><input type='radio' name='redir_op_wl0' id='redir_op_enable_wl0' value='1' onChange='change_redir_fb_op("wl0")' /><label>활성화</label></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>웹 리다이렉션 URL</th>
+		            <td><input type='text' name='redir_url_wl0' id='redir_url_wl0' /></td>
+		        </tr>
+		        </tbody>
+		        <tr>
+		            <th scope='row' style='width:20%;'>퍼스트 브라우징 활성</th>
+		            <td><input type='radio' name='first_op_wl0' id='first_op_disable_wl0' value='0' onChange='change_redir_fb_op("wl0")' /><label>비활성화</label><input type='radio' name='first_op_wl0' id='first_op_enable_wl0' value='1' onChange='change_redir_fb_op("wl0")' /><label>활성화</label></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>퍼스트 브라우징 URL</th>
+		            <td><input type='text' name='first_url_wl0' id='first_url_wl0' /></td>
+		        </tr>
+		    </table>
+		</div>
+		<div class='tb_style_2' id='sec_div_wl1'>
+		    <table id='sec_setup_wl1'>
+		        <tbody>
+		            <tr>
+		                <th scope='row' style='width:20%;'>SSID(네트워크이름 [설명])</th>
+		                <td><select name='ssid_list_wl1' id='ssid_list_wl1' style='width:45%;' onChange='updateState();'>
+		                        <option value='0'>SK_WiFiGIGA0001_2.4G [메인 2.4G]</option>
+								<option value='1'>SK_WiFiGIGA0001 [핸드오버]</option>
+		                    </select></td>
+		            </tr>
+		            <tr>
+		                <th scope='row' style='width:20%;'>보안 모드</th>
+		                <td><select name='sec_mode_wl1' id='sec_mode_wl1' style='width:45%;' onChange='reloadSecValue();'>
+		                        <option value='wpa3wpa2'>WPA3/WPA2</option>
+		                        <option value='wpa3'>WPA3</option>
+		                        <option value='wpa2wpa'>WPA2/WPA</option>
+		                        <option value='wpa2'>WPA2</option>
+		                        <option value='wpa'>WPA</option>
+		                        <option value='none'>None</option>
+		                </td>
+		            </tr>
+		        </tbody>
+		    </table>
+		    <table id='none_wl1'>
+		        <tr id='eap_tr_wl1'>
+		            <th scope='row' style='width:20%;'>EAP 동작</th>
+		            <td><input type='checkbox' id='eap_op_wl1' name='eap_op_wl1' onChange='change_eap("wl1");'>EAP 활성</td>
+		        </tr>
+		        <tr id='mac_tr_wl1'>
+		            <th scope='row' style='width:20%;'>MAC 인증</th>
+		            <td><input type='checkbox' id='mac_auth_wl1' name='mac_auth_wl1' onclick='return false;'>인증 활성</td>
+		        </tr>
+		    </table>
+		    <table id='wpa_wl1'>
+		        <tr>
+		            <th scope='row' style='width:20%;'>인증 타입</th>
+		            <td><select name='auth_type_wl1' id='auth_type_wl1' style='width:45%;' onChange='change_auth("wl1");'>
+		                    <option value='psk'>PSK</option>
+		                    <option value='eap'>Enterprise</option>
+		            </td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>암호화 타입</th>
+		            <td><select name='encrypt_type_wl1' id='encrypt_type_wl1' style='width:45%;'>
+		                    <option value='tkip+aes'>Auto</option>
+		                    <option value='tkip'>TKIP</option>
+		                    <option value='aes'>AES-CCMP</option>
+		            </td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>Key Passphrase</th>
+		            <td><input type='password' name='passphrase_wl1' id='passphrase_wl1' style='width:45%;' maxlength='64'><input type='text' name='showpsk_wl1' id='showpsk_wl1' style='width:45%;' maxlength='64'><br><label>(8~63자 : ASCII, 64자 : HEX)</label><input type='checkbox' name='showchk_wl1' id='showchk_wl1' onChange='show_pw("wl1");'>암호 보기</td>
+		        </tr>
+		    </table>
+		    <table id='wep_wl1'>
+		        <tr>
+		            <th scope='row' style='width:20%;'>인증 타입</th>
+		            <td><select name='wep_sec_mode_wl1' id='wep_sec_mode_wl1' style='width:45%;'>
+		                    <option value='open'>Open 시스템</option>
+		                    <option value='share'>공유 키</option>
+		                    <option value='auto'>Auto</option>
+		            </td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>Key 1</th>
+		            <td><input type='password' name='wl1_key1' id='wl1_key1' style='width:45%;'></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>Key 2</th>
+		            <td><input type='password' name='wl1_key2' id='wl1_key2' style='width:45%;'></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>Key 3</th>
+		            <td><input type='password' name='wl1_key3' id='wl1_key3' style='width:45%;'></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>Key 4</th>
+		            <td><input type='password' name='wl1_key4' id='wl1_key4' style='width:45%;'></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>기본키</th>
+		            <td><select name='wep_key_wl1' id='wep_key_wl1' style='width:45%;'>
+		                    <option value='1'>Key 1</option>
+		                    <option value='2'>Key 2</option>
+		                    <option value='3'>Key 3</option>
+		                    <option value='4'>Key 4</option>
+		            </td>
+		        </tr>
+		    </table>
+		    <table id='auth_acct_wl1'>
+		        <tr>
+		            <th scope='row' style='width:20%;'>인증 IP</th>
+		            <td><input type='text' name='auth_ip_wl1' id='auth_ip_wl1' style='width:45%;'></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>인증 Port</th>
+		            <td><input type='text' name='auth_port_wl1' id='auth_port_wl1' style='width:45%;'></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>인증 Shared Secret</th>
+		            <td><input type='password' name='auth_shared_wl1' id='auth_shared_wl1' style='width:45%;'><br><input type='checkbox' name='show_auth_secret_wl1' id='show_auth_secret_wl1' onChange='show_auth_secret("wl1");'>암호 보기</td>
+		        </tr>
+		        <tr id='ID_ACCT_TBL_wl1'>
+		            <th scope='row' style='width:20%;'>과금 동작</th>
+		            <td><input type='radio' name='acct_op_wl1' id='acct_op_disable_wl1' value='0' onChange='change_acct_op("wl1")' /><label>비활성화</label><input type='radio' name='acct_op_wl1' id='acct_op_enable_wl1' value='1' onChange='change_acct_op("wl1")' /><label>활성화</label></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>과금 IP</th>
+		            <td><input type='text' name='acct_ip_wl1' id='acct_ip_wl1' style='width:45%;'></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>과금 Port</th>
+		            <td><input type='text' name='acct_port_wl1' id='acct_port_wl1' style='width:45%;'></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>과금 Shared Secret</th>
+		            <td><input type='password' name='acct_shared_wl1' id='acct_shared_wl1' style='width:45%;'><br><input type='checkbox' name='show_acct_secret_wl1' id='show_acct_secret_wl1' onChange='show_acct_secret("wl1");'>암호 보기</td>
+		        </tr>
+		    </table>
+		    <table id='redir_fb_wl1'>
+		        <tr>
+		            <th scope='row' style='width:20%;'>웹 리다이렉션 활성</th>
+		            <td><input type='radio' name='redir_op_wl1' id='redir_op_disable_wl1' value='0' onChange='change_redir_fb_op("wl1")' /><label>비활성화</label><input type='radio' name='redir_op_wl1' id='redir_op_enable_wl1' value='1' onChange='change_redir_fb_op("wl1")' /><label>활성화</label></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>웹 리다이렉션 URL</th>
+		            <td><input type='text' name='redir_url_wl1' id='redir_url_wl1' /></td>
+		        </tr>
+		        </tbody>
+		        <tr>
+		            <th scope='row' style='width:20%;'>퍼스트 브라우징 활성</th>
+		            <td><input type='radio' name='first_op_wl1' id='first_op_disable_wl1' value='0' onChange='change_redir_fb_op("wl1")' /><label>비활성화</label><input type='radio' name='first_op_wl1' id='first_op_enable_wl1' value='1' onChange='change_redir_fb_op("wl1")' /><label>활성화</label></td>
+		        </tr>
+		        <tr>
+		            <th scope='row' style='width:20%;'>퍼스트 브라우징 URL</th>
+		            <td><input type='text' name='first_url_wl1' id='first_url_wl1' /></td>
+		        </tr>
+		    </table>
+		</div>
+		<div class="txt_c pt_20">
+			<input type="button"  value="저장" onclick="document.formWifiSet.cmd.value='security';btnApplySave()" class="basic-btn01 btn-blue-bg" >
+
+		</div>
+		<input type="hidden" value="set" name="cmd" id="cmd">
+		<input type="hidden" value="" name="mssid_idx" id="mssid_idx">
+		<input type="hidden" value="" name="mac_op" id="mac_op">
+		<input type="hidden" value="" name="user_name" id="user_name">
+		<input type="hidden" value="" name="bw_2g_web" id="bw_2g_web">
+</div>
+		<script language='javascript'>
+var dur = 16000;
+var is_end_progress = 0;
+(function( $ ){
+	$.fn.animateProgress = function(progress, callback) 
+	{
+		return this.each(function() {
+			$(this).animate({
+				width: progress+'%'
+			}, {
+				duration: dur, //초를 조정하여 주세요.
+				easing: 'swing',
+				step: function( progress ){
+					var labelEl = $('.ui-label', this),
+						valueEl = $('.value', labelEl);
+					if (Math.ceil(progress) == 95) {
+						$(this).stop();
+					}
+					else if(is_end_progress == 1)
+					{
+						$(this).stop();
+					}
+					else{
+						valueEl.text(Math.ceil(progress) + '%');
+					}
+				},
+				complete: function(scope, i, elem) {
+					if (callback) {
+						callback.call(this, i, elem );
+					};
+				}
+			});
+		});
+	};
+})( jQuery );
+
+(function( $ ){
+  $.fn.animateProgress_next = function(progress, callback) {
+    return this.each(function() {
+      $(this).animate({
+        width: progress+'%'
+      }, {
+        duration: Math.ceil((dur/95)*5), //초를 조정하여 주세요.
+        easing: 'swing',
+        step: function( progress ){
+          var labelEl = $('.ui-label', this),
+              valueEl = $('.value', labelEl);
+           valueEl.text(Math.ceil(progress) + '%');
+        },
+        complete: function(scope, i, elem) {
+          if (callback) {
+            callback.call(this, i, elem );
+          };
+        }
+      });
+    });
+  };
+})( jQuery );
+
+function progress_fun() {
+	is_end_progress = 0;
+  //$('#progress_bar .ui-progress .ui-label').hide();
+  // Set initial value
+	$('#progress_bar .ui-progress').css('width', '0');
+	$('.u_popup_bg').fadeIn(200);
+	$('.u_progressive_bar_popup').fadeIn(200);
+  // Simulate some progress
+	$('#progress_bar .ui-progress').animateProgress(100, function() {
+		$('.u_popup_bg').fadeOut(200);
+		$('.u_progressive_bar_popup').fadeOut(200);
+	});
+};
+function progress_fun_end() {
+	is_end_progress = 1;
+	$('#progress_bar .ui-progress').animateProgress_next(100, function() {
+		$('.u_popup_bg').fadeOut(200);
+		$('.u_progressive_bar_popup').fadeOut(200);
+	});
+};
+	</script>
+<div class='u_popup_bg' style='display:none'></div>
+<div class='u_progressive_bar_popup' style='display:none'>
+	<div class='inner'>
+		<span class='title'>검색중</span>
+		<div class='progressive_bar'>
+				<div id='progress_bar' class='ui-progress-bar ui-container'>
+					<div class='ui-progress' style='width: 100%;'>
+						<span class='ui-label'><b class='value'>100%</b></span>
+					</div>
+				</div>
+		</div>
+	</div>
+</div> 
+
+</form>
+<!-- //wrap -->
+
+</body>
+</html>

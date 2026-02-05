@@ -1,0 +1,298 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+	
+<script language="javascript">
+/*
+var wan_mode = 0;
+var wan_ip = "2001:1000:1000::5";
+var wan_ipv6_static_defaultgw   = "2001:1000:1000::1";
+var dns1 = "2001:1000:1000::2";
+var dns2 = "2001:1000:1000::3";
+
+var wan_ipv6_mode = 0;
+var wan_ipv6 = "2001:1000:1000::5";
+var wan_ipv6_static_defaultgw   = "2001:1000:1000::1";
+var ipv6_dns1 = "2001:1000:1000::2";
+var ipv6_dns2 = "2001:1000:1000::3";
+
+*/
+
+var wan_ipv6_mode = 2; 
+var wan_ipv6 = "2001:1000:1000::5"; 
+var wan_ipv6_link = "FE80::"; 
+var wan_ipv6_static_defaultgw  = "2001:1000:1000::1"; 
+var v_prefix = "64";
+var ipv6_dns1 = "2001:1000:1000::2";
+var ipv6_dns2 = "2001:1000:1000::3";
+
+var v_ipv6_mld_enable = 0;
+
+
+function change_button_by_mode( vmode ){
+	with ( document.forms[0] ) {
+			if (vmode  == 3)
+			{
+				/* STATIC */
+				h_wan_ip.disabled=false;
+				h_local_ip.disabled=false;
+				h_wan_prefix.disabled=false;
+				h_wan_gateway.disabled=false;
+				h_wan_dnspri.disabled=false;
+				h_wan_dnssec.disabled=false;
+			}
+			else
+			{
+				/* DHCP */
+				h_wan_ip.disabled=true;
+				h_local_ip.disabled=true;
+				h_wan_prefix.disabled=true;
+				h_wan_gateway.disabled=true;
+				h_wan_dnspri.disabled=true;
+				h_wan_dnssec.disabled=true;
+			}
+			
+			if(vmode  == 0){
+				h_wan_mld_mode.disabled=true;
+				h_wan_mld_mode.value=0;
+			}else{
+				h_wan_mld_mode.disabled=false;
+			}
+	}
+}
+
+function change_ip_mode(){
+	with ( document.forms[0] ) {
+		var vmode = h_wan_ip_mode.value;
+		 change_button_by_mode(vmode);
+	}
+}
+
+function check_linklocal_ip(ip) {
+		if ( isValidIpAddress6(document.forms[0].h_local_ip.value) == false )
+			return false;
+		if ( document.forms[0].h_local_ip.value.substring(0,4) != "fe80" && document.forms[0].h_local_ip.value.substring(0,4) != "FE80")
+			return false;
+		if( document.forms[0].h_local_ip.value.indexOf('/') != -1 )
+			return false;
+}			
+
+function check_ip() {
+	if( check_linklocal_ip(document.forms[0].h_local_ip.value) == false) {
+		webAlert('유효하지 않은 LinkLocal IP주소입니다 : ' + document.forms[0].h_local_ip.value);
+		return false;
+	}
+
+	if ( isValidIpAddress6(document.forms[0].h_wan_ip.value) == false ) {
+		webAlert('유효하지 않은 IP주소입니다 : ' + document.forms[0].h_wan_ip.value);
+		return false;
+	}
+
+	if( isValidPrefixLength(document.forms[0].h_wan_prefix.value) == false) {
+		webAlert('유효하지 않은 Prefix 입니다 : ' + document.forms[0].h_wan_prefix.value);
+		return false;
+	}
+
+	if ( isValidIpAddress6(document.forms[0].h_wan_gateway.value) == false ) {
+		webAlert('유효하지 않은 게이트웨이 IP주소입니다 : ' + document.forms[0].h_wan_gateway.value);
+		return false;
+	}
+
+	if ( isValidIpAddress6(document.forms[0].h_wan_dnspri.value) == false ) {
+		webAlert('유효하지 않은 DNS 1주소입니다 : ' + document.forms[0].h_wan_dnspri.value);
+		return false;
+	}
+
+	if ( isValidIpAddress6(document.forms[0].h_wan_dnssec.value) == false ) {
+		webAlert('유효하지 않은 DNS 2주소입니다 : ' + document.forms[0].h_wan_dnssec.value);
+		return false;
+	}
+
+	return true;
+}
+	
+function btnApplySave() {
+	var loc = 'network_ipv6.cgi?';
+	
+
+	switch(parseInt(document.forms[0].h_wan_ip_mode.value) ){
+		case 3:
+			if(check_ip() == false)
+				return;
+				
+			 loc +="wv_ipv6_mode="+document.forms[0].h_wan_ip_mode.value;
+			 loc +="&wv_ipv6_wanip="+document.forms[0].h_wan_ip.value;
+			 loc +="&wv_ipv6_linkip="+document.forms[0].h_local_ip.value;
+			 loc +="&wv_ipv6_prefix="+document.forms[0].h_wan_prefix.value;
+			 loc +="&wv_ipv6_gateway="+document.forms[0].h_wan_gateway.value;
+			 loc +="&wv_ipv6_dns1="+document.forms[0].h_wan_dnspri.value;
+			 loc +="&wv_ipv6_dns2="+document.forms[0].h_wan_dnssec.value;
+			 loc +="&wv_ipv6_mld_enable="+document.forms[0].h_wan_mld_mode.value;
+			break;		
+		case 0:		
+		case 1:
+		case 2:
+			 loc +="wv_ipv6_mode="+document.forms[0].h_wan_ip_mode.value;
+			 loc +="&wv_ipv6_wanip="+wan_ipv6;
+			 loc +="&wv_ipv6_linkip="+wan_ipv6_link;
+			 loc +="&wv_ipv6_prefix="+v_prefix;
+			 loc +="&wv_ipv6_gateway="+wan_ipv6_static_defaultgw;
+			 loc +="&wv_ipv6_dns1="+ipv6_dns1;
+			 loc +="&wv_ipv6_dns2="+ipv6_dns2;
+			break;
+		
+	}
+	
+	 loc +="&wv_ipv6_mld_enable="+document.forms[0].h_wan_mld_mode.value;
+	 
+	 if(document.forms[0].h_wan_mld_mode.value == 0)
+		loc += '&enblMldSnp=0';
+	else
+		loc += '&enblMldSnp=1';
+	 
+	 loc += '&sessionKey=' + 570342748;
+	 var code = 'location="' + loc + '"';
+
+	var popup = new Popup({ 
+		'type': 'confirm', 
+		'title': '알림', 
+		'fontsize' : 14, 
+		'text':  'IPv6설정은 재시작해야합니다.\n 계속하시겠습니까?"', 
+		'cancelbutton': true, 
+		'closeCallBack': function(){ 
+		}, 
+		'submitCallBack': function(){ 
+			var confirm_qusery = code; 
+			eval(confirm_qusery); 
+		} 
+	});	 
+	 
+	 //eval(code);	
+}
+
+function frmLoad() {
+	change_button_by_mode(wan_ipv6_mode);
+	   with ( document.forms[0] ) {
+			h_wan_ip_mode.value=wan_ipv6_mode;
+			h_local_ip.value=wan_ipv6_link;
+			h_wan_ip.value=wan_ipv6;
+			h_wan_prefix.value=v_prefix;
+			h_wan_gateway.value=wan_ipv6_static_defaultgw;
+			h_wan_dnspri.value=ipv6_dns1;
+			h_wan_dnssec.value=ipv6_dns2;
+			h_wan_mld_mode.value=v_ipv6_mld_enable;
+   }
+   
+   
+   document.forms[0].SHOW_NETSTAT.innerHTML += 'fe80::21eb:982d:9968:cdba dev br0 lladdr 20:13:08:19:72:c7 STALE' + '\n';
+
+}
+
+function frmReload() {
+	document.location.reload();
+	return;
+}
+</script>
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<body onload="frmLoad()">
+
+<form>
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>네트워크</li>
+			<li>IPv6 설정</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">IPv6 설정</h1>
+	<p>IPv6 정보를 설정합니다. </p>
+	<hr>
+
+	<h2 class="title_style_2">설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row">IPv6 모드</th>
+					<td>
+						<select name="h_wan_ip_mode" id="h_wan_ip_mode"  onchange="change_ip_mode()">
+							<option value="0">사용안함</option>
+							<!-- option value="1">EUI-64</option -->
+							<option value="2">DHCPv6</option>
+							<option value="3">고정 IP</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">MLD</th>
+					<td>
+						<select name="h_wan_mld_mode" id="h_wan_mld_mode"  >
+							<option value="0">사용안함</option>
+							<option value="1">사용</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">LinkLocal IP</th>
+					<td><input type="text" name="h_local_ip" id="h_local_ip"  maxlength="128"><br>
+						FE80:: 으로 사용하는 경우 자동으로 Link Local 주소가 생성됩니다.
+					</td>
+				</tr>						
+				<tr>
+					<th scope="row">WAN IP</th>
+					<td><input type="text" name="h_wan_ip" id="h_wan_ip"  maxlength="128"></td>
+				</tr>		
+				<tr>
+					<th scope="row">Prefix</th>
+					<td><input type="text" name="h_wan_prefix" id="h_wan_prefix"  maxlength="64"></td>
+				</tr>
+				<tr>
+					<th scope="row">기본 게이트웨이</th>
+					<td><input type="text" name="h_wan_gateway" id="h_wan_gateway"  maxlength="128" ></td>
+				</tr>
+				<tr>
+					<th scope="row">DNS Primary</th>
+					<td><input type="text"  name="h_wan_dnspri"  id="h_wan_dnspri"  maxlength="128"></td>
+				</tr>
+				<tr>
+					<th scope="row">DNS Secondary</th>
+					<td><input type="text"  name="h_wan_dnssec" id="h_wan_dnssec"  maxlength="128"></td>
+				</tr>				
+			</tbody>
+		</table>
+	</div>
+	<div class="txt_c">
+		<input type="button"  onclick="btnApplySave()" value="저장" class="basic-btn01 btn-blue-bg" >
+	</div>
+	<h2 class="title_style_2">Neighbor List</h2>
+	<div class="netstat_box">
+		<textarea  name="SHOW_NETSTAT" id="SHOW_NETSTAT" style="color:white; background-color:black; position:relative; overflow:auto; top: 0px; width: 100%; height: 415px;"></textarea>
+	</div>
+	<br>
+	<div class="txt_c">
+		<input type="button"  onclick="frmReload()" value="새로고침" class="basic-btn01 btn-gray-bg2 mr_20" >
+	</div>
+</div>
+</body>
+</html>
