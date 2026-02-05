@@ -1,0 +1,293 @@
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+
+var sessionKey = '88298616';
+
+function check_mode() {
+
+	if(document.forms[0].logMode.value == 1)
+	{
+		document.forms[0].logAddr.disabled = true;
+		document.forms[0].logPort.disabled = true;
+	}
+	else
+	{
+		document.forms[0].logAddr.disabled = false;
+		document.forms[0].logPort.disabled = false;
+	}
+}
+
+function check_enable(checked) {
+	var x = document.getElementById("logenable");
+	var i = x.options[x.selectedIndex].value;
+
+	if(i == 1)
+	{
+		document.forms[0].levelLog.disabled=false;
+		document.forms[0].levelDisplay.disabled=false;
+		document.forms[0].logMode.disabled = false;
+		check_mode();
+	}
+	else
+	{
+		document.forms[0].levelLog.disabled=true;
+		document.forms[0].levelDisplay.disabled=true;
+		document.forms[0].logMode.disabled = true;
+		document.forms[0].logAddr.disabled = true;
+		document.forms[0].logPort.disabled = true;
+	}
+
+}
+
+function btnApplySave() {
+	var loc = 'logconfig.cgi?';
+	var code = '';
+
+	var log_sys_level  = document.forms[0].levelLog.value;
+	var log_disp_level = document.forms[0].levelDisplay.value;
+
+	var log_enable = parseInt(document.getElementById("logenable").value);
+	var log_mode   = parseInt(document.getElementById("logMode").value);
+
+	if(log_enable != 0 ) {
+		if(log_mode == 3) {
+			loc += 'logStatus=1';
+			loc += '&logLevel='     + log_sys_level;
+			loc += '&logDisplay='   + log_disp_level;
+			loc += '&logMode='      + document.forms[0].logMode.value;
+			loc += '&logIpAddress=' + document.forms[0].logAddr.value;
+			loc += '&logPort='      + document.forms[0].logPort.value;
+		}
+		else {
+			loc += 'logStatus=1';
+			loc += '&logLevel='   + log_sys_level;
+			loc += '&logDisplay=' + log_disp_level;
+			loc += '&logMode=1';
+		}
+	}
+	else {
+		loc += 'logStatus=0';
+	}
+
+	loc += '&sessionKey=' + sessionKey;
+	code = 'location="' + loc + '"';
+	eval(code);
+}
+
+function btnApplyMiscLog(action) {
+	var loc = '';
+	var code = '';
+
+	if(action == 0)
+	{
+		loc  ='cgi_logremove.cmd?';
+		loc += '&sessionKey=' + sessionKey;
+	}
+	else
+	{
+		loc = 'message.txt';
+	}
+
+	code = 'location="' + loc + '"';
+	eval(code);
+}
+
+function frmLoad() {
+	var log_enable = 1;
+	var log_mode   = 1;
+
+	document.forms[0].logenable.value    = log_enable;
+	document.forms[0].levelLog.value     = 6;
+	document.forms[0].levelDisplay.value = 6;
+	document.forms[0].logMode.value      = log_mode;
+	document.forms[0].logAddr.value      = "0.0.0.0";
+	document.forms[0].logPort.value      = "514";
+
+	check_enable();
+
+	return;
+}
+</script>
+</head>
+
+<body  onLoad='frmLoad()'>
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form>
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>관리 </li>
+			<li>시스템 로그</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">시스템 로그</h1>
+	<p>시스템 로그 동작 설정 및 이력을 출력합니다.</p>
+	<hr>
+
+	<h2 class="title_style_2">설정</h2>
+	<div class="tb_style_2 w_200">
+		<table>
+			<colgroup>
+				<col style="width:22%;"/>
+				<col style="width:%;"/>
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">시스템 로그</th>
+					<td>
+						<!--select name="logenable" id="logenable" onchange="check_enable()" class="w_250"-->
+						<select name="logenable" id="logenable" onchange="check_enable()">
+	                        <option value="0">비활성화</option>
+	                        <option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+<!--
+				<tr>
+					<th scope="row">모드</th>
+					<td>
+						<select name="logMode" id="logMode" onclick="check_mode()" class="w_250">
+	                        <option value="1">로컬</option>
+	                        <option value="2">원격</option>
+	                        <option value="3">로컬/원격</option>
+						</select>
+					</td>
+				</tr>
+-->				
+				<tr>
+					<th scope="row">로그 레벨</th>
+					<td>
+						<select name="levelLog" id="levelLog" class="w_250">
+							<option value="0">Emergency</option>
+	                        <option value="1">Alert</option>
+	                        <option value="2">Critical</option>
+	                        <option value="3">Error</option>
+	                        <option value="4">Warning</option>
+	                        <option value="5">Notice</option>
+	                        <option value="6">Informational</option>
+	                        <option value="7">Debugging</option>
+						</select>
+					</td>
+				</tr>
+				<tr style="display:none;">
+					<th scope="row">출력 레벨</th>
+					<td>
+						<select name="levelDisplay" id="levelDisplay" class="w_250">
+							<option value="0">Emergency</option>
+	                        <option value="1">Alert</option>
+	                        <option value="2">Critical</option>
+	                        <option value="3">Error</option>
+	                        <option value="4">Warning</option>
+	                        <option value="5">Notice</option>
+	                        <option value="6">Informational</option>
+	                        <option value="7">Debugging</option>
+						</select>
+					</td>
+				</tr>
+<!--				
+				<tr>
+					<th scope="row">로그 서버 주소</th>
+					<td>
+						<input type='text' name='logAddr' id='logAddr' class="w_250">
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">로그 서버 UDP 포트</th>
+					<td>
+						<input  type='text' name='logPort' id ='logPort' class="w_250">
+					</td>
+				</tr>
+-->
+				<tr>
+					<th scope="row"><span>원격서버 주소 : 포트</span></th>
+					<td>
+						<select name="logMode" id="logMode" onchange="check_mode()">
+			                <option value="1">비활성화
+        	                <option value="3">활성화
+						</select>
+						<input type="text" size="2" id="logAddr" name="logAddr" placeholder="000.000.000.000" style="width:30%"/>
+						:
+						<input type="text" size="1" id="logPort" name="logPort" placeholder="514" style="width:30%"/>
+					</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c mb_40">
+		<input type="button" value="적용"  onclick="btnApplySave()" class="basic-btn01 btn-blue-bg mr_20">
+	</div>
+
+	<h2 class="title_style_2">시스템 로그 메세지</h2>
+	<div class="tb_style_4">
+		<div class="event_log">
+		<div class="box_style_3">
+			<div class="tb_style_log">
+				<table>
+					<colgroup>
+						<col style="width:11%;" />
+						<col style="width:6%;" />
+						<col style="width:6%;" />
+						<col />
+					</colgroup>
+					<thead>
+						<tr>
+							<th scope="col"><center>날짜/시간</center></th>
+							<th scope="col"><center>라벨</center></th>
+							<th scope="col"><center>레벨</center></th>
+							<th scope="col"><center>메세지</center></th>
+						</tr>
+					</thead>
+					<tbody>
+<tr>
+	<td class='txt_c'>*** ** **638.30</td>
+	<td class='txt_c'>daemon</td>
+	<td class='txt_c'>notice</td>
+	<td class='txt_c'><div align='left'>dhcpc: [DHCPC] receive ACK
+</div></td>
+</tr>
+<tr>
+	<td class='txt_c'>*** ** **638.30</td>
+	<td class='txt_c'>daemon</td>
+	<td class='txt_c'>notice</td>
+	<td class='txt_c'><div align='left'>dhcpc: [DHCPC] Lease of 192.168.80.51 obtained, lease time 60
+</div></td>
+</tr>
+
+					</tbody>
+				</table>
+			</div>
+		</div>
+		</div>
+	</div>
+
+	<div class="txt_c mb_40">
+		<input type="button" value="기록 저장"  onclick="btnApplyMiscLog(1)" class="basic-btn01 btn-gray-bg2 mr_20">
+		<input type="button" value="기록 삭제"  onclick="btnApplyMiscLog(0)" class="basic-btn01 btn-gray-bg2 mr_20">
+	</div>
+</div>
+</form>
+</body>
+</html>

@@ -1,0 +1,20 @@
+<html>
+<head>
+	<meta content="text/html; charset=utf-8" http-equiv="Content-Type" />
+	<title>Captcha</title>
+</head>
+
+<body>
+<table border=0>
+<script>
+	var rc = 'mlnlvo';
+</script>
+<img id="cap_img" name="cap_img" src="cap_img.gif" width="100" height="35">
+<input type="hidden" id="cap_val" name="cap_val" >
+<script>
+	var capImage = document.getElementById("cap_img");
+	document.getElementById("cap_val").value = rc;
+</script>
+</body>
+</html>
+

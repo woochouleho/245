@@ -1,0 +1,929 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/prv_util.js"></script>
+	<script language="javascript" src="js/portName.js"></script>
+	<script language="javascript" src="js/popup.js"></script>	
+	<style type="text/css">
+.u_popup_bg{position:fixed; left:0; top:0; bottom:0; z-index:10; width:100%; height:100%; background:rgba(0,0,0,0.1);}
+
+.u_progressive_bar_popup{position:fixed; left:50%; top:50%; z-index:12; margin:-50px 0 0 -206px; padding:40px 25px; width:412px; box-sizing:border-box; background-color:#fff; border-radius:5px; box-shadow:5px 5px 5px rgba(0,0,0,0.2);}
+</style>
+	<script language="javascript">
+var cur_user = 'root';
+
+var dur = 2000;
+var is_end_scan = 1;
+
+function frmLoad() {
+    wl_mode_chang();
+}
+
+(function( $ ){
+    $.fn.animateProgress = function(progress, callback) 
+    {
+        return this.each(function() {
+            $(this).animate({
+                width: progress+'%'
+            }, {
+                duration: dur, //초를 조정하여 주세요.
+                easing: 'swing',
+                step: function( progress ){
+                    var labelEl = $('.ui-label', this),
+                        valueEl = $('.value', labelEl);
+                    if (Math.ceil(progress) == 95) {
+						progress = 0;
+                        $(this).complete();
+                    }
+                    else if(is_end_scan == 1)
+                    {
+                        $(this).stop();
+                    }
+                    else{
+                        valueEl.text(Math.ceil(progress) + '%');
+                    }
+                },
+                complete: function(scope, i, elem) {
+                    if (callback) {
+                        callback.call(this, i, elem );
+                    };
+                }
+            });
+        });
+    };
+})( jQuery );
+
+(function( $ ){
+    $.fn.animateProgress_next = function(progress, callback) {
+        return this.each(function() {
+            $(this).animate({
+                width: progress+'%'
+            }, {
+                duration: Math.ceil((dur/100)*5), //초를 조정하여 주세요.
+                easing: 'swing',
+                step: function( progress ){
+                    var labelEl = $('.ui-label', this),
+                        valueEl = $('.value', labelEl);
+                    valueEl.text(Math.ceil(progress) + '%');
+                },
+                complete: function(scope, i, elem) {
+                    if (callback) {
+                        callback.call(this, i, elem );
+                    };
+                }
+            });
+        });
+    };
+})( jQuery );
+
+function progress_fun() {
+    // Set initial value
+    $('#progress_bar .ui-progress').css('width', '0');
+    $(".u_popup_bg").fadeIn(200);
+    $(".u_progressive_bar_popup").fadeIn(200);
+    // Simulate some progress
+    $('#progress_bar .ui-progress').animateProgress(100, function() {
+        $(".u_popup_bg").fadeOut(200);
+        $(".u_progressive_bar_popup").fadeOut(200);
+		$('#loading').css('display', 'none');
+		document.getElementById("research_channel").disabled = false;
+    });
+};
+
+
+$(window).load( function() {
+    document.getElementById("research_channel").disabled = false;
+    document.getElementById("loading").style.display = "none";
+});
+
+var ap_scan_url = window.location.protocol +'//' + window.location.host +'/wlapscan.cgi';
+
+function ap_scan_5g(callback){
+    var ifname_5g = "wl0";
+
+    document.getElementById("loading").style.display = "";
+    document.getElementById("research_channel").disabled = true;
+//    document.getElementById("result_table").style.display = "none";
+
+    var band_d_scan = function (){
+    }
+
+    var band_c_scan = function (){
+    }
+
+    var band_b_scan = function (){
+    }
+
+}
+
+function ap_scan_2g(callback){
+    var ifname_2g = "wl1";
+
+    document.getElementById("loading").style.display = "";
+    document.getElementById("research_channel").disabled = true;
+    document.getElementById("result_table").style.display = "none";
+
+    var band_c_scan = function (){
+    }
+
+    var band_b_scan = function (){
+    }
+
+}
+
+var loading_end_f = function () {
+    document.getElementById("research_channel").disabled = false;
+    document.getElementById("loading").style.display = "none";
+    //document.getElementById("result_table").style.display = "";
+}
+
+function ap_scan(){
+    var sel_ifname = $('#wireless_mode option:selected').val();
+    var ifname_5g = "wl0";
+    var ifname_2g = "wl1";
+    is_end_scan = 0;
+    progress_fun();
+
+    //$("#result_table tr").remove();
+
+    if(sel_ifname == '1')
+    {
+        dur = 3;
+        ap_scan_5g(acs_on_click_5g);
+    }
+    else if(sel_ifname == '2')
+    {
+        dur = 3;
+        ap_scan_2g(acs_on_click_2g);
+    }
+}
+
+function ap_scan_ajax(ifname, ch_band){
+    var scan_data="Req=scan&ifname="+ifname+"&ch_band="+ch_band;
+    var resulte_date="Req=results&ifname="+ifname;
+
+    document.getElementById("loading").style.display = "";
+    document.getElementById("research_channel").disabled = true;
+    document.getElementById("result_table").style.display = "none";
+
+    $.post( ap_scan_url, scan_data, 
+        function(){
+            $.post( ap_scan_url, resulte_date,
+                function(data){
+                    $("#result_table").append(data);
+
+                    if (ifname == "wl1")
+                        acs_on_click("2G");
+                    else if (ifname == "wl0")
+                        acs_on_click("5G");
+                });});
+}
+
+function ap_scan_ajax_callback(ifname, ch_band,callback){
+    var scan_data="Req=scan&ifname="+ifname+"&ch_band="+ch_band;
+    var resulte_date="Req=results&ifname="+ifname;	
+    $.ajax ({
+        type : 'POST',
+        timeout : 25000,
+        url : ap_scan_url,
+        data : { "Req" : "scan" ,"ifname" : ifname ,"ch_band" : ch_band },
+        success : function ( )
+        {
+            $.ajax ({
+                type : 'POST',
+                timeout : 25000,
+                url : ap_scan_url,
+                data : { "Req" : "results" ,"ifname" : ifname },
+                success : function ( data )
+                {
+                    $("#result_table").append( data );
+                    return callback();
+                }
+            })
+                .fail ( function ( )
+                    {
+                        webAlert("접속이 끊어져 페이지를 새로고침 합니다.");
+                        location.reload();
+                    });
+        }
+    })
+    .fail ( function ( )
+        {
+            webAlert("접속이 끊어져 페이지를 새로고침 합니다.");
+            location.reload();
+        });
+
+}
+
+function acs_on_click(band){
+    var i = 0;
+    var chan_5g_div= document.getElementById("div_chan_5g");
+    var chan_2g_div= document.getElementById("div_chan_2g");
+    var chan_span_5g= chan_5g_div.getElementsByTagName("span")[0];
+    var chan_span_2g= chan_2g_div.getElementsByTagName("span")[0];
+    var call_acs_url= window.location.protocol + '//' + window.location.host+'/wlacs.cgi';
+    var call_acs_date="Req=acs_on_click&Bw=0&Band="+band;
+    chan_span_5g.innerHTML=""
+    chan_span_2g.innerHTML=""
+	if(Band == "2G")
+	{
+		if("1" == "1")
+			call_acs_date="Req=acs_on_click&Bw=0&Band="+band;
+		else
+			call_acs_date="Req=acs_on_click&Bw=3&Band="+band;
+	}
+	else if(Band == "5G")
+	{
+		call_acs_date="Req=acs_on_click&Bw=0&Band="+band;
+	}
+
+    acs_on_click_post(band,call_acs_url, call_acs_date, chan_span_5g, 
+        chan_span_2g);
+
+}
+
+function acs_on_click_post(band,call_acs_url, call_acs_date, chan_span_5g, 
+    chan_span_2g)
+{
+    $.ajax ({
+        type : 'POST',
+        timeout : 25000,
+        url : call_acs_url,
+        data : call_acs_date,
+        success : function(data)
+        {
+            if(data == "repeater_mode")
+            {
+                webAlert("리피터 모드에서는 채널 추천 기능을 지원하지 않습니다.");
+                is_end_scan = 1;
+                $('#progress_bar .ui-progress').animateProgress_next(100, function() {
+                    $(".u_popup_bg").fadeOut(200);
+                    $(".u_progressive_bar_popup").fadeOut(200);
+                });
+                document.getElementById("research_channel").disabled = false;
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("result_table").style.display = "";
+                return;
+            }
+            if(data=="over_time")
+            {
+                var call_acs_date_re_date="Req=recommend_val&Band="+band;
+                acs_on_click_post(band,call_acs_url, call_acs_date_re_date, chan_span_5g, 
+                    chan_span_2g);
+            }
+            else 
+            {
+                if(band == "5G")
+                {
+                    chan_span_5g.innerHTML= "추천 채널: "+data;
+
+                    var re_bw_cap = data.split('/');
+
+                    $("#channel_5g_20").hide();
+                    $("#channel_5g_40").hide();
+                    $("#channel_5g_80").hide();
+                    $("#channel_5g_160").hide();
+                    $("#channel_5g_20_admin").hide();
+                    $("#channel_5g_40_admin").hide();
+                    $("#channel_5g_80_admin").hide();
+                    $("#channel_5g_160_admin").hide();
+                    $("#channel_5g_20").removeAttr("name");
+                    $("#channel_5g_40").removeAttr("name");
+                    $("#channel_5g_80").removeAttr("name");
+                    $("#channel_5g_160").removeAttr("name");
+                    $("#channel_5g_20_admin").removeAttr("name");
+                    $("#channel_5g_40_admin").removeAttr("name");
+                    $("#channel_5g_80_admin").removeAttr("name");
+                    $("#channel_5g_160_admin").removeAttr("name");
+
+                    if(cur_user == "root")
+                    {
+                        if(re_bw_cap[1]=="20M")
+                        {
+                            $("#channel_5g_20").show();
+                            $("#channel_5g_20").attr("name","channel_5g");
+                        }
+                        else if(re_bw_cap[1]=="40M")
+                        {
+                            $("#channel_5g_40").show();
+                            $("#channel_5g_40").attr("name","channel_5g");
+                        }
+                        else if(re_bw_cap[1]=="80M")
+                        {
+                            $("#channel_5g_80").show();
+                            $("#channel_5g_80").attr("name","channel_5g");
+                        }
+                        else if(re_bw_cap[1]=="160M")
+                        {
+                            $("#channel_5g_160").show();
+                            $("#channel_5g_160").attr("name","channel_5g");
+                        }
+                    }
+                    else if(cur_user == "admin")
+                    {
+                        if(re_bw_cap[1]=="20M")
+                        {
+                            $("#channel_5g_20_admin").show();
+                            $("#channel_5g_20_admin").attr("name","channel_5g");
+                        }
+                        else if(re_bw_cap[1]=="40M")
+                        {
+                            $("#channel_5g_40_admin").show();
+                            $("#channel_5g_40_admin").attr("name","channel_5g");
+                        }
+                        else if(re_bw_cap[1]=="80M")
+                        {
+                            $("#channel_5g_80_admin").show();
+                            $("#channel_5g_80_admin").attr("name","channel_5g");
+                        }
+                        else if(re_bw_cap[1]=="160M")
+                        {
+                            $("#channel_5g_160_admin").show();
+                            $("#channel_5g_160_admin").attr("name","channel_5g");
+                        }
+                    }
+                }
+                else if(band == "2G")
+                {
+                    chan_span_2g.innerHTML= "추천 채널: "+data;
+                    var re_bw_cap = data.split('/');
+
+                    $("#channel_2g_20").hide();
+                    $("#channel_2g_40").hide();
+                    $("#channel_2g_20").removeAttr("name");
+                    $("#channel_2g_40").removeAttr("name");
+
+                    if(re_bw_cap[1]=="20M")
+                    {
+                        $("#channel_2g_20").show();
+                        $("#channel_2g_20").attr("name","channel_2g");
+                    }
+                    else if(re_bw_cap[1]=="40M")
+                    {
+                        $("#channel_2g_40").show();
+                        $("#channel_2g_40").attr("name","channel_2g");
+                    }
+                }
+                is_end_scan = 1;
+                $('#progress_bar .ui-progress').animateProgress_next(100, function() {
+                    $(".u_popup_bg").fadeOut(200);
+                    $(".u_progressive_bar_popup").fadeOut(200);
+                });
+                document.getElementById("research_channel").disabled = false;
+                document.getElementById("loading").style.display = "none";
+                document.getElementById("result_table").style.display = "";
+            }
+        }
+    })
+    .fail ( function ( )
+        {
+            webAlert("접속이 끊어져 페이지를 새로고침 합니다.");
+            location.reload();
+        });
+}
+
+function acs_on_click_5g(){
+    var i = 0;
+    var chan_5g_div= document.getElementById("div_chan_5g");
+    var chan_2g_div= document.getElementById("div_chan_2g");
+    var chan_span_5g= chan_5g_div.getElementsByTagName("span")[0];
+    var chan_span_2g= chan_2g_div.getElementsByTagName("span")[0];
+    var call_acs_url= window.location.protocol + '//' + window.location.host+'/wlacs.cgi';
+    var call_acs_date="Req=acs_on_click&Bw=0&Band=5G";
+
+    chan_span_5g.innerHTML=""
+    chan_span_2g.innerHTML=""
+
+    acs_on_click_post("5G",call_acs_url, call_acs_date, chan_span_5g, 
+        chan_span_2g);
+}
+
+function acs_on_click_2g(){
+    var i = 0;
+    var chan_5g_div= document.getElementById("div_chan_5g");
+    var chan_2g_div= document.getElementById("div_chan_2g");
+    var chan_span_5g= chan_5g_div.getElementsByTagName("span")[0];
+    var chan_span_2g= chan_2g_div.getElementsByTagName("span")[0];
+    var call_acs_url= window.location.protocol + '//' + window.location.host+'/wlacs.cgi';
+    var call_acs_date="Req=acs_on_click&Bw=0&Band=2G";
+
+    chan_span_5g.innerHTML=""
+    chan_span_2g.innerHTML=""
+
+    acs_on_click_post("2G",call_acs_url, call_acs_date, chan_span_2g, 
+        chan_span_2g);
+}
+
+
+
+function change_dfs_mode_to_ch_num(elem)
+{
+    enable_dfs(is_dfs_ch_num(elem.id),true);
+}
+function enable_dfs(bool_dfs,on_change_ch)
+{
+    if(bool_dfs)
+    {
+        if(on_change_ch && ($("#dfs").val() == "0"))
+            webAlert("DFS 기능을 사용합니다.");
+        $("#dfs").val("1");
+    }
+    else
+    {
+        if(on_change_ch && ($("#dfs").val() == "1"))
+            webAlert("DFS 기능을 종료합니다.");
+        $("#dfs").val("0");
+    }
+}
+
+function wl_mode_chang(){
+    var sel_ifname = $('#wireless_mode option:selected').val();
+    var bw_cap_5g= "7";
+    var bw_cap_2g= "3";
+
+    if(sel_ifname == '1')
+    {
+        document.getElementById("div_chan_5g").style.display ="";
+        document.getElementById("div_chan_2g").style.display ="none";
+
+        $("#channel_5g_20").hide();
+        $("#channel_5g_40").hide();
+        $("#channel_5g_80").hide();
+        $("#channel_5g_160").hide();
+        $("#channel_5g_20_admin").hide();
+        $("#channel_5g_40_admin").hide();
+        $("#channel_5g_80_admin").hide();
+        $("#channel_5g_160_admin").hide();
+        $("#channel_5g_20").removeAttr("name");
+        $("#channel_5g_40").removeAttr("name");
+        $("#channel_5g_80").removeAttr("name");
+        $("#channel_5g_160").removeAttr("name");
+        $("#channel_5g_20_admin").removeAttr("name");
+        $("#channel_5g_40_admin").removeAttr("name");
+        $("#channel_5g_80_admin").removeAttr("name");
+        $("#channel_5g_160_admin").removeAttr("name");
+
+        if(cur_user == "root")
+        {
+            if(bw_cap_5g=="1")
+            {
+                $("#channel_5g_20").show();
+                $("#channel_5g_20").attr("name","channel_5g");
+                enable_dfs(is_dfs_ch_num("channel_5g_20"),false);
+            }
+            else if(bw_cap_5g=="3")
+            {
+                $("#channel_5g_40").show();
+                $("#channel_5g_40").attr("name","channel_5g");
+                enable_dfs(is_dfs_ch_num("channel_5g_40"),false);
+            }
+            else if(bw_cap_5g=="7")
+            {
+                $("#channel_5g_80").show();
+                $("#channel_5g_80").attr("name","channel_5g");
+                enable_dfs(is_dfs_ch_num("channel_5g_80"),false);
+            }
+            else if(bw_cap_5g=="15")
+            {
+                $("#channel_5g_160").show();
+                $("#channel_5g_160").attr("name","channel_5g");
+                enable_dfs(is_dfs_ch_num("channel_5g_160"),false);
+            }
+        }
+        else if(cur_user == "admin")
+        {
+            if(bw_cap_5g=="1")
+            {
+                $("#channel_5g_20_admin").show();
+                $("#channel_5g_20_admin").attr("name","channel_5g");
+                enable_dfs(is_dfs_ch_num("channel_5g_20_admin"),false);
+            }
+            else if(bw_cap_5g=="3")
+            {
+                $("#channel_5g_40_admin").show();
+                $("#channel_5g_40_admin").attr("name","channel_5g");
+                enable_dfs(is_dfs_ch_num("channel_5g_40_admin"),false);
+            }
+            else if(bw_cap_5g=="7")
+            {
+                $("#channel_5g_80_admin").show();
+                $("#channel_5g_80_admin").attr("name","channel_5g");
+                enable_dfs(is_dfs_ch_num("channel_5g_80_admin"),false);
+            }
+            else if(bw_cap_5g=="15")
+            {
+                $("#channel_5g_160_admin").show();
+                $("#channel_5g_160_admin").attr("name","channel_5g");
+                enable_dfs(is_dfs_ch_num("channel_5g_160_admin"),false);
+            }
+        }
+    }
+    else if(sel_ifname == '2')
+    {
+        document.getElementById("div_chan_5g").style.display ="none";
+        document.getElementById("div_chan_2g").style.display ="";
+
+        $("#channel_2g_20").hide();
+        $("#channel_2g_40").hide();
+        $("#channel_2g_20").removeAttr("name");
+        $("#channel_2g_40").removeAttr("name");
+        if(bw_cap_2g=="1")
+        {
+            $("#channel_2g_20").show();
+            $("#channel_2g_20").attr("name","channel_2g");
+        }
+        else if(bw_cap_2g=="3")
+        {
+            $("#channel_2g_40").show();
+            $("#channel_2g_40").attr("name","channel_2g");
+        }
+    }
+}
+
+function btnApplySave()
+{
+    document.wifi_ap_scan_form.submit();
+
+    return true;
+}
+
+    </script>	
+</head>
+<body onload="frmLoad()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form name= "wifi_ap_scan_form" action="/wifi_ap_scan_cgi.cmd">
+        <div class="container">
+            <div class="navi clfx">
+                <ul class="clfx">
+                    <li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+                    <li>WiFi</li>
+                    <li>주변 AP 스캔</li>
+                </ul>
+            </div>
+
+            <h1 class="title_style_1">주변 AP 스캔</h1>
+            <p>AP 주변 무선 환경을 조회합니다.</p>
+            <hr>
+            <h2 class="title_style_2">무선 대역 설정</h2>
+            <div class="tb_style_2">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th scope="row">무선 대역</th>
+                            <td>
+                                <select name="wireless_mode" id="wireless_mode" onChange="wl_mode_chang();">
+                                    <option value="1" selected="selected">5GHz </option>
+                                    <option value="2">2.4GHz</option>
+                                </select>
+                                <input type="button" id='research_channel' value="채널검색" onclick="ap_scan()" class="basic-btn01 btn-blue-bg" disabled>
+                                <input type="button" id='loading' value="검색중..." class="basic-btn01 btn-blue-bg" style='display:none;' disabled>
+                            </td>
+                        </tr>				
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 class="title_style_2">주변 AP 리스트</h2>
+            <div class="tb_style_1 scroll" id="result_div" name="result_div">
+                <table>
+                    <colgroup>
+                        <col />
+                        <col />
+                        <col />
+                        <col />
+
+
+                        <!--<col style="width:25%;" />
+                            <col style="width:20%;" />
+                            <col style="width:10%;" />
+                            <col style="width:10%;" />
+                            <col style="width:10%;" />
+                            <col style="width:25%;" />-->
+
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th scope="col"><center>SSID</center></th>
+                            <th scope="col"><center>BSSID</center></th>
+                            <th scope="col"><center>채널</center></th>
+                            <th scope="col"><center>RSSI</center></th>
+                            <th scope="col"><center>보안</center></th>
+                        </tr>				
+                    </thead>
+                    <tbody name="result_table" id="result_table">
+						<tr class="5g">
+							<td><center>SK_WiFiGIGA310E_5G</center></td>
+							<td><center>00:23:AA:C0:31:10</center></td>
+							<td><center>36/80<br>(A+N+AC+AX)</center></td>
+							<td><center>-73</center></td>
+							<td><center> WPA-PSK / WPA2-PSK</center></td>
+						</tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <h2 class="title_style_2">채널 선택</h2>
+            채널 검색하여 수동으로 채널을 선택합니다. 
+            <hr></hr>
+            <div class="tb_style_2" id="div_chan_5g">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th scope="row">채널</th>
+                            <td>
+                                <select name="channel_5g" id="channel_5g_20" onChange="change_dfs_mode_to_ch_num(this);">
+                                    
+							<option value="0" selected="true">Auto</option>
+							<option value="36">36 (5,180 GHz)</option>
+							<option value="40">40 (5,200 GHz)</option>
+							<option value="44">44 (5,220 GHz)</option>
+							<option value="48">48 (5,240 GHz)</option>
+							<option value="52">52 (5,260 GHz)</option>
+							<option value="56">56 (5,280 GHz)</option>
+							<option value="60">60 (5,300 GHz)</option>
+							<option value="64">64 (5,320 GHz)</option>
+							<option value="100">100 (5,500 GHz)</option>
+							<option value="104">104 (5,520 GHz)</option>
+							<option value="108">108 (5,540 GHz)</option>
+							<option value="112">112 (5,560 GHz)</option>
+							<option value="116">116 (5,580 GHz)</option>
+							<option value="120">120 (5,600 GHz)</option>
+							<option value="124">124 (5,620 GHz)</option>
+							<option value="128">128 (5,640 GHz)</option>
+							<option value="132">132 (5,660 GHz)</option>
+							<option value="136">136 (5,680 GHz)</option>
+							<option value="140">140 (5,700 GHz)</option>
+							<option value="144">144 (5,720 GHz)</option>
+							<option value="149">149 (5,745 GHz)</option>
+							<option value="153">153 (5,765 GHz)</option>
+							<option value="157">157 (5,785 GHz)</option>
+							<option value="161">161 (5,805 GHz)</option>
+							<option value="165">165 (5,825 GHz)</option>
+                                </select>
+                                <select  id="channel_5g_40" onChange="change_dfs_mode_to_ch_num(this);">
+                                    
+							<option value="0" selected="true">Auto</option>
+							<option value="40u">40 U (5,200 GHz)</option>
+							<option value="48u">48 U (5,240 GHz)</option>
+							<option value="56u">56 U (5,280 GHz)</option>
+							<option value="64u">64 U (5,320 GHz)</option>
+							<option value="104u">104 U (5,520 GHz)</option>
+							<option value="112u">112 U (5,560 GHz)</option>
+							<option value="120u">120 U (5,600 GHz)</option>
+							<option value="128u">128 U (5,640 GHz)</option>
+							<option value="136u">136 U (5,680 GHz)</option>
+							<option value="144u">144 U (5,720 GHz)</option>
+							<option value="153u">153 U (5,765 GHz)</option>
+							<option value="161u">161 U (5,805 GHz)</option>
+							<option value="36l">36 L (5,180 GHz)</option>
+							<option value="44l">44 L (5,220 GHz)</option>
+							<option value="52l">52 L (5,260 GHz)</option>
+							<option value="60l">60 L (5,300 GHz)</option>
+							<option value="100l">100 L (5,500 GHz)</option>
+							<option value="108l">108 L (5,540 GHz)</option>
+							<option value="116l">116 L (5,580 GHz)</option>
+							<option value="124l">124 L (5,620 GHz)</option>
+							<option value="132l">132 L (5,660 GHz)</option>
+							<option value="140l">140 L (5,700 GHz)</option>
+							<option value="149l">149 L (5,745 GHz)</option>
+							<option value="157l">157 L (5,785 GHz)</option>
+                                </select>
+                                <select  id="channel_5g_80" onChange="change_dfs_mode_to_ch_num(this);">
+                                    
+							<option value="0" selected="true">Auto</option>
+							<option value="36/80">36/80 (5,180 GHz)</option>
+							<option value="40/80">40/80 (5,200 GHz)</option>
+							<option value="44/80">44/80 (5,220 GHz)</option>
+							<option value="48/80">48/80 (5,240 GHz)</option>
+							<option value="52/80">52/80 (5,260 GHz)</option>
+							<option value="56/80">56/80 (5,280 GHz)</option>
+							<option value="60/80">60/80 (5,300 GHz)</option>
+							<option value="64/80">64/80 (5,320 GHz)</option>
+							<option value="100/80">100/80 (5,500 GHz)</option>
+							<option value="104/80">104/80 (5,520 GHz)</option>
+							<option value="108/80">108/80 (5,540 GHz)</option>
+							<option value="112/80">112/80 (5,560 GHz)</option>
+							<option value="116/80">116/80 (5,580 GHz)</option>
+							<option value="120/80">120/80 (5,600 GHz)</option>
+							<option value="124/80">124/80 (5,620 GHz)</option>
+							<option value="128/80">128/80 (5,640 GHz)</option>
+							<option value="132/80">132/80 (5,660 GHz)</option>
+							<option value="136/80">136/80 (5,680 GHz)</option>
+							<option value="140/80">140/80 (5,700 GHz)</option>
+							<option value="144/80">144/80 (5,720 GHz)</option>
+							<option value="149/80">149/80 (5,745 GHz)</option>
+							<option value="153/80">153/80 (5,765 GHz)</option>
+							<option value="157/80">157/80 (5,785 GHz)</option>
+							<option value="161/80">161/80 (5,805 GHz)</option>
+                                </select>
+                                <select  id="channel_5g_160" onChange="change_dfs_mode_to_ch_num(this);">
+                                    
+							<option value="0" selected="true">Auto</option>
+							<option value="36/160">36/160 (5,180 GHz)</option>
+							<option value="40/160">40/160 (5,200 GHz)</option>
+							<option value="44/160">44/160 (5,220 GHz)</option>
+							<option value="48/160">48/160 (5,240 GHz)</option>
+							<option value="52/160">52/160 (5,260 GHz)</option>
+							<option value="56/160">56/160 (5,280 GHz)</option>
+							<option value="60/160">60/160 (5,300 GHz)</option>
+							<option value="64/160">64/160 (5,320 GHz)</option>
+							<option value="100/160">100/160 (5,500 GHz)</option>
+							<option value="104/160">104/160 (5,520 GHz)</option>
+							<option value="108/160">108/160 (5,540 GHz)</option>
+							<option value="112/160">112/160 (5,560 GHz)</option>
+							<option value="116/160">116/160 (5,580 GHz)</option>
+							<option value="120/160">120/160 (5,600 GHz)</option>
+							<option value="124/160">124/160 (5,620 GHz)</option>
+							<option value="128/160">128/160 (5,640 GHz)</option>
+                                </select>
+                                <select id="channel_5g_20_admin" onChange="change_dfs_mode_to_ch_num(this);">
+                                    
+							<option value="0" selected="true">Auto</option>
+							<option value="36">36 (5,180 GHz)</option>
+							<option value="40">40 (5,200 GHz)</option>
+							<option value="44">44 (5,220 GHz)</option>
+							<option value="48">48 (5,240 GHz)</option>
+							<option value="52">52 (5,260 GHz)</option>
+							<option value="56">56 (5,280 GHz)</option>
+							<option value="60">60 (5,300 GHz)</option>
+							<option value="64">64 (5,320 GHz)</option>
+							<option value="100">100 (5,500 GHz)</option>
+							<option value="104">104 (5,520 GHz)</option>
+							<option value="108">108 (5,540 GHz)</option>
+							<option value="112">112 (5,560 GHz)</option>
+							<option value="116">116 (5,580 GHz)</option>
+							<option value="120">120 (5,600 GHz)</option>
+							<option value="124">124 (5,620 GHz)</option>
+							<option value="128">128 (5,640 GHz)</option>
+							<option value="149">149 (5,745 GHz)</option>
+							<option value="153">153 (5,765 GHz)</option>
+							<option value="157">157 (5,785 GHz)</option>
+							<option value="161">161 (5,805 GHz)</option>
+                                </select>
+                                <select  id="channel_5g_40_admin" onChange="change_dfs_mode_to_ch_num(this);">
+                                    
+							<option value="0" selected="true">Auto</option>
+							<option value="40u">40 U (5,200 GHz)</option>
+							<option value="48u">48 U (5,240 GHz)</option>
+							<option value="56u">56 U (5,280 GHz)</option>
+							<option value="64u">64 U (5,320 GHz)</option>
+							<option value="104u">104 U (5,520 GHz)</option>
+							<option value="112u">112 U (5,560 GHz)</option>
+							<option value="120u">120 U (5,600 GHz)</option>
+							<option value="128u">128 U (5,640 GHz)</option>
+							<option value="153u">153 U (5,765 GHz)</option>
+							<option value="161u">161 U (5,805 GHz)</option>
+							<option value="36l">36 L (5,180 GHz)</option>
+							<option value="44l">44 L (5,220 GHz)</option>
+							<option value="52l">52 L (5,260 GHz)</option>
+							<option value="60l">60 L (5,300 GHz)</option>
+							<option value="100l">100 L (5,500 GHz)</option>
+							<option value="108l">108 L (5,540 GHz)</option>
+							<option value="116l">116 L (5,580 GHz)</option>
+							<option value="124l">124 L (5,620 GHz)</option>
+							<option value="149l">149 L (5,745 GHz)</option>
+							<option value="157l">157 L (5,785 GHz)</option>
+                                </select>
+                                <select  id="channel_5g_80_admin" onChange="change_dfs_mode_to_ch_num(this);">
+                                    
+							<option value="0" selected="true">Auto</option>
+							<option value="36/80">36/80 (5,180 GHz)</option>
+							<option value="40/80">40/80 (5,200 GHz)</option>
+							<option value="44/80">44/80 (5,220 GHz)</option>
+							<option value="48/80">48/80 (5,240 GHz)</option>
+							<option value="52/80">52/80 (5,260 GHz)</option>
+							<option value="56/80">56/80 (5,280 GHz)</option>
+							<option value="60/80">60/80 (5,300 GHz)</option>
+							<option value="64/80">64/80 (5,320 GHz)</option>
+							<option value="100/80">100/80 (5,500 GHz)</option>
+							<option value="104/80">104/80 (5,520 GHz)</option>
+							<option value="108/80">108/80 (5,540 GHz)</option>
+							<option value="112/80">112/80 (5,560 GHz)</option>
+							<option value="116/80">116/80 (5,580 GHz)</option>
+							<option value="120/80">120/80 (5,600 GHz)</option>
+							<option value="124/80">124/80 (5,620 GHz)</option>
+							<option value="128/80">128/80 (5,640 GHz)</option>
+							<option value="149/80">149/80 (5,745 GHz)</option>
+							<option value="153/80">153/80 (5,765 GHz)</option>
+							<option value="157/80">157/80 (5,785 GHz)</option>
+							<option value="161/80">161/80 (5,805 GHz)</option>
+                                </select>
+                                <select  id="channel_5g_160_admin" onChange="change_dfs_mode_to_ch_num(this);">
+                                    
+							<option value="0" selected="true">Auto</option>
+							<option value="36/160">36/160 (5,180 GHz)</option>
+							<option value="40/160">40/160 (5,200 GHz)</option>
+							<option value="44/160">44/160 (5,220 GHz)</option>
+							<option value="48/160">48/160 (5,240 GHz)</option>
+							<option value="52/160">52/160 (5,260 GHz)</option>
+							<option value="56/160">56/160 (5,280 GHz)</option>
+							<option value="60/160">60/160 (5,300 GHz)</option>
+							<option value="64/160">64/160 (5,320 GHz)</option>
+							<option value="100/160">100/160 (5,500 GHz)</option>
+							<option value="104/160">104/160 (5,520 GHz)</option>
+							<option value="108/160">108/160 (5,540 GHz)</option>
+							<option value="112/160">112/160 (5,560 GHz)</option>
+							<option value="116/160">116/160 (5,580 GHz)</option>
+							<option value="120/160">120/160 (5,600 GHz)</option>
+							<option value="124/160">124/160 (5,620 GHz)</option>
+							<option value="128/160">128/160 (5,640 GHz)</option>
+                                </select>
+                                 <span style="color:green">추천 채널: 149/80M</span>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="tb_style_2" id="div_chan_2g">
+                <table>
+                    <tbody>
+                        <tr>
+                            <th scope="row">채널</th>
+                            <td>
+                                <select name="channel_2g" id="channel_2g_20">
+                                    
+							<option value="0" selected="true">Auto</option>
+							<option value="1">1 (2,412 GHz)</option>
+							<option value="2">2 (2,417 GHz)</option>
+							<option value="3">3 (2,422 GHz)</option>
+							<option value="4">4 (2,427 GHz)</option>
+							<option value="5">5 (2,432 GHz)</option>
+							<option value="6">6 (2,437 GHz)</option>
+							<option value="7">7 (2,442 GHz)</option>
+							<option value="8">8 (2,447 GHz)</option>
+							<option value="9">9 (2,452 GHz)</option>
+							<option value="10">10 (2,457 GHz)</option>
+							<option value="11">11 (2,462 GHz)</option>
+							<option value="12">12 (2,467 GHz)</option>
+							<option value="13">13 (2,472 GHz)</option>
+                                </select>
+                                <select  id="channel_2g_40">
+                                    
+							<option value="0" selected="true">Auto</option>
+							<option value="5u">5 U (2,432 GHz)</option>
+							<option value="6u">6 U (2,437 GHz)</option>
+							<option value="7u">7 U (2,442 GHz)</option>
+							<option value="8u">8 U (2,447 GHz)</option>
+							<option value="9u">9 U (2,452 GHz)</option>
+							<option value="10u">10 U (2,457 GHz)</option>
+							<option value="11u">11 U (2,462 GHz)</option>
+							<option value="12u">12 U (2,467 GHz)</option>
+							<option value="13u">13 U (2,472 GHz)</option>
+							<option value="1l">1 L (2,412 GHz)</option>
+							<option value="2l">2 L (2,417 GHz)</option>
+							<option value="3l">3 L (2,422 GHz)</option>
+							<option value="4l">4 L (2,427 GHz)</option>
+							<option value="5l">5 L (2,432 GHz)</option>
+							<option value="6l">6 L (2,437 GHz)</option>
+							<option value="7l">7 L (2,442 GHz)</option>
+							<option value="8l">8 L (2,447 GHz)</option>
+							<option value="9l">9 L (2,452 GHz)</option>
+                                </select>                            
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="txt_c pt_20">
+                <!--<input type="button"  value="적용" onclick="btnApplySave(2)" class="basic-btn01 btn-blue-bg" >-->
+                <input type="button"  value="저장" onclick="btnApplySave()" class="basic-btn01 btn-blue-bg" >
+                <input type="hidden" value="0" name="dfs" id="dfs">
+            </div>
+                    <!-- 프로그레시브바 -->
+                    <div class="u_popup_bg" style="display:none"></div>
+                    <div class="u_progressive_bar_popup popup" style="display:none">
+                        <div class="inner">
+                            <span class="title">검색중</span>
+                            <div class="progressive_bar">
+                                <div id="progress_bar" class="ui-progress-bar ui-container">
+                                    <div class="ui-progress" style="width:100%;">
+                                        <span class="ui-label"><b class="value">100%</b></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+
+
+        </div>
+        <!-- //wrap -->
+    </form>
+</body>
+</html>

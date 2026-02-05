@@ -1,0 +1,1201 @@
+
+<!--DOCTYPE html-->
+<html lang="ko" xml:lang="ko">
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+
+<script language="javascript">
+
+var sessionKey='1916911354';
+var wan_port = 0;
+
+/*
+	include: queueName, queueKey, queueInterface, queueId, queuePrecedence, schedulerAlgorithm, queueWeight
+	exclude: enable, ifName(lan only str)
+
+var qos_sch_list = [
+[ "LAN1 Q1", 1, "eth0", 0, 1, "WRR", 3 ],
+[ "LAN1 Q2", 2, "eth0", 1, 2, "WRR", 7 ],
+[ "LAN1 Q3", 3, "eth0", 2, 3, "SP", 0 ],
+[ "LAN1 Q4", 4, "eth0", 3, 4, "SP", 0 ],
+[ "LAN2 Q1", 5, "eth1", 0, 1, "WRR", 3 ],
+[ "LAN2 Q2", 6, "eth1", 1, 2, "WRR", 7 ],
+[ "LAN2 Q3", 7, "eth1", 2, 3, "SP", 0 ],
+[ "LAN2 Q4", 8, "eth1", 3, 4, "SP", 0 ],
+[ "LAN3 Q1", 9, "eth2", 0, 1, "WRR", 3 ],
+[ "LAN3 Q2", 10, "eth2", 1, 2, "WRR", 7 ],
+[ "LAN3 Q3", 11, "eth2", 2, 3, "SP", 0 ],
+[ "LAN3 Q4", 12, "eth2", 3, 4, "SP", 0 ],
+[ "LAN4 Q1", 13, "eth3", 0, 1, "WRR", 3 ],
+[ "LAN4 Q2", 14, "eth3", 1, 2, "WRR", 7 ],
+[ "LAN4 Q3", 15, "eth3", 2, 3, "SP", 0 ],
+[ "LAN4 Q4", 16, "eth3", 3, 4, "SP", 0 ],
+[ "WAN Q1", 17, "eth4", 0, 1, "WRR", 3 ],
+[ "WAN Q2", 18, "eth4", 1, 2, "WRR", 7 ],
+[ "WAN Q3", 19, "eth4", 2, 3, "SP", 0 ],
+[ "WAN Q4", 20, "eth4", 3, 4, "SP", 0 ]];
+
+var port_limit = [
+[ 0,  0,  10000],
+[ 0,  0,  1000],
+[ 0,  0,  1000],
+[ 0,  0,  1000],
+[ 0,  0,  10000]];
+ */
+
+var qos_sch_list = [
+[ "LAN1 Q1", 1, "eth0", 0, 1, "WRR", 3 ],
+[ "LAN1 Q2", 2, "eth0", 1, 2, "WRR", 7 ],
+[ "LAN1 Q3", 3, "eth0", 2, 3, "SP", 0 ],
+[ "LAN1 Q4", 4, "eth0", 3, 4, "SP", 0 ],
+[ "LAN2 Q1", 5, "eth1", 0, 1, "WRR", 3 ],
+[ "LAN2 Q2", 6, "eth1", 1, 2, "WRR", 7 ],
+[ "LAN2 Q3", 7, "eth1", 2, 3, "SP", 0 ],
+[ "LAN2 Q4", 8, "eth1", 3, 4, "SP", 0 ],
+[ "LAN3 Q1", 9, "eth2", 0, 1, "WRR", 3 ],
+[ "LAN3 Q2", 10, "eth2", 1, 2, "WRR", 7 ],
+[ "LAN3 Q3", 11, "eth2", 2, 3, "SP", 0 ],
+[ "LAN3 Q4", 12, "eth2", 3, 4, "SP", 0 ],
+[ "LAN4 Q1", 13, "eth3", 0, 1, "WRR", 3 ],
+[ "LAN4 Q2", 14, "eth3", 1, 2, "WRR", 7 ],
+[ "LAN4 Q3", 15, "eth3", 2, 3, "SP", 0 ],
+[ "LAN4 Q4", 16, "eth3", 3, 4, "SP", 0 ],
+[ "WAN Q1", 17, "eth4", 0, 1, "WRR", 3 ],
+[ "WAN Q2", 18, "eth4", 1, 2, "WRR", 7 ],
+[ "WAN Q3", 19, "eth4", 2, 3, "SP", 0 ],
+[ "WAN Q4", 20, "eth4", 3, 4, "SP", 0 ]];
+
+
+var port_limit = [
+[ 0,  0,  10000],
+[ 0,  0,  1000],
+[ 0,  0,  1000],
+[ 0,  0,  1000],
+[ 0,  0,  10000]];
+
+
+
+var port_count= [ 0, 0, 0, 0, 0];
+
+
+var enableIPv6    = '1';
+var qosIntf       = 'LAN1|LAN2|LAN3|LAN4||WAN(routed)';
+var queueIntf     = qosIntf.split('|');
+
+var nullQueueInfo = '';
+var queues        = nullQueueInfo.split('|');
+
+/* zin77 note: we do not consider PON yet */
+var wanQinfo      = '1:wan&Key17&Wt3|2:wan&Key18&Wt7|3:wan&Key19|4:wan&Key20|';
+var lan1Qinfo     = '1:lan1&Key1&Pre1&Wt3|2:lan1&Key2&Pre2&Wt7|3:lan1&Key3&Pre3|4:lan1&Key4&Pre4|';
+var lan2Qinfo     = '5:lan2&Key5&Pre1&Wt3|6:lan2&Key6&Pre2&Wt7|7:lan2&Key7&Pre3|8:lan2&Key8&Pre4|';
+var lan3Qinfo     = '9:lan3&Key9&Pre1&Wt3|10:lan3&Key10&Pre2&Wt7|11:lan3&Key11&Pre3|12:lan3&Key12&Pre4|';
+var lan4Qinfo     = '13:lan4&Key13&Pre1&Wt3|14:lan4&Key14&Pre2&Wt7|15:lan4&Key15&Pre3|16:lan4&Key16&Pre4|';
+
+function check_port_limit() {
+    var n = 0;
+    var str_down = "";
+    var str_up = "";
+
+    for ( n = 0; n < port_limit.length ; n++)
+    {
+        str_down = "port_limit_down_"+n;
+        str_up = "port_limit_up_"+n;
+
+        if(isNaN(parseInt(document.getElementById(str_down).value))) {
+            webAlert('(port limit down)유효하지 않은 숫자입니다');
+            return false;
+        } else if(parseInt(document.getElementById(str_down).value) < 0) {
+            webAlert('(port limit down) 0 보다 작은 숫자는 사용할수 없습니다');
+            return false;
+        }
+
+        if(isNaN(parseInt(document.getElementById(str_up).value))) {
+            webAlert('(port limit up)유효하지 않은 숫자입니다');
+            return false;
+        } else if(parseInt(document.getElementById(str_up).value) < 0) {
+            webAlert('(port limit up)0 보다 작은 숫자는 사용할수 없습니다');
+            return false;
+        }
+    } /* end for */
+
+    return true;
+}
+
+function check_port_count() {
+	var str_count = "";
+
+	for(var n = 1; n < port_limit.length; n++)	/* skip wan */
+	{
+		str_count = "port_maxhost_count_" + n;
+
+		if(isNaN(parseInt(document.getElementById(str_count).value))) {
+			webAlert('MAC 제한 개수 - 유효하지 않은 숫자입니다');
+			return false;
+		}
+
+		if(parseInt(document.getElementById(str_count).value) >= 5) {
+			webAlert('MAC 제한 개수 - 유효하지 않은 숫자입니다. MAC 제한 개수(0 제한없음, 1~4개)');
+			return false;
+		}
+	}
+
+	return true;
+}
+
+function btnApplyRateLimit(save_type) {
+	var str_up    = "";
+	var str_down  = "";
+	var str_count = "";
+	var loc  = "network_qos.cgi?";
+	var code = "";
+
+	/* rate limit and max hosts */
+
+	if(check_port_limit() == false) return;
+	if(check_port_count() == false) return;
+
+	for(var n = 0; n < port_limit.length; n++) {
+		str_up    = "port_limit_up_" + n;
+		str_down  = "port_limit_down_" + n;
+		str_count = "port_maxhost_count_" + n;
+
+		if(n == 0) {
+			loc += "wv_ratelimit_up_wan"    + n + "=" + parseInt(document.getElementById(str_up).value);
+			loc += "&wv_ratelimit_down_wan" + n + "=" + parseInt(document.getElementById(str_down).value);
+		}
+		else {
+			loc += "&wv_ratelimit_up_lan"    + n + "=" + parseInt(document.getElementById(str_up).value);
+			loc += "&wv_ratelimit_down_lan"  + n + "=" + parseInt(document.getElementById(str_down).value);
+			loc += "&wv_port_maxhost_count_" + n + "=" + parseInt(document.getElementById(str_count).value);
+		}
+	}
+
+	loc += '&sessionKey=' + sessionKey;
+	code = 'location="' + loc + '"';
+	eval(code);
+
+	return;
+}
+
+function  changePortSchEntry(algo_id, algo_val, weight_id, weight_val) {
+
+	switch( Number(algo_val) ) 
+	{
+		case 0: 	/* SPQ */
+			$('#'+algo_id).val('0');
+			$('#'+weight_id).val('-');
+			$('#'+weight_id).attr('disabled', true);
+			break;
+		
+		case 1:	/* WRR  */
+			$('#'+algo_id).val('1');
+			$('#'+weight_id).val(weight_val);
+			$('#'+weight_id).attr('disabled', false);
+			break;
+		
+		default:
+			break;
+	}
+}
+
+function changePortSchMode() {
+	var val = parseInt(document.getElementById('w_sch_mode').value);
+
+	console.log(Number(val));
+
+	switch( Number(val))
+	{
+		case 0 :	 	/* SPQ */
+			for(i = 0; i < 4; i++)
+				changePortSchEntry('w_algo_q' + i, 0, 'w_weight_q' + i, 0);
+			break;
+		
+		case 1 :	 	/* WRR(2) + SPQ(2)  */
+			changePortSchEntry('w_algo_q0', 1, 'w_weight_q0', 3);
+			changePortSchEntry('w_algo_q1', 1, 'w_weight_q1', 7);
+			changePortSchEntry('w_algo_q2', 0, 'w_weight_q2', 0);
+			changePortSchEntry('w_algo_q3', 0, 'w_weight_q3', 0);
+	
+			break;
+		
+		case 2 :		/* WRR(3) + SPQ(1)  */
+			changePortSchEntry('w_algo_q0', 1, 'w_weight_q0', 3);
+			changePortSchEntry('w_algo_q1', 1, 'w_weight_q1', 7);
+			changePortSchEntry('w_algo_q2', 1, 'w_weight_q2', 0);
+			changePortSchEntry('w_algo_q3', 0, 'w_weight_q3', 0);		
+		break;		
+		
+		case 3 :	/* WRR */
+			for(i = 0; i < 4; i++)
+				changePortSchEntry('w_algo_q' + i, 1, 'w_weight_q' + i, 0);
+			break;
+		
+		default:
+			break;
+	}
+
+	return;
+}
+
+function changeSchMode(idx) {
+	var val = parseInt(document.getElementById('w_algo_q' + idx).value);
+
+	if(val) {
+		document.getElementById('w_weight_q'     + idx).disabled = false;
+		if(document.getElementById('w_weight_q'  + idx).value == '-')
+			document.getElementById('w_weight_q' + idx).value    = 0;
+	}
+	else {
+		document.getElementById('w_weight_q' + idx).disabled = true;
+		document.getElementById('w_weight_q' + idx).value    = '-';
+	}
+
+	return;
+}
+
+function getPortQueueSch() {
+	var val    = document.getElementById('w_sch_port').value;
+	var qid    = 0;
+	var is_wrr = 0;
+	var i      = 0;
+
+	/* fill queue value */
+	for(i = 0; i < qos_sch_list.length; i++) {
+		if(qos_sch_list[i][2] == val) {
+			qid = qos_sch_list[i][3];
+
+			if(qos_sch_list[i][5] == 'SP') {
+				document.getElementById('w_weight_q' + qid).disabled = true;
+				document.getElementById('w_algo_q'   + qid).value    = 0;
+				document.getElementById('w_weight_q' + qid).value    = '-';
+			}
+			else {
+				document.getElementById('w_weight_q' + qid).disabled = false;
+				document.getElementById('w_algo_q'   + qid).value    = 1;
+				document.getElementById('w_weight_q' + qid).value    = qos_sch_list[i][6];
+				is_wrr++;
+			}
+			changeSchMode(qid);
+		}
+	}
+
+	/* determine port scheduling algo */
+	if(is_wrr)
+		document.getElementById('w_sch_mode').value = 1;
+	else
+		document.getElementById('w_sch_mode').value = 0;
+}
+
+function btnApplyQosSch() {
+	var val   = document.getElementById('w_sch_port').value;
+	var loc   = "qosqueue.cmd?action=update";
+	var code  = '';
+	var ulist = '&upLst=';
+	var i     = 0;
+	var cnt   = 0;
+	var qid   = 0;
+
+	/* QoS Scheduling */
+	cnt = qos_sch_list.length;
+	for(i = 0; i < cnt; i++) {
+
+		if(qos_sch_list[i][2] == val) {
+			qid = qos_sch_list[i][3];
+
+			/* build update list */
+			ulist += encodeUrl(qos_sch_list[i][0]);
+			ulist += '|1';
+			ulist += '|' + qos_sch_list[i][2];
+			ulist += '|' + qos_sch_list[i][4];
+
+			if(parseInt(document.getElementById('w_algo_q' + qid).value)) {
+				ulist += '|WRR|' + parseInt(document.getElementById('w_weight_q' + qid).value);	/* 1 ~ 63 */
+			}
+			else {
+				ulist += '|SP|0';
+			}
+			if((i + 1) < cnt) ulist += ',';
+		}
+	}
+
+	loc += ulist;
+	loc += '&sessionKey=' + sessionKey;
+	code = 'location="' + loc + '"';
+	eval(code);
+
+	return;
+}
+
+
+function enable_ethtype_8021q()
+{
+	var op = document.getElementById("w_qos_rule_ig_ethtype").getElementsByTagName("option");
+	for (var i = 0; i < op.length ; i++)
+	{
+		if(op[i].value == "8100")
+			op[i].disabled = false;
+	}
+}
+
+function disable_ethtype_8021q()
+{
+	var op = document.getElementById("w_qos_rule_ig_ethtype").getElementsByTagName("option");
+	for (var i = 0; i < op.length ; i++)
+	{
+		if(op[i].value == "8100")
+			op[i].disabled = true;
+	}
+}
+
+function changeSelect(OnPageLoad)
+{
+	var ifc = document.forms[0].w_qos_rule_ig_ifc.value;
+
+	if (ifc == 'WAN(routed)')
+		disable_ethtype_8021q()
+	else
+		enable_ethtype_8021q()
+}
+
+function changeSelect3(OnPageLoad) {
+	var ifc = document.forms[0].w_qos_policy_eg_ifc.value;
+
+	if(ifc == 'LAN1') {
+		queues = lan1Qinfo.split('|');
+	}
+	else if(ifc == 'LAN2') {
+		queues = lan2Qinfo.split('|');
+	}
+	else if(ifc == 'LAN3') {
+		queues = lan3Qinfo.split('|');
+	}
+	else if(ifc == 'LAN4') {
+		queues = lan4Qinfo.split('|');
+	}
+	else if(ifc.indexOf('WAN') != -1) {
+		queues = wanQinfo.split('|');
+	}
+	else
+		return;	/* we do not found queue interface */
+
+	document.forms[0].w_qos_policy_queue.length = queues.length + 1;
+	for(var i = 0, j = 1; i < queues.length; i++) {
+		if(queues[i] != '') {
+			var info = queues[i].split(':');
+			var qid  = 0;
+
+			qid = parseInt(info[0]);
+			if(qid > 0) {
+				document.forms[0].w_qos_policy_queue.options[j].value = info[0];
+				document.forms[0].w_qos_policy_queue.options[j].text  = (qid - 1) % 4;
+				j++;
+			}
+		}
+	}
+	document.forms[0].w_qos_policy_queue.length = j;
+
+	return;
+}
+
+function changeProtocol() {
+	var proto = document.forms[0].w_qos_rule_protocol.value;
+
+	if(proto != '6' && proto != '17') {
+		document.getElementById('w_qos_display_srcport').style.display = "none";
+		document.getElementById('w_qos_display_dstport').style.display = "none";
+	}
+	else {
+		document.getElementById('w_qos_display_srcport').style.display = "";
+		document.getElementById('w_qos_display_dstport').style.display = "";
+	}
+}
+
+function checkPortNum(port) {
+	var port_no = parseInt(port);
+
+	if(port_no < 1) return false;
+	if(port_no > 65535) return false;
+
+	return true;
+}
+
+function checkQoSClss() {
+	var msg     = '';
+	var etype   = document.forms[0].w_qos_rule_ig_ethtype.value;
+	var srcport = document.forms[0].w_qos_rule_srcport.value;
+	var dstport = document.forms[0].w_qos_rule_dstport.value;
+
+	if(document.forms[0].w_qos_policy_queue.selectedIndex == 0) {
+		msg = '내부 처리 우선 순위는 필수 항목입니다.';
+		webAlert(msg);
+		return false;
+	}
+
+	if(document.forms[0].w_qos_rule_srcaddr.value != '') {
+		var srcaddr = document.forms[0].w_qos_rule_srcaddr.value;
+		var addrParts = srcaddr.split('/');
+
+		if(addrParts.length > 2) {
+			msg = '다음 주소형식이 잘못되었습니다:"' + srcaddr.value + '"';
+			webAlert(msg);
+			return false;
+		}
+		if (addrParts[0] == "") {
+			msg = '다음 주소형식이 잘못되었습니다:"' + srcaddr.value + '"';
+			webAlert(msg);
+			return false;
+		}
+
+		if (etype == '86DD') {
+			if(isValidIpAddress6(addrParts[0]) == false) {
+				msg = '다음 IPv6 주소형식이 잘못되었습니다:"' + srcaddr.value + '"';
+				webAlert(msg);
+				return false;
+			}
+			if(addrParts.length == 2 ) {
+				num = parseInt(addrParts[1]);
+				if ( num <= 0 || num > 128 ) {
+					msg = 'IPv6 Mask 값은 0 ~ 128 이어야 합니다.';
+					webAlert(msg);
+					return false;
+				}
+			}
+		}
+		else {
+			if (isValidIpAddress(addrParts[0]) == false) {
+				msg = '다음 IPv4 주소형식이 잘못되었습니다:"' + srcaddr.value + '"';
+				webAlert(msg);
+				return false;
+			}
+			if ( addrParts.length == 2 ) {
+				num = parseInt(addrParts[1]);
+				if ( num <= 0 || num > 32 ) {
+					msg = 'IPv6 Mask 값은 0 ~ 32 이어야 합니다.';
+					webAlert(msg);
+					return false;
+				}
+			}
+		}
+	}
+
+	if(srcport.value != "" && checkPortNum(srcport.value) == false ) {
+		msg = '다음 발신 포트 값이 잘못되었습니다. "' + srcport.value + '"';
+		webAlert(msg);
+		return false;
+	}
+
+	if(document.forms[0].w_qos_rule_dstaddr.value != "") {
+		var dstaddr = document.forms[0].w_qos_rule_dstaddr.value;
+		var addrParts = dstaddr.split('/');
+
+		if(addrParts.length > 2) {
+			msg = '다음 주소형식이 잘못되었습니다:"' + dstaddr.value + '"';
+			webAlert(msg);
+			return false;
+		}
+		if(addrParts[0] == "") {
+			msg = '다음 주소형식이 잘못되었습니다:"' + dstaddr.value + '"';
+			webAlert(msg);
+			return false;
+		}
+		if(etype == '86DD') {
+			if(isValidIpAddress6(addrParts[0]) == false ) {
+				msg = '다음 IPv6 주소형식이 잘못되었습니다:"' + dstaddr.value + '"';
+				webAlert(msg);
+				return false;
+			}
+			if(addrParts.length == 2) {
+				num = parseInt(addrParts[1]);
+				if(num <= 0 || num > 128) {
+					msg = 'IPv6 Mask 값은 0 ~ 32 이어야 합니다.';
+					webAlert(msg);
+					return false;
+				}
+			}
+		}
+		else {
+			if(isValidIpAddress(addrParts[0]) == false) {
+				msg = '다음 IPv4 주소형식이 잘못되었습니다:"' + dstaddr.value + '"';
+				webAlert(msg);
+				return false;
+			}
+			if(addrParts.length == 2) {
+				num = parseInt(addrParts[1]);
+				if(num <= 0 || num > 32) {
+					msg = 'IPv6 Mask 값은 0 ~ 32 이어야 합니다.';
+					webAlert(msg);
+					return false;
+				}
+			}
+		}
+	}
+
+	if ( dstport.value != "" && checkPortNum(dstport.value) == false ) {
+		msg = '다음 착신 포트 값이 잘못되었습니다. "' + dstport.value + '"';
+		webAlert(msg);
+		return false;
+	}
+
+	return true;
+}
+
+function getQoSOrder() {
+	var order = 0, i = 0;
+	var queueclsRulsOrder = 'Last';
+	var rules = queueclsRulsOrder.split('|');
+
+	rules.sort();
+
+	for(i = 0; i < rules.length; i++) {
+		order = i + 1;
+
+		if(rules[i] == 'Last') {
+			break;
+		}
+	}
+
+	return order;
+}
+
+function addQoSClick() {
+	var loc   = 'qoscls.cmd?action=add';
+	var code  = '';
+	var order = 0;
+	var val   = '';
+
+	if(checkQoSClss() != true) return;
+
+	/* hidden info */
+	loc  += '&clsName=' + encodeUrl("QoS");
+	order = getQoSOrder();
+	loc  += '&rulsOrder=' + order;
+	loc  += '&rulsEnbl=1';
+
+	val = document.forms[0].w_qos_rule_ig_ifc.value.split('/');
+	val = val[0].split('(');
+	loc += '&classIf=' + val[0];
+
+	loc += '&ethertype=' + document.forms[0].w_qos_rule_ig_ethtype.value;
+	loc += '&vlan8021p=' + document.forms[0].w_qos_rule_802_1p.value;
+
+	if(document.forms[0].w_qos_rule_srcaddr.value != '') {
+		loc += '&ipoptionlist=0';
+		loc += '&srcAddr=' + document.forms[0].w_qos_rule_srcaddr.value;
+	}
+
+	if(document.forms[0].w_qos_rule_dstaddr.value != '')
+		loc += '&dstAddr=' + document.forms[0].w_qos_rule_dstaddr.value;
+
+	if(document.forms[0].w_qos_rule_dscp_tos.selectedIndex > 0)
+		loc += '&dscpCheck=' + document.forms[0].w_qos_rule_dscp_tos.value;
+
+	if(document.forms[0].w_qos_rule_protocol.selectedIndex > 0)
+		loc += '&protocol=' + document.forms[0].w_qos_rule_protocol.value;
+
+	if(document.forms[0].w_qos_rule_srcport.value != '')
+		loc += '&srcPort=' + document.forms[0].w_qos_rule_srcport.value;
+
+	if(document.forms[0].w_qos_rule_dstport.value != '')
+		loc += '&dstPort=' + document.forms[0].w_qos_rule_dstport.value;
+
+	val = document.forms[0].w_qos_policy_eg_ifc.value.split('/');
+	val = val[0].split('(');
+	loc += '&egress=' + val[0];
+
+	loc += '&queuekey=' + document.forms[0].w_qos_policy_queue.value;
+	loc += '&wanVlan8021p=' + document.forms[0].w_qos_policy_802_1p.value;
+	loc += '&dscpMark=' + document.forms[0].w_qos_policy_dscp_tos.value;
+
+	loc += '&sessionKey=' + sessionKey;
+    code = 'location="' + loc + '"';
+    eval(code);
+
+	return;
+}
+
+function rmQoSClick(rml) {
+	var i    = 0;
+	var lst  = '';
+	var loc  = '';
+	var code = '';
+
+	if (rml.length > 0) {
+		for(i = 0; i < rml.length; i++) {
+			if(rml[i].checked == true)
+				lst += '1,';
+			else
+				lst += '0,';
+		}
+	}
+	else if(rml.checked == true)
+		lst = '1';
+	else
+		lst = '0';
+
+	loc  = 'qoscls.cmd?action=remove&rmLst=' + lst;
+	loc += '&sessionKey=' + sessionKey;
+	code = 'location="' + loc + '"';
+	eval(code);
+
+	return;
+}
+
+function frmLoad() {
+	getPortQueueSch();
+	return;
+}
+</script>
+</head>
+
+<body onload="frmLoad()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form>
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>네트워크 </li>
+			<li>유선 QoS 설정 </li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">유선 QoS 설정</h1>
+	<p>QOS 설정 및 큐 스케줄방법을 설정합니다.</p>
+	<hr>
+
+	<h2 class="title_style_2">QoS 스케줄링 설정</h2>
+	<div class='tb_style_2'>
+		<table>
+			<colgroup>
+				<col style='width:25%;' />
+				<col style='width:%;' />
+			</colgroup>
+			<tbody>
+			<tr>
+				<th scope="row">포트</th>
+				<td>
+					<select id='w_sch_port' name='w_sch_port' onchange="getPortQueueSch()" >
+						<option value="eth4" selected>WAN</option>
+						<option value="eth0">LAN1</option>
+						<option value="eth1">LAN2</option>
+						<option value="eth2">LAN3</option>
+						<option value="eth3">LAN4</option>
+					</select>
+				</td>
+			</tr>
+			<tr>
+				<th scope="row">포트 알고리즘</th>
+				<td>
+					<select id='w_sch_mode' name='w_sch_mode' onchange="changePortSchMode()">
+						<option value='0'>SPQ</option>
+						<option value='1'>WRR(2) + SPQ(2)</option>
+						<option value='2'>WRR(3) + SPQ(1)</option>
+						<option value='3'>WRR</option>												
+					</select>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+		<table>
+			<colgroup>
+				<col style='width:25%;' />
+				<col style='width:25%;' />
+				<col style='width:25%;' />
+				<col style='width:25%;' />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope='col'><center>Queue ID</center></th>
+					<th scope='col'><center>내부 우선순위</center></th>
+					<th scope='col'><center>알고리즘</center></th>
+					<th scope='col'><center>가중치</center></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr align='center'>
+					<td><span>0</span></td>
+					<td><span>Low</span></td>
+					<td>
+						<select id='w_algo_q0' name='w_algo_q0' onchange="changeSchMode(0)">
+							<option value='0'>SPQ</option>
+                        	<option value='1'>WRR</option>
+						</select>
+					</td>
+					<td><input type='text' maxLength="3" id="w_weight_q0" name="w_weight_q0" ></td>
+				</tr>
+				<tr align='center'>
+					<td><span>1</span></td>
+					<td><span>Medium</span></td>
+					<td>
+						<select id='w_algo_q1' name='w_algo_q1' onchange="changeSchMode(1)">
+							<option value='0'>SPQ</option>
+							<option value='1'>WRR</option>
+						</select>
+					</td>
+					<td><input type='text' maxLength="3" id="w_weight_q1" name="w_weight_q1" ></td>
+				</tr>
+				<tr align='center'>
+					<td><span>2</span></td>
+					<td><span>High</span></td>
+					<td>
+						<select id='w_algo_q2' name='w_algo_q2' onchange="changeSchMode(2)">
+							<option value='0'>SPQ</option>
+							<option value='1'>WRR</option>
+						</select>
+					</td>
+					<td><input type='text' maxLength="3" id="w_weight_q2" name="w_weight_q2" ></td>
+				</tr>
+				<tr align='center'>
+					<td><span>3</span></td>
+					<td><span>Highest</span></td>
+					<td>
+						<select id='w_algo_q3' name='w_algo_q3' onchange="changeSchMode(3)">
+							<option value='0'>SPQ</option>
+							<option value='1'>WRR</option>
+						</select>
+					</td>
+					<td><input type='text' maxLength="3" id="w_weight_q3" name="w_weight_q3" ></td>
+				</tr>
+			</tbody>
+		</table>
+		<p style="font-size:8pt">※ 설정 후, 재시작하여야 정상 적용됩니다.</p>
+	</div>
+	<div class='txt_c pt_20'>
+		<input type='button' onClick='btnApplyQosSch()' value='적용' class='basic-btn01 btn-blue-bg mr_20'>
+	</div>
+	<br><br>
+
+	<h2 class="title_style_2">트래픽 및 MAC 개수 제한 설정</h2>
+	<div class="tb_style_2 scroll">
+		<table>
+			<colgroup>
+				<col />
+				<col />
+				<col />
+				<col />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col"><center>포트</center></th>
+					<th scope="col"><center>사용자 단말 기준 업로드 트래픽 제한 (Mbps)</center></th>
+					<th scope="col"><center>사용자 단말 기준 다운로드 트래픽 제한 (Mbps)</center></th>
+					<th scope="col"><center>MAC 제한 개수</center></th>
+				</tr>
+			</thead>
+			<tbody>
+				<script language="javascript">
+					var port_n;
+					for(var i = 0; i < port_limit.length; i++)
+					{
+						port_n = i;
+						document.write('<tr>\n');
+						document.write('<th scope="row">\n');
+
+						if(port_n == wan_port)
+							document.write("WAN");
+						else
+							document.write("LAN"+port_n);
+						document.write("</th>\n");
+
+						document.write("<td>\n");
+						document.write("<input type='text' id='port_limit_up_"+i+"' value='"+port_limit[i][0]+"'>");
+						document.write("</td>\n");
+
+						document.write("<td>\n");
+						document.write("<input type='text' id='port_limit_down_"+i+"' value='"+port_limit[i][1]+"'>\n");
+						document.write("</td>\n");
+
+						document.write("<td>\n");
+						if (port_n == wan_port) {
+							document.write('<input type="text" value="-" disabled>\n');
+						}
+						else {
+							document.write("<input type='text' id='port_maxhost_count_"+i+"' value='"+port_count[i]+"'>\n");
+						}
+						document.write("</td>\n");
+						document.write('</tr>\n');
+					}
+				</script>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c">
+		<input type="button" onclick="btnApplyRateLimit()" value="적용" class="basic-btn01 btn-blue-bg mr_20" >
+    </div>
+	<br><br>
+
+	<h2 class="title_style_2">QoS Policy 설정</h2>
+	<div class='tb_style_2'>
+		<table>
+			<thead>
+				<tr>
+					<th scope="row">규칙</th>
+				</tr>
+			</thead>
+		</table>
+		<table>
+			<colgroup>
+				<col style='width:25%;' />
+				<col style='' />
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">입력 인터페이스</th>
+					<td >
+						<select name='w_qos_rule_ig_ifc' onChange='changeSelect(0)'>
+							<option value='LAN' selected>LAN</option>
+							<script language="javascript">
+							{
+								var i = 0;
+
+								queueIntf.sort();
+								for(i = 0; i < queueIntf.length; i++) {
+									if(queueIntf[i] != 'undefined' || queueIntf[i] != '')
+										document.writeln('<option value="' + queueIntf[i] + '">' + queueIntf[i] + '</option>');
+								}
+							}
+							</script>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">Ether Type</th>
+					<td>
+						<select id="w_qos_rule_ig_ethtype" name="w_qos_rule_ig_ethtype">
+                            <option value='800' selected>IP (0x800)</option>
+							<option value='8100'>8021Q (0x8100)</option>
+							<option value='86DD'>IPv6 (0x86DD)</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="w_qos_rule_802_1p_display" style="">
+					<th scope="row">802.1p</th>
+					<td>
+						<select id="w_qos_rule_802_1p" name="w_qos_rule_802_1p">
+							<option value="-1"> </option>
+							<option value="0">0</option>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+							<option value="7">7</option>
+							</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">DSCP / TOS</th>
+					<td>
+						<select id="w_qos_rule_dscp_tos" name="w_qos_rule_dscp_tos">
+							<option value="-1" selected> </option>
+							<option value="0">0 / 0</option>
+							<option value="1">1 / 4</option>
+							<option value="2">2 / 8</option>
+							<option value="3">3 / 12</option>
+							<option value="4">4 / 16</option>
+							<option value="5">5 / 20</option>
+							<option value="6">6 / 24</option>
+							<option value="7">7 / 28</option>
+							<option value="8">8 / 32</option>
+							<option value="9">9 / 36</option>
+							<option value="10">10 / 40</option>
+							<option value="11">11 / 44</option>
+							<option value="12">12 / 48</option>
+							<option value="13">13 / 52</option>
+							<option value="14">14 / 56</option>
+							<option value="15">15 / 60</option>
+							<option value="16">16 / 64</option>
+							<option value="17">17 / 68</option>
+							<option value="18">18 / 72</option>
+							<option value="19">19 / 76</option>
+							<option value="20">20 / 80</option>
+							<option value="21">21 / 84</option>
+							<option value="22">22 / 88</option>
+							<option value="23">23 / 92</option>
+							<option value="24">24 / 96</option>
+							<option value="25">25 / 100</option>
+							<option value="26">26 / 104</option>
+							<option value="27">27 / 108</option>
+							<option value="28">28 / 112</option>
+							<option value="29">29 / 116</option>
+							<option value="30">30 / 120</option>
+							<option value="31">31 / 124</option>
+							<option value="32">32 / 128</option>
+							<option value="33">33 / 132</option>
+							<option value="34">34 / 136</option>
+							<option value="35">35 / 140</option>
+							<option value="36">36 / 144</option>
+							<option value="37">37 / 148</option>
+							<option value="38">38 / 152</option>
+							<option value="39">39 / 156</option>
+							<option value="40">40 / 160</option>
+							<option value="41">41 / 164</option>
+							<option value="42">42 / 168</option>
+							<option value="43">43 / 172</option>
+							<option value="44">44 / 176</option>
+							<option value="45">45 / 180</option>
+							<option value="46">46 / 184</option>
+							<option value="47">47 / 188</option>
+							<option value="48">48 / 192</option>
+							<option value="49">49 / 196</option>
+							<option value="50">50 / 200</option>
+							<option value="51">51 / 204</option>
+							<option value="52">52 / 208</option>
+							<option value="53">53 / 212</option>
+							<option value="54">54 / 216</option>
+							<option value="55">55 / 220</option>
+							<option value="56">56 / 224</option>
+							<option value="57">57 / 228</option>
+							<option value="58">58 / 232</option>
+							<option value="59">59 / 236</option>
+							<option value="60">60 / 240</option>
+							<option value="61">61 / 244</option>
+							<option value="62">62 / 248</option>
+							<option value="63">63 / 252</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">발신 IP 주소 [/ MASK]</th>
+					<td>
+						<input type="text" name="w_qos_rule_srcaddr" maxLength="43" style="width:50%;">
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">착신 IP 주소 [/ MASK]</th>
+					<td>
+						<input type="text" name="w_qos_rule_dstaddr" maxLength="43" style="width:50%;">
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">프로토콜</th>
+					<td>
+						<select id="w_qos_rule_protocol" name="w_qos_rule_protocol" onchange='changeProtocol()'>
+							<option value="-1" selected> </option>
+							<option value="6" >TCP</option>
+							<option value="17">UDP</option>
+							<option value="1" >ICMP</option>
+							<option value="2" >IGMP</option>
+							<option value="58">ICMPv6</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="w_qos_display_srcport" style="display:none;">
+					<th scope="row">발신 L4 포트</th>
+					<td>
+						<input type="text" name="w_qos_rule_srcport" maxLength="5" style="width:25%;">
+					</td>
+				</tr>
+				<tr id="w_qos_display_dstport" style="display:none;">
+					<th scope="row">착신 L4 포트</th>
+					<td>
+						<input type="text" name="w_qos_rule_dstport" maxLength="5" style="width:25%;" >
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<table>
+			<thead>
+				<tr>
+					<th scope="row">정책</th>
+				</tr>
+			</thead>
+		</table>
+		<table>
+			<colgroup>
+				<col style='width:25%;' />
+				<col style='' />
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">출력 인터페이스 (필수)</th>
+					<td>
+						<select name="w_qos_policy_eg_ifc" onChange='changeSelect3(0)'>
+							<option value="-1"></option>
+							<script language="javascript">
+							{
+								var i = 0;
+
+								queueIntf.sort();
+								for(i = 0; i < queueIntf.length; i++) {
+									if(queueIntf[i] != 'undefined' || queueIntf[i] != '')
+										document.writeln('<option value="' + queueIntf[i] + '">' + queueIntf[i] + '</option>');
+								}
+							}
+							</script>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">내부 우선 순위 (필수)</th>
+					<td>
+						<select id="w_qos_policy_queue" name="w_qos_policy_queue">
+							<option value="-1"></option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">802.1p 마킹</th>
+					<td>
+						<select name="w_qos_policy_802_1p">
+							<option value="-1" selected> </option>
+							<option value="0">0</option>
+							<option value="1">1</option>
+							<option value="2">2</option>
+							<option value="3">3</option>
+							<option value="4">4</option>
+							<option value="5">5</option>
+							<option value="6">6</option>
+							<option value="7">7</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">DSCP/TOS 마킹</th>
+					<td>
+						<select name="w_qos_policy_dscp_tos">
+							<option value="-1" selected> </option>
+							<option value="0">0 / 0</option>
+							<option value="1">1 / 4</option>
+							<option value="2">2 / 8</option>
+							<option value="3">3 / 12</option>
+							<option value="4">4 / 16</option>
+							<option value="5">5 / 20</option>
+							<option value="6">6 / 24</option>
+							<option value="7">7 / 28</option>
+							<option value="8">8 / 32</option>
+							<option value="9">9 / 36</option>
+							<option value="10">10 / 40</option>
+							<option value="11">11 / 44</option>
+							<option value="12">12 / 48</option>
+							<option value="13">13 / 52</option>
+							<option value="14">14 / 56</option>
+							<option value="15">15 / 60</option>
+							<option value="16">16 / 64</option>
+							<option value="17">17 / 68</option>
+							<option value="18">18 / 72</option>
+							<option value="19">19 / 76</option>
+							<option value="20">20 / 80</option>
+							<option value="21">21 / 84</option>
+							<option value="22">22 / 88</option>
+							<option value="23">23 / 92</option>
+							<option value="24">24 / 96</option>
+							<option value="25">25 / 100</option>
+							<option value="26">26 / 104</option>
+							<option value="27">27 / 108</option>
+							<option value="28">28 / 112</option>
+							<option value="29">29 / 116</option>
+							<option value="30">30 / 120</option>
+							<option value="31">31 / 124</option>
+							<option value="32">32 / 128</option>
+							<option value="33">33 / 132</option>
+							<option value="34">34 / 136</option>
+							<option value="35">35 / 140</option>
+							<option value="36">36 / 144</option>
+							<option value="37">37 / 148</option>
+							<option value="38">38 / 152</option>
+							<option value="39">39 / 156</option>
+							<option value="40">40 / 160</option>
+							<option value="41">41 / 164</option>
+							<option value="42">42 / 168</option>
+							<option value="43">43 / 172</option>
+							<option value="44">44 / 176</option>
+							<option value="45">45 / 180</option>
+							<option value="46">46 / 184</option>
+							<option value="47">47 / 188</option>
+							<option value="48">48 / 192</option>
+							<option value="49">49 / 196</option>
+							<option value="50">50 / 200</option>
+							<option value="51">51 / 204</option>
+							<option value="52">52 / 208</option>
+							<option value="53">53 / 212</option>
+							<option value="54">54 / 216</option>
+							<option value="55">55 / 220</option>
+							<option value="56">56 / 224</option>
+							<option value="57">57 / 228</option>
+							<option value="58">58 / 232</option>
+							<option value="59">59 / 236</option>
+							<option value="60">60 / 240</option>
+							<option value="61">61 / 244</option>
+							<option value="62">62 / 248</option>
+							<option value="63">63 / 252</option>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c pt_20">
+		<input type="button" onclick="addQoSClick()" value="추가" class="basic-btn01 btn-blue-bg" >
+	</div>
+
+	<h2 class="title_style_2">리스트</h2>
+	<div class='tb_style_1 scroll'>
+		<table>
+			<colgroup>
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="row">선택</th>
+					<th scope="row">입력</th>
+					<th scope="row">ET</th>
+					<th scope="row">802.1p</th>
+					<th scope="row">DSCP/TOS</th>
+					<th scope="row">발신 IP/MASK</th>
+					<th scope="row">착신 IP/MASK</th>
+					<th scope="row">프로토콜</th>
+					<th scope="row">발신포트</th>
+					<th scope="row">착신포트</th>
+					<th scope="row">출력</th>
+					<th scope="row">우선순위</th>
+					<th scope="row">마킹타입</th>
+				</tr>
+			</thead>
+			<tbody>
+				
+			</tbody>
+		</table>
+	</div>
+
+	<div class='txt_c pt_20'>
+		<input type='button' onClick='rmQoSClick(this.form.rml)' value='선택 제거' class='basic-btn01 btn-gray-bg2 mr_20'>
+	</div>
+</div>
+</form>
+</body>
+</html>

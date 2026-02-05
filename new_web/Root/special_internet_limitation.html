@@ -1,0 +1,733 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+
+var loc ='';
+var query='';
+
+var localhosts = [
+[ "a8:2b:b9:00:00:01","엄마_핸드폰" ],
+[ "a8:2b:b9:00:00:02","큰아들_핸드폰" ],
+[ "a8:2b:b9:09:3b:8c","Galaxy-S8" ]];
+
+var current_time = "1575877586";
+var hosts_list = [
+[ "test",  "1",  "e8:9a:8f:26:a7:26",  "매일",  "3:0",  "21:0",  "1" ]];
+
+var wl_restrict_use = new Array();
+ 
+/*
+var localhosts = [
+""];
+var current_time = "1536030896";
+var hosts_list = [
+[ "sun",  "10:23:aa:00:1c:cc",  " 일 ",  "0",  "20",  "0" ],
+[ "mon",  "20:23:aa:00:1c:cc",  " 월",  "0",  "1",  "0" ],
+[ "th",  "30:23:aa:00:1c:cc",  " 화",  "0",  "15",  "0" ],
+[ "web",  "40:23:aa:00:1c:cc",  " 수",  "0",  "1",  "0" ],
+[ "tu",  "50:23:aa:00:1c:cc",  " 목 ",  "0",  "1",  "0" ],
+[ "금",  "60:23:aa:00:1c:cc",  " 금 ",  "0",  "1",  "0" ],
+[ "sat",  "70:23:aa:00:1c:cc",  " 토 ",  "0",  "1",  "0" ],
+[ "sat2",  "80:23:aa:00:1c:cc",  " 목  금  토 ",  "0",  "7",  "0" ]];
+*/
+
+
+function leadingZeros(n, digits) {
+  var zero = '';
+  n = n.toString();
+
+  if (n.length < digits) {
+    for (i = 0; i < digits - n.length; i++)
+      zero += '0';
+  }
+  return zero + n;
+}
+
+function getTodayLabel()
+{
+ var week = new Array('일요일', '월요일', ' 화요일', '수요일', '목요일', '금요일', '토요일');
+ var today = new Date().getDay();
+ var todayLabel = week[today];
+ return todayLabel;
+}
+
+function getTimeStamp(time) { // 24시간제
+ var d = new Date(time*1000);
+  var s =
+    leadingZeros(d.getFullYear(), 4) + '-' +
+    leadingZeros(d.getMonth() + 1, 2) + '-' +
+    leadingZeros(d.getDate(), 2) + ' ' +
+    leadingZeros(d.getHours(), 2) + ':' +
+    leadingZeros(d.getMinutes(), 2) + ':' +
+    leadingZeros(d.getSeconds(), 2);
+  return s;
+}
+
+function realtimeClock() {
+ document.getElementById("rtcInput").innerHTML= "현재 시간 : " + getTimeStamp(current_time) + " (" + getTodayLabel() + ")";
+ setTimeout("realtimeClock()", 1000);
+ current_time++;
+}
+
+function write_StartTime(){
+	var n =0;
+	for(n = 0; n < 24; n++ )
+		if( n < 10)
+			document.write("<option value="+n+">0"+n+"시</option>\n");
+		else
+			document.write("<option value="+n+">"+n+"시</option>\n");
+}
+
+function write_EndTime(){
+	var n =0;
+	for(n = 1; n < 25; n++ )
+		if( n < 10)
+			document.write("<option value="+n+">0"+n+"시</option>\n");
+		else
+			document.write("<option value="+n+">"+n+"시</option>\n");
+}
+
+function write_time_min(){
+	var n =0;
+	for(n = 0; n < 6; n++ ) {
+		if(n == 0)
+			document.write("<option value="+Number(n*10)+">0"+Number(n*10)+"분</option>\n");
+		else 
+			document.write("<option value="+Number(n*10)+">"+Number(n*10)+"분</option>\n");
+	}
+}
+
+function select_client_list(){
+	var value = document.getElementById("client_mac_list").value;
+
+	if(value == localhosts.length)
+		document.getElementById("client_mac").value="";
+	else
+		document.getElementById("client_mac").value=localhosts[value][0];
+
+}
+
+function select_week_check_all_week(){
+	var n = 0;
+	var str = "";
+	for(n = 0; n < 7; n++ ){
+		str = "week_"+n;
+		document.getElementById(str).checked = true;
+	}
+}
+
+function select_week_release_all_week(){
+	var n = 0;
+	var str = "";
+	for(n = 0; n < 7; n++ ){
+		str = "week_"+n;
+		document.getElementById(str).checked = false;
+	}
+}
+
+function select_week_check_all(){
+	if( document.getElementById("week_all").checked == true)
+		select_week_check_all_week();
+	else
+		select_week_release_all_week();
+}
+
+function check_time(){
+	var shour = parseInt(document.forms[0].start_time.value);
+	var smin  = parseInt(document.forms[0].start_time_min.value);
+	var ehour = parseInt(document.forms[0].end_time.value);
+	var emin = parseInt(document.forms[0].end_time_min.value);
+
+	if( (shour*60 + smin) >= (ehour*60 + emin) )
+		return false;
+	else
+		return true;
+}
+
+function btnApply_add(){
+	var str="", action="", start_t, start_m, end_t, end_m;
+	var n = 0;
+	var week = "0";
+
+	str = document.forms[0].client_mac.value;
+	if(document.forms[0].policy[1].checked == true) {
+		action = "1";
+	} else {
+		action = "0";
+	}
+	start_t = Number(document.forms[0].start_time.value);
+	start_m = Number(document.forms[0].start_time_min.value);
+	end_t = Number(document.forms[0].end_time.value);
+	end_m = Number(document.forms[0].end_time_min.value);
+	
+	if( str.indexOf(' ') != -1 ){
+		webAlert('MAC주소에 공백을 사용할수 없습니다');
+		return true;
+	}
+
+	if( isValidMacAddress(str) == false ){
+		webAlert('유효하지 않는 MAC주소입니다 ' +'Ex) 00:23:AA:00:00:00');
+		return true;
+	}
+
+	for(n = 0; n <hosts_list.length; n++ ) {
+		if(hosts_list[n][1] != "1")
+			continue;
+		if(hosts_list[n][2] == str) { 
+			var hosts_start_t, hosts_start_m, hosts_end_t, hosts_end_m;
+			var start_str, end_str;
+			var day_list = ["일", "월", "화", "수", "목", "금", "토"];
+			var day_arr = new Array();
+	
+			for(var i = 0; i < 7; i++) {
+				if(document.getElementById("week_"+i).checked) {
+					day_arr[i] = 1;
+				} else {
+					day_arr[i] = 0;
+				}
+			}
+
+			if(action != hosts_list[n][6]) {  
+				webAlert('중복되는 MAC주소가 있습니다');
+				return true;
+			}
+
+			start_str = hosts_list[n][4].split(':');
+			hosts_start_t = Number(start_str[0]);
+			hosts_start_m = Number(start_str[1]);
+			end_str = hosts_list[n][5].split(':');
+			hosts_end_t = Number(end_str[0]);
+			hosts_end_m = Number(end_str[1]);
+			if(hosts_list[n][3] == "매일") { // week all set
+				if(!(end_t < hosts_start_t || (end_t == hosts_start_t && end_m <= hosts_end_m)
+							|| start_t > hosts_end_t || (start_t == hosts_end_t && start_m >= hosts_end_m))){
+					webAlert('중복되는 MAC주소가 있습니다');
+					return true;
+				}
+			} else {
+				for(var i = 0; i < 7; i++) {
+					if(day_arr[i] && (hosts_list[n][3].indexOf(day_list[i]) != -1)){
+						if(!(end_t < hosts_start_t || (end_t == hosts_start_t && end_m <= hosts_end_m)
+									|| start_t > hosts_end_t || (start_t == hosts_end_t && start_m >= hosts_end_m))){
+							webAlert('중복되는 MAC주소가 있습니다');
+							return true;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	str=document.forms[0].client_name.value;
+	if( str.indexOf(' ') != -1 ){
+		webAlert('단말이름에 공백을 사용할수 없습니다');
+		return true;
+	}
+
+	if(str==''){
+		webAlert('단말이름이 없습니다');
+		return true;
+	}
+/*
+	if( parseInt(document.forms[0].start_time.value) >= parseInt(document.forms[0].end_time.value) ){
+		webAlert('시작시간이 종료시간보다 같거나 클수는 없습니다');
+		return true;
+	}
+*/
+	if(check_time() == false){
+		webAlert('시작시간이 종료시간보다 같거나 클수는 없습니다');
+		return true;
+	}
+
+
+	for(n = 6; n >= 0; n-- ){
+		str = "week_"+n;
+		if(document.getElementById(str).checked == true)
+			week+="1";
+		else
+			week+="0";
+	}
+
+	if( week == 0){
+		webAlert('최소 하나의 요일을 설정해야 합니다');
+		return true;
+	}
+
+	query += document.forms[0].client_name.value+'|';
+	query += document.forms[0].client_mac.value+'|';
+	query += week +'|';
+	query += document.forms[0].start_time.value +'|';
+	query += document.forms[0].start_time_min.value +'|';
+	query +=document.forms[0].end_time.value +'|';
+	query += document.forms[0].end_time_min.value +'|';
+
+	if(document.forms[0].policy[1].checked ==true )
+		query +='deny|,';
+	else
+		query +='allow|,';
+
+	return false;
+}
+
+function btnApply_remove(){
+	var p = 0;
+	var str ='';
+	for(p = 0; p< hosts_list.length; p++)
+	{
+		str = 'wv_restrict_net_rm_'+p;
+		console.log(str);
+		if(document.getElementById(str).checked == true)
+			query += document.getElementById(str).value+",";
+	}
+}
+
+function btnApply_apply(){
+	var p = 0, flag = 0;
+	var str ='';
+	var def_str = "xx:xx:xx:xx:xx:xx|xxxxxxxx|x:x~x:x|x ";
+	var day_list = ["일", "월", "화", "수", "목", "금", "토"];
+	var week = "0";
+
+	if(hosts_list[0][0] == "" && hosts_list[0][1] == "" && hosts_list[0][2] == "" 
+				&& hosts_list[0][3] == 0 && hosts_list[0][4] == 0 && hosts_list[0][5] == 0){
+		return true;
+	}
+	query += '-';
+	for(p = 0; p< hosts_list.length; p++)
+	{
+		if(document.getElementById("wv_restrict_net_rm_"+p).checked)
+			continue;
+		if((document.getElementById("wv_restrict_net_use_"+p).checked == true) && !wl_restrict_use[p]) {
+			var mac = hosts_list[p][2];
+			var action = hosts_list[p][6];
+			var start_str, endstr, hosts_start_str, hosts_end_str;
+			var start_t, start_m, end_t, end_m;
+
+			start_str = hosts_list[p][4].split(':');
+			start_t = Number(start_str[0]);
+			start_m = Number(start_str[1]);
+			end_str = hosts_list[p][5].split(':');
+			end_t = Number(end_str[0]);
+			end_m = Number(end_str[1]);
+
+			for(var n = 0; n < hosts_list.length; n++ ) {
+				if(n == p)
+					continue;
+				if(document.getElementById("wv_restrict_net_use_"+n).checked == false) 
+					continue;
+				if(hosts_list[n][2] == mac) { 
+					var hosts_start_t, hosts_start_m, hosts_end_t, hosts_end_m;
+					var start_str, end_str;
+					var day_arr = new Array();
+					for(var i = 0; i < 7; i++) {
+						if((hosts_list[p][3].indexOf(day_list[i]) != -1) || (hosts_list[p][3].indexOf("매일") != -1)) {
+							day_arr[i] = 1;
+						} else {
+							day_arr[i] = 0;
+						}
+					}
+
+					if(action != hosts_list[n][6]) {  
+						webAlert('중복되는 MAC주소가 있습니다');
+						return true;
+					}
+
+					hosts_start_str = hosts_list[n][4].split(':');
+					hosts_start_t = Number(hosts_start_str[0]);
+					hosts_start_m = Number(hosts_start_str[1]);
+					hosts_end_str = hosts_list[n][5].split(':');
+					hosts_end_t = Number(hosts_end_str[0]);
+					hosts_end_m = Number(hosts_end_str[1]);
+					if(hosts_list[n][3] == "매일") { 
+						if(!(end_t < hosts_start_t || (end_t == hosts_start_t && end_m <= hosts_end_m)
+									|| start_t > hosts_end_t || (start_t == hosts_end_t && start_m >= hosts_end_m))){
+							webAlert('중복되는 MAC주소가 있습니다');
+							return true;
+						}
+					} else {
+						for(var i = 0; i < 7; i++) {
+							if(day_arr[i] && (hosts_list[n][3].indexOf(day_list[i]) != -1)){
+								if(!(end_t < hosts_start_t || (end_t == hosts_start_t && end_m <= hosts_end_m)
+											|| start_t > hosts_end_t || (start_t == hosts_end_t && start_m >= hosts_end_m))){
+									webAlert('중복되는 MAC주소가 있습니다');
+									return true;
+								}
+							}
+						}
+					}
+
+				}
+			}
+			for(var n = 6; n >= 0; n-- ){
+				if(hosts_list[p][3].indexOf(day_list[n]) != -1 || hosts_list[p][3].indexOf("매일") != -1)
+					week+="1";		
+				else
+					week+="0";
+			}
+			query += document.getElementById("wv_restrict_net_use_"+p).value;
+			query += "|"+week+"|"+hosts_list[p][4]+"~"+hosts_list[p][5]+"|"+p;
+			query += " ";
+			flag = 1;
+			week = "0";
+		}
+	}
+	if (flag == 0) 
+		query += def_str;
+	flag = 0;
+
+	query += '-';
+	for(p = 0; p< hosts_list.length; p++)
+	{
+		if(document.getElementById("wv_restrict_net_rm_"+p).checked)
+			continue;
+		if((document.getElementById("wv_restrict_net_use_"+p).checked == false) && wl_restrict_use[p]) {
+			for(var n = 6; n >= 0; n-- ){
+				if(hosts_list[p][3].indexOf(day_list[n]) != -1 || hosts_list[p][3].indexOf("매일") != -1)
+					week+="1";		
+				else
+					week+="0";
+			}
+			query += document.getElementById("wv_restrict_net_use_"+p).value;
+			query += "|"+week+"|"+hosts_list[p][4]+"~"+hosts_list[p][5]+"|"+p;
+			query += " ";
+			flag = 1;
+			week = "0";
+		}
+	}
+	if (flag == 0) 
+		query += def_str;
+	flag = 0;
+
+	query += '-';
+	for(p = 0; p< hosts_list.length; p++)
+	{
+		if(document.getElementById("wv_restrict_net_rm_"+p).checked) {
+			for(var n = 6; n >= 0; n-- ){
+				if(hosts_list[p][3].indexOf(day_list[n]) != -1 || hosts_list[p][3].indexOf("매일") != -1)
+					week+="1";		
+				else
+					week+="0";
+			}
+			query += document.getElementById("wv_restrict_net_use_"+p).value;
+			query += "|"+week+"|"+hosts_list[p][4]+"~"+hosts_list[p][5]+"|"+p;
+			query += " ";
+			flag = 1;
+			week = "0";
+		}
+	}
+	if (flag == 0) 
+		query += def_str;
+	flag = 0;
+}
+
+function btnApply(action){
+	loc = 'special_internet_limitation.cgi?';
+
+	if(action == 1){
+		loc +="wv_restrict_net_action=add";
+		if(btnApply_add() == true)
+			return;
+	}else if(action == 0){
+		loc +="wv_restrict_net_action=remove";
+		btnApply_remove();
+	}else{
+		loc +="wv_restrict_net_action=apply";
+		if(btnApply_apply() == true)
+			return;
+	}
+
+	loc +='&wv_restrict_net_query='+query;
+	loc += '&sessionKey=620230505';
+	var code = 'location="' + loc + '"';
+	eval(code);
+}
+
+function refresh() {
+	var code = 'location=wv_restrict_net_query.html';
+	eval(code);
+}
+
+function frmLoad() {
+	var j =0;
+	if(current_time != "0")
+		realtimeClock();
+	else 
+		webAlert("현재 NTP 동기화 상태가 아닙니다. \n인터넷 접속제한 서비스는 NTP 동기화 상태에서만 동작합니다.");
+	document.getElementById("client_mac_list").value= localhosts.length;
+	document.forms[0].policy[1].checked =true;
+	if(!(hosts_list[0][0] == "" && hosts_list[0][1] == "" && hosts_list[0][2] == "" && hosts_list[0][3] == 0 && hosts_list[0][4] == 0 && hosts_list[0][5] == 0)) {
+		for(j = 0; j < hosts_list.length; j++){
+			if(hosts_list[j][1] == "1") {
+				document.getElementById("wv_restrict_net_use_"+j).checked = true;
+				wl_restrict_use[j] = 1;
+			} else { 
+				document.getElementById("wv_restrict_net_use_"+j).checked = false;
+				wl_restrict_use[j] = 0;
+			}
+		}
+	}
+}
+</script>
+</head>
+
+<body  onload="frmLoad()">
+
+
+<script language="javascript">
+showmenubar();
+</script>
+
+
+<form>
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>특수기능 </li>
+			<li>인터넷 접속제한 서비스</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">인터넷 접속제한 서비스</h1>
+	<p>설정된 MAC정보에 대하여 인터넷 접속 제한을 설정합니다.</p>
+	<hr>
+
+	<div class="top_title_area clfx">
+		<h2 class="title_style_2 left_area">설정 추가</h2>
+
+		<div class="right_area">
+			<p name="rtcInput" id="rtcInput" class="icon_time">현재시간 : --월 -- 일  -- --</p>
+<!--
+			<button class="btn_refresh" onclick="refresh()"><span>새로고침</span></button>
+-->
+		</div>
+	</div>
+
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:13.5%;" />
+				<col style="width:36.5%;" />
+				<col style="width:13.5%;" />
+				<col style="width:36.5%;" />
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">단말이름</th>
+					<td class="txt_l"><input type="text" name="client_name" id="client_name" maxlength="30"></td>
+					<th scope="row">허용/차단</th>
+					<td class="txt_l">
+						<input type="radio"  name="policy" id="policy" >
+						<label for="internet_y">허용</label>
+						<input type="radio"  name="policy" id="policy" >
+						<label for="internet_n">차단</label>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">단말주소(MAC)</th>
+					<td class="txt_l"><input type="text" name="client_mac" id="client_mac" maxlength="30"></td>
+					<th scope="row">단말 찾기</th>
+					<td class="txt_l">
+						<select name="client_mac_list" id="client_mac_list" class="w_250" onChange="select_client_list();">
+<script language="javascript">
+							var i = 0;
+							for(i = 0; i <localhosts.length; i++ ){
+									if(localhosts[i][0] !="")
+										document.write("<option value="+i+">"+localhosts[i][0]+"&nbsp;&nbsp;["+localhosts[i][1]+"]</option>\n");
+								}
+							document.write("<option value="+localhosts.length+">단말 선택 안 함</option>\n");
+</script>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">일정</th>
+					<td colspan="3" class="txt_l">
+						<span>
+							<input type="checkbox" id="week_0">
+							<label for="week_0">일</label>
+						</span>
+						<span>
+							<input type="checkbox" id="week_1" >
+							<label for="week_1">월</label>
+						</span>
+						<span>
+							<input type="checkbox" id="week_2" />
+							<label for="week_2">화</label>
+						</span>
+						<span>
+							<input type="checkbox" id="week_3">
+							<label for="week_3">수</label>
+						</span>
+						<span>
+							<input type="checkbox" id="week_4" >
+							<label for="week_4">목</label>
+						</span>
+						<span>
+							<input type="checkbox" id="week_5">
+							<label for="week_5">금</label>
+						</span>
+						<span>
+							<input type="checkbox" id="week_6">
+							<label for="week_6">토</label>
+						</span>
+						<span>
+							<input type="checkbox" id="week_all"  onChange="select_week_check_all();">
+							<label for="week_all">매일</label>
+						</span>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">시간</th>
+					<td colspan="3" class="txt_l">
+
+<script language="javascript">
+						document.write('<select class="w_70" name="start_time" id="start_time">\n');
+						write_StartTime();
+						document.write('</select>\n');
+
+						document.write('<select class="w_70" name="start_time_min" id="start_time_min">\n');
+						write_time_min();
+						document.write('</select>\n');
+</script>
+						&nbsp; ~ &nbsp;
+<script language="javascript">
+						document.write('<select class="w_70" name="end_time" id="end_time">\n');
+						write_EndTime();
+						document.write('</select>\n');
+
+						document.write('<select class="w_70" name="end_time_min" id="end_time_min">\n');
+						write_time_min();
+						document.write('</select>\n');
+</script>
+						&nbsp; &nbsp; (00 &nbsp;~ &nbsp;24)시
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="txt_c">
+		<input type="button" onclick="btnApply(1)" value="추가" class="basic-btn01 btn-blue-bg mr_20">
+		<input type="button" onclick="javascript: window.location.reload();" value="취소" class="basic-btn01 btn-gray-bg2">
+	</div>
+	<h2 class="title_style_2 left_area">인터넷 접속제한 리스트</h2>
+	<div class="tb_style_1 scroll">
+		<table>
+			<colgroup>
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col"><center>No</center></th>
+					<th scope="col"><center>단말이름</center></th>
+					<th scope="col"><center>사용</center></th>
+					<th scope="col"><center>단말주소(MAC)</center></th>
+					<th scope="col"><center>일정/시간</center></th>
+					<th scope="col"><center>허용/차단</center></th>
+					<th scope="col"><center>삭제</center></th>
+				</tr>
+			</thead>
+			<tbody>
+<script language="javascript">
+			var j =0;
+			var start_hour, start_min, end_hour, end_min;
+			var time_str = "", start_str, end_str;
+			for(j =0; j < hosts_list.length; j++){
+				if(hosts_list[j][0] == "" && hosts_list[j][1] == "" && hosts_list[j][2] == "" && hosts_list[j][3] == 0 && hosts_list[j][4] == 0 && hosts_list[j][5] == 0){
+					document.write("<tr>\n");
+					document.write("	<td><center>-</center></td>\n");
+					document.write("	<td><center>-</center></td>\n");
+					document.write("	<td><center>-</center></td>\n");
+					document.write("	<td><center>-</center></td>\n");
+					document.write("	<td><center>-</center></td>\n");
+					document.write("	<td><center>-</center></td>\n");
+					document.write("	<td><center>-</center></td>\n");
+					document.write("</tr>\n");
+					continue;
+				}
+
+				time_str = "";
+				start_str = hosts_list[j][4].split(':');
+				start_hour = Number(start_str[0]);
+				start_min = Number(start_str[1]);
+				end_str = hosts_list[j][5].split(':');
+				end_hour = Number(end_str[0]);
+				end_min = Number(end_str[1]);
+				if(start_hour < 10) 
+					time_str = "0";
+				time_str += start_hour + ":";
+				if(start_min < 10) 
+					time_str += "0";
+				time_str += start_min + " ~ ";
+				if(end_hour < 10) 
+					time_str += "0";
+				time_str += end_hour + ":";
+				if(end_min < 10) 
+					time_str += "0";
+				time_str += end_min;
+				
+				document.write("<tr>\n");
+				document.write("	<td>"+Number(j+1)+"</td>\n");
+				document.write("	<td>"+hosts_list[j][0]+"</td>\n");
+				document.write("	<td><center>\n");
+				document.write("		<input type='checkbox' ");
+				document.write("			name='wv_restrict_net_use_"+j+"' " );
+				document.write("			id='wv_restrict_net_use_"+j+"' " );
+				document.write("			id='wv_restrict_net_use_"+j+"' " );
+				document.write("			value='"+hosts_list[j][2]+"'>\n");
+				document.write("	</center></td>\n");						
+				document.write("	<td>"+hosts_list[j][2]+"</td>\n");
+				document.write("	<td>  "+hosts_list[j][3]+" &nbsp;&nbsp;["+time_str+"]</td>\n");
+
+				if(hosts_list[j][6] == 0)
+					document.write("	<td>허용</td>\n");
+				else
+					document.write("	<td>차단</td>\n");
+
+				document.write("			<td><center>\n");
+				document.write("			<input type='checkbox' ");
+				document.write("				name='wv_restrict_net_rm_"+j+"' " );
+				document.write("				id='wv_restrict_net_rm_"+j+"' " );
+				document.write("				value='"+hosts_list[j][2]+"|"+"'>\n");
+				document.write("			</center></td>\n");
+				document.write("</tr>\n");
+			}
+</script>
+			</tbody>
+		</table>
+	</div>
+	<div class="txt_c">
+		<input type="button" onclick="btnApply(2)" value="적용" class="basic-btn01 btn-blue-bg mr_20">
+	</div>
+
+	<br><br>
+	<tr><b>허용: 설정된 시간만 인터넷 이용이 가능하며 나머지 시간은 인터넷 이용 차단</b></tr><br>
+	<tr><b>차단: 설정된 시간만 인터넷 이용이 차단되며 나머지 시간은 인터넷 이용 가능</b></tr><br>
+	<tr><b>동일 단말(MAC)에 대해서는 한가지 규칙만(허용 또는 차단) 설정 가능합니다.</b></tr><br>
+	<tr><b>무선접속차단 시간에는 WiFi를 사용할수 없으며, LTE/3G로 전환 시 데이터가 소진 될수 있습니다.<b></tr><br>
+
+</div>
+</form>
+</body>
+</html>

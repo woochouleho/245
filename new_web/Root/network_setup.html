@@ -1,0 +1,1478 @@
+<html lang="ko" xml:lang="ko">
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+	<style type='text/css'>
+.u_popup_bg{position:fixed; left:0; top:0; bottom:0; z-index:10; width:100%; height:100%; background:rgba(0,0,0,0.1);}
+
+.u_progressive_bar_popup{position:fixed; left:50%; top:50%; z-index:12; margin:-50px 0 0 -206px; padding:40px 25px; width:412px; box-sizing:border-box; background-color:#fff; border-radius:5px; box-shadow:5px 5px 5px rgba(0,0,0,0.2);}
+</style>
+
+
+<script language="javascript">
+
+var sessionKey='484565961';
+var br_mode=0;
+var wan_ip ='192.168.80.51';
+var wan_subnet ='255.255.255.0';
+var wan_defaultgw ='192.168.80.1';
+var wan_ip_mode ='DHCP';
+var wan_mac ='';
+var ip_crash = 0;
+
+
+var natEnbl = '1';
+
+var state = '0';
+var vethIpAddress  = '192.168.45.1';
+var vethSubnetMask = '255.255.255.0';
+
+var dhcpStart = '192.168.45.2';
+var dhcpEnd = '192.168.45.253';
+var dhcpLease = '3600';
+var dhcpEnbl = '1';
+var igmpSnpSup = '1';
+var vdnsPrimary =  '210.220.163.82';
+var vdnsSecondary = '0.0.0.0';
+
+/* DHCP static IP list */
+var staticiplease = '00:42:19:32:aa:24/192.168.45.32';
+var max_static_dhcp_ip = 25;
+var info = staticiplease.split('|');
+
+var localhosts = [
+[ "a8:2b:b9:00:00:01","엄마_핸드폰" ],
+[ "a8:2b:b9:00:00:02","큰아들_핸드폰" ],
+[ "a8:2b:b9:09:3b:8c","Galaxy-S8" ]
+];
+
+
+function change_button_value() {
+	var mode = 0;
+
+	if (document.forms[0].h_mode.value != '0') // bridge or repeat mode
+	{
+		document.getElementById('w_lan_setup_ip1').style.display="none";
+		document.getElementById('w_lan_setup_ip2').style.display="block";
+	}
+	else // nat mode
+	{
+		document.getElementById('w_lan_setup_ip1').style.display="block";
+		document.getElementById('w_lan_setup_ip2').style.display="none";
+	}
+
+	if(br_mode != document.forms[0].h_mode.value) {
+		document.forms[0].h_wan_button.value = "재시작";
+		return;
+	}
+
+	if(wan_ip_mode == 'DHCP') mode = 1;
+	else                      mode = 2;
+
+	if(mode != document.forms[0].h_wan_ip_mode.value) {
+		document.forms[0].h_wan_button.value = "재시작";
+		return;
+	}
+
+	/* Static IP mode only */
+	if(document.forms[0].h_wan_ip_mode.value == 2) {
+		if(wan_ip != document.forms[0].h_wan_ip.value) {
+			document.forms[0].h_wan_button.value = "재시작";
+			return;
+		}
+
+		if(wan_subnet != document.forms[0].h_wan_subnet.value) {
+			document.forms[0].h_wan_button.value = "재시작";
+			return;
+		}
+
+		if(wan_defaultgw != document.forms[0].h_wan_subnet.value) {
+			document.forms[0].h_wan_button.value = "재시작";
+			return;
+		}
+	}
+
+	document.forms[0].h_wan_button.value = "적용";
+}
+
+function change_input_by_mode(vmode) {
+	if (vmode == 1) {
+		/* DHCP */
+		document.forms[0].h_wan_ip.disabled=true;
+		document.forms[0].h_wan_subnet.disabled=true;
+		document.forms[0].h_wan_gateway.disabled=true;
+		//document.forms[0].h_wan_dnssec.disabled=true;
+	}
+	else {
+		/* STATIC */
+		document.forms[0].h_wan_ip.disabled=false;
+		document.forms[0].h_wan_subnet.disabled=false;
+		document.forms[0].h_wan_gateway.disabled=false;
+		//h_wan_dnssec.disabled=false;
+	}
+}
+
+function change_ip_mode() {
+	var mode = document.forms[0].h_wan_ip_mode.value;
+
+	change_input_by_mode(mode);
+	change_button_value();
+}
+
+function checkIP() {
+	if(isValidIpAddress(document.forms[0].h_wan_ip.value) == false ) {
+		webAlert('유효하지 않은 IP주소입니다 : ' + document.forms[0].h_wan_ip.value);
+		return false;
+	}
+
+	if(isValidIpAddress(document.forms[0].h_wan_subnet.value) == false) {
+		webAlert('유효하지 않은 서브넷 마스크 주소입니다 : ' + document.forms[0].h_wan_subnet.value);
+		return false;
+	}
+
+	if(isValidIpAddress(document.forms[0].h_wan_gateway.value) == false) {
+		webAlert('유효하지 않은 게이트웨이 IP주소입니다 : ' + document.forms[0].h_wan_gateway.value);
+		return false;
+	}
+
+	return true;
+}
+
+function checkLanIPConflct(wanip, lanip) {
+	var addrwan = wanip.split('.');
+   	var addrlan = lanip.split('.');
+
+	if((parseInt(addrwan[0]) == parseInt(addrlan[0]))
+	&&(parseInt(addrwan[1]) == parseInt(addrlan[1]))
+	&&(parseInt(addrwan[2]) == parseInt(addrlan[2])))
+		return true;
+	else
+		return false;
+}
+
+function checkWanSetting()
+{
+	if(document.forms[0].h_wan_ip_mode.value == 2)
+		if(checkIP() == false) return false;
+
+	return true;
+}
+
+function isRestrictIP(EndIp, StartIp, LanIp)
+{
+	var addrEnd = EndIp.split('.');
+	var addrStart = StartIp.split('.');
+	var addrLan = LanIp.split('.');
+	var end   = parseInt(addrEnd[3]);
+	var start = parseInt(addrStart[3]);
+	var local   = parseInt(addrLan[3]);
+
+	console.log("Start="+start+" End="+end);
+
+	if(start == 254 || end == 254 || local == 254) return false;
+	return true;
+}
+
+function isValidDhcpRange(EndIp, StartIp)
+{
+	var addrEnd = EndIp.split('.');
+	var addrStart = StartIp.split('.');
+	var end = parseInt(addrEnd[3]) + 1;
+	var start = parseInt(addrStart[3]) + 1;
+
+	if(end < start) return false;
+	return true;
+}
+
+function checkLanSetting()
+{
+	if(isValidIpAddress( document.forms[0].ethIpAddress.value) == false) {
+		webAlert('유효하지 않은 IP주소입니다 : ' + document.forms[0].ethIpAddress.value);
+		return false;
+	}
+
+	if(isValidIpAddress( document.forms[0].ethSubnetMask.value) == false) {
+		webAlert('유효하지 않은 서브넷 마스크 주소입니다 : ' +document.forms[0].ethSubnetMask.value);
+		return false;
+	}
+
+	/* enable */
+	if(isValidIpAddress(document.forms[0].dhcpEthStart.value) == false
+	|| !(isSameSubNet(document.forms[0].ethIpAddress.value, document.forms[0].ethSubnetMask.value, document.forms[0].dhcpEthStart.value, document.forms[0].ethSubnetMask.value))) {
+		webAlert('유효하지 않은 DHCPD 시작 IP 주소 입니다 : ' +document.forms[0].dhcpEthStart.value);
+		return false;
+	}
+
+	if(isValidIpAddress( document.forms[0].dhcpEthEnd.value) == false
+	|| !(isSameSubNet( document.forms[0].ethIpAddress.value, document.forms[0].ethSubnetMask.value, document.forms[0].dhcpEthEnd.value, document.forms[0].ethSubnetMask.value))) {
+		webAlert('유효하지 않은 DHCPD 마지막 IP 주소 입니다 : '+ document.forms[0].ethIpAddress.value);
+		return false;
+	} 
+  
+	if(!(isValidDhcpRange(document.forms[0].dhcpEthEnd.value, document.forms[0].dhcpEthStart.value))) {
+		webAlert(" DHCPD 시작 IP 주소가 마지막 IP보다 큽니다");
+		return false;
+	}
+
+	if(isRestrictIP(document.forms[0].dhcpEthEnd.value, document.forms[0].dhcpEthStart.value, document.forms[0].ethIpAddress.value) == false){
+		webAlert("IP 주소에 x.x.x.254는 사용할수 없습니다");
+		return false;
+	}
+
+	if(document.forms[0].dhcpEthStart.value == document.forms[0].ethIpAddress.value) {
+		webAlert("DHCPD 시작 IP 주소가 LAN IP 주소와 같습니다");
+		return false;
+	}
+
+	if(document.forms[0].dhcpEthEnd.value ==  document.forms[0].ethIpAddress.value) {
+		webAlert("DHCPD 마지막 IP 주소가 LAN IP 주소와 같습니다");
+		return false;
+	}
+
+	if(document.forms[0].dhcpLeasedTime.value < 60 || document.forms[0].dhcpLeasedTime.value > 604800) {
+		webAlert("임대시간이 올바르지 않습니다! \n 60 ~ 604800 사이의 값을 입력해야 합니다.");
+		return false;
+	}
+
+	return true;
+}
+
+/* DHCP static IP list */
+function change_dhcp_input_form() {
+	var sel = document.getElementById("dhcpStaticMac_input");
+	var val = sel.options[sel.selectedIndex].value;
+	var text = document.getElementById("input_mac");
+	
+	if(val == '99') {
+		sel.style.width = '35%';
+		text.style.display = '';
+		text.style.width = '55%';
+	}
+	else {
+		sel.style.width = '100%';
+		text.style.display = 'none';
+	}
+}
+
+/*
+	DHCP 서버 예약 IP 동작 기능 정의
+	1. 기존의 데이터를 불러온다. 
+		불러온 데이터를 DB와 1:1로 매칭으로 데이터를 입력한다. 
+	2. 테이블 표시
+		매칭된 유효한 데이터들만 display한다.
+	3. 테이블 추가
+		for문을 통해 유요한 데이터가 없는 항목들을 숨김해제 한다. 
+	4. 테이블 삭제
+		for문을 통해 체크박스에 표시된 항목에 대해서는 데이터를 무효로 처리하고, UI 테이블을 숨긴다. 
+*/
+function CheckDuplicateIPAddress(IpAddr)
+{
+	var i = 0;
+
+	if (info != '') {
+		for ( i = 0; i < info.length; i++ ) 
+		{
+			var names = info[i].split('/');
+
+			if (names[1] == IpAddr) /* MAC */
+				return true;
+		}
+	}
+	return false;
+}
+
+function CheckDuplicateMACAddress(MacAddr)
+{
+	var i = 0;
+
+	if (info != '') {
+		for ( i = 0; i < info.length; i++ ) 
+		{
+			var names = info[i].split('/');
+
+			if (names[0] == MacAddr) /* MAC */
+				return true;
+		}
+	}
+	return false;
+}
+
+function checkStaticDhcpSetting(MacAddr, IpAddr) {
+	if (isValidIpAddress(IpAddr.value) == false) {
+		webAlert('유효하지 않는 IP주소입니다 ' +'Ex) 192.168.75.20');
+		return false;
+	}
+	else if (isValidMacAddress(MacAddr.value) == false) {
+		webAlert('유효하지 않는 MAC주소입니다 ' +'Ex) 00:23:AA:00:00:00');
+		return false;
+	}
+	else if (CheckDuplicateIPAddress(IpAddr.value) == true) {
+		webAlert('중복되는 IP를 추가하였습니다.');
+		return false;
+	}
+	else if (CheckDuplicateMACAddress(MacAddr.value) == true) {
+		webAlert('중복되는 MAC을 추가하였습니다.');
+		return false;
+	}
+
+	return true;
+}
+
+function static_dhcp_ip_display() {
+	for(var i = 1; i <= max_static_dhcp_ip; i++ ) {
+		if( document.getElementById("mac_text"+i).value == "" )
+			document.getElementById("static_"+i).style.display = "none";
+		else 
+			document.getElementById("static_"+i).style.display = "";
+	}
+}
+
+$(function() {
+	$("#add_index").click(function () {
+		var sel = document.getElementById("dhcpStaticMac_input");
+		var val = sel.options[sel.selectedIndex].value;
+		var mac_text, ip_text;
+		var loc, code;
+
+		if(val == '99') { //직접입력
+			mac_text = document.getElementById("input_mac").value;
+		}
+		else { //단말 MAC 리스트 선택 시 
+			mac_text = sel.options[sel.selectedIndex].text;
+		}
+		ip_text = document.getElementById('dhcpStaticIp').value;
+
+		//if(checkStaticDhcpSetting(mac_text, ip_text) != true) return;
+
+		for( var i = 1; i <= max_static_dhcp_ip; i++ ) {
+			if(document.getElementById("static_"+i).style.display == "none") {
+				document.getElementById("static_"+i).style.display = "";
+				document.getElementById("mac_text"+i).value = mac_text;
+				document.getElementById("ip"+i).value = ip_text;
+				loc = 'network_setup_ap.cmd?action=add'
+				loc += '&mac=' + mac_text + '&static_ip=' + ip_text;
+				loc += '&sessionKey=' + sessionKey;
+				var code = 'location=\"' + loc + '\"';
+				eval(code);
+				return;
+			}
+		}
+	})
+	$("#delete_index").click(function() {
+		var rml, code;
+		var loc = 'network_setup_ap.cmd?action=remove&rmLst=';
+		for(var i = 1; i <= max_static_dhcp_ip; i++) {
+			if(document.getElementById("check_"+i).checked == true) {
+				
+				rml = document.getElementById("mac_text"+i).value + ',';
+				document.getElementById("check_"+i).checked = false;
+				document.getElementById("mac_text"+i).value = "";
+				document.getElementById("ip"+i).value = "";
+				document.getElementById("static_"+i).style.display = "none";
+				loc += rml;
+			}
+		}
+
+		loc += '&sessionKey=' + sessionKey;
+		code = 'location=\"' + loc + '\"';
+		eval(code);
+	})
+});
+
+function btnApplySave(save_type)
+{
+	var loc = 'network_setup_ap.cgi?';
+	var modeStr = '';
+
+	switch(save_type) {
+		case 0:
+			if(checkWanSetting() != true) return;
+
+			loc += 'wv_network_setup_action=wan';
+			loc += '&wv_network_mode=' + document.forms[0].h_mode.value;
+			loc += '&wv_wan_ip_mode=' + document.forms[0].h_wan_ip_mode.value;
+			loc += '&wv_wan_ip=' + document.forms[0].h_wan_ip.value;
+			loc += '&wv_wan_subnet=' + document.forms[0].h_wan_subnet.value;
+			loc += '&wv_wan_gateway=' + document.forms[0].h_wan_gateway.value;
+			loc += '&dnsPrimary=210.220.163.82';
+			loc += '&dnsSecondary=' + document.forms[0].h_wan_dnssec.value;
+			modeStr = 'WAN설정은 재시작해야합니다.<br> 계속하시겠습니까?';
+			break;
+
+		case 1:
+			if(checkLanSetting() != true) return;
+
+			loc += 'wv_network_setup_action=lan';
+			loc += '&ethIpAddress=' + document.forms[0].ethIpAddress.value;
+			loc += '&ethSubnetMask=' + document.forms[0].ethSubnetMask.value;
+			loc += '&enblLanFirewall=0';
+			loc += '&enblIgmpSnp=' + 1;
+			loc += '&enblIgmpMode=' + 1;
+			loc += '&enblIgmpLanToLanMcast=' + 0;
+			loc += '&dhcpEthStart=' + document.forms[0].dhcpEthStart.value;
+			loc += '&dhcpEthEnd=' + document.forms[0].dhcpEthEnd.value;
+			loc += '&dhcpLeasedTime=' + document.forms[0].dhcpLeasedTime.value;
+			loc += '&enblDhcpSrv=1';
+			loc += '&enblLan2=0';
+			if(  Number($('#h_mode').val()) ==  0)
+				modeStr = 'LAN설정은 재시작해야합니다.<br> 계속하시겠습니까?';
+			else
+				modeStr = '관리용 IP설정은 재시작해야합니다.<br> 계속하시겠습니까?';
+			break;
+
+		default:
+			return;
+			break;
+	}
+
+	loc += '&sessionKey=' + sessionKey;
+	var code = 'location="' + loc + '"';
+	var popup = new Popup({ 
+		'type': 'confirm', 
+		'title': '알림', 
+		'fontsize' : 14, 
+		'text':  modeStr, 
+		'cancelbutton': true, 
+		'closeCallBack': function(){ 
+			change_h_mode(); 
+			change_ip_mode(); 
+		}, 
+		'submitCallBack': function(){ 
+			change_h_mode(); 
+			change_ip_mode(); 
+			var confirm_qusery = code; 
+			eval(confirm_qusery); 
+		} 
+	}); 	 
+
+	// eval(code);
+}
+
+function frmWan() {
+	var mode = 0;
+	if(wan_ip_mode == 'DHCP')
+		mode = 1;
+	else
+		mode = 2;
+
+	//change_input_by_mode(mode);
+	//change_button_value();
+	change_ip_mode();
+
+	document.forms[0].h_wan_ip_mode.value = mode;
+	document.forms[0].h_wan_ip.value = wan_ip;
+	document.forms[0].h_wan_subnet.value = wan_subnet;
+	document.forms[0].h_wan_gateway.value = wan_defaultgw;
+	document.forms[0].h_wan_dnspri.value = '210.220.163.82';
+	document.forms[0].h_wan_dnssec.value = '8.8.8.8';
+	document.forms[0].h_wan_dns_status.value='8.8.8.8';
+
+	if( br_mode == 1)
+		document.forms[0].h_mode.value = 1;
+	else if( br_mode == 2)
+		document.forms[0].h_mode.value = 2;
+	else
+		document.forms[0].h_mode.value = 0;
+}
+
+function frmLan() {
+	document.forms[0].ethIpAddress.value = vethIpAddress;
+	document.forms[0].ethSubnetMask.value = vethSubnetMask;
+	document.forms[0].dhcpEthStart.value = dhcpStart;
+	document.forms[0].dhcpEthEnd.value = dhcpEnd;
+	document.forms[0].dhcpLeasedTime.value = dhcpLease;
+	
+	/* Show Default */
+	$('#ethIpAddress').attr('placeholder', '기본값: ' + '192.168.45.1');
+	$('#ethSubnetMask').attr('placeholder', '기본값: ' + '255.255.255.0');
+	$('#dhcpEthStart').attr('placeholder', '기본값: ' + '192.168.45.2');
+	$('#dhcpEthEnd').attr('placeholder', '기본값: ' + '192.168.45.253');
+	$('#dhcpLeasedTime').attr('placeholder', '기본값: ' + '3600');
+}
+
+function frmStaticDhcp() {
+	if(info != '') {
+		for(var i = 0; i <info.length; i++)
+		{
+			var names = info[i].split('/');
+			var idx = i + 1;
+
+			if(i == max_static_dhcp_ip) break;
+			document.getElementById("mac_text"+idx).value = names[0];
+			document.getElementById("ip"+idx).value = names[1];
+		}
+	}
+}
+
+function btn_easymesh()
+{
+	setInterval(function(){btn_easymesh_timer()}, 1000);
+	progress_fun();
+
+	return;
+}
+
+
+function frmLoad() {
+	frmWan();
+	frmLan();
+	frmStaticDhcp();
+	static_dhcp_ip_display();
+}
+</script>
+</head>
+
+<body onload="frmLoad()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form>
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>네트워크 </li>
+			<li>네트워크 설정</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">네트워크 설정</h1>
+	<p>WAN 연결 방법과 LAN 인터페이스, DHCP 서버 정보를 설정합니다. </p>
+	<hr>
+	<h2 class="title_style_2">WAN 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row">운용 모드</th>
+					<td>
+						<select name="h_mode" id="h_mode"  onchange="change_button_value()">
+							<option value="0">NAT</option>
+							<option value="1">Bridge</option>
+							<option value="2">Repeater</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">연결 방식</th>
+					<td>
+						<select name="h_wan_ip_mode" id="h_wan_ip_mode"   onchange="change_ip_mode()">
+							<option value="1">DHCP</option>
+							<option value="2">Static</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">WAN IP 주소</th>
+					<td><input type="text" name="h_wan_ip" id="h_wan_ip"  ></td>
+				</tr>
+				<tr>
+					<th scope="row">서브넷 마스크</th>
+					<td><input type="text"  name="h_wan_subnet" id="h_wan_subnet"  ></td>
+				</tr>
+				<tr>
+					<th scope="row">기본 게이트웨이</th>
+					<td><input type="text"  name="h_wan_gateway" id="h_wan_gateway" ></td>
+				</tr>
+				<tr>
+					<th scope="row">기본 DNS</th>
+					<td><input type="text"  name="h_wan_dnspri" disabled></td>
+				</tr>
+				<tr>
+					<th scope="row">보조 DNS 상태</th>
+					<td><input type="text"  name="h_wan_dns_status" disabled></td>
+				</tr>
+				<tr>
+					<th scope="row">보조 DNS 입력</th>
+					<td><input type="text" name="h_wan_dnssec" id ="h_wan_dnssec"  ></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<!-- TODO: repeater mode -->
+			<script language='javascript'>
+		$(document).ready(function(){
+			$('body').off('load');
+			frmLoad();
+			change_h_mode();
+			document.getElementById('h_mode').setAttribute('onchange','change_h_mode()');
+			document.getElementById('h_wan_button').removeAttribute('onclick');
+			document.getElementById('h_wan_button').setAttribute('onclick','btnApplySave_add_repeater()');
+		});
+		function btnApplySave_add_repeater()
+		{
+				var loc = 'network_setup_ap.cgi?';
+
+				if(checkWanSetting() != true) return;
+
+
+			if($('#h_mode').val() == 2)
+			{
+				if(document.forms[0].sec_mode.value != 'none')
+				{
+					if(document.forms[0].passphrase.value == '')
+					{
+						alert('네트워크 암호를 설정해 주세요');
+						return;
+					}
+				}
+			}
+
+				loc += '&sessionKey=' + sessionKey;
+				var code = 'location=\'' + loc + '\'';
+var popup = new Popup({ 
+	'type': 'confirm', 
+	'title': '알림', 
+	'fontsize' : 14, 
+	'text':  'WAN설정은 재시작해야합니다.<br> 계속하시겠습니까?', 
+	'cancelbutton': true, 
+	'closeCallBack': function(){ 
+		change_h_mode(); 
+		change_ip_mode(); 
+	}, 
+	'submitCallBack': function(){ 
+		change_h_mode(); 
+		change_ip_mode(); 
+		var confirm_qusery = code; 
+		eval(confirm_qusery); 
+	} 
+}); 
+		}
+		function change_h_mode()
+		{
+			change_button_value();
+			var hmode = $('#h_mode').val();
+			if(hmode == 2)
+			{
+/*			
+				$('select[name=h_wan_ip_mode]').closest('tr').hide();
+				$('input[name=h_wan_ip]').closest('tr').hide();
+				$('input[name=h_wan_subnet]').closest('tr').hide();
+				$('input[name=h_wan_gateway]').closest('tr').hide();
+				$('input[name=h_wan_dnspri]').closest('tr').hide();
+				$('input[name=h_wan_dns_status]').closest('tr').hide();
+				$('input[name=h_wan_dnssec]').closest('tr').hide();
+*/				
+				$('#repeater_scan_start').hide();
+				$('#repeater_subtitle').show();
+				$('#repeater_setup').show();
+			}
+			else
+			{
+/*			
+				$('select[name=h_wan_ip_mode]').closest('tr').show();
+				$('input[name=h_wan_ip]').closest('tr').show();
+				$('input[name=h_wan_subnet]').closest('tr').show();
+				$('input[name=h_wan_gateway]').closest('tr').show();
+				$('input[name=h_wan_dnspri]').closest('tr').show();
+				$('input[name=h_wan_dns_dns_status]').closest('tr').show();
+				$('input[name=h_wan_dnssec]').closest('tr').show();
+*/				
+				$('#repeater_scan_start').hide();
+				$('#repeater_subtitle').hide();
+				$('#repeater_setup').hide();
+			}
+		}
+		var ap_scan_url = window.location.protocol +'//' + window.location.host +'/wlapscan.cgi';
+		function ap_scan_ajax_callback(ifname, ch_band,callback)
+		{
+			$.ajax ({
+				type : 'POST',
+				timeout : 25000,
+				url : ap_scan_url,
+				data : { 'Req' : 'scan' ,'ifname' : ifname ,'ch_band' : ch_band },
+				success : function ( )
+				{
+					$.ajax ({
+						type : 'POST',
+						timeout : 25000,
+						url : ap_scan_url,
+						data : { 'Req' : 'results' ,'ifname' : ifname },
+						success : function ( data )
+						{
+							$('#repeater_scan_start').after(data);
+							var sel_if_num = $('#wl_radio_sel option:selected').val();
+							var class_name ='.5g';
+							if(sel_if_num == '0')
+							{
+								class_name = '.5g';
+							}
+							else if(sel_if_num == '1')
+							{
+								class_name = '.2g';
+							}
+							var sel_class = $(class_name);
+							sel_class.hide();
+							return callback();
+						}
+					})
+					.fail ( function ( )
+						{
+							alert( '접속이 끊어져 페이지를 새로고침 합니다.' );
+							location.reload();
+						});
+				}
+			})
+			.fail ( function ( )
+				{
+					alert( '접속이 끊어져 페이지를 새로고침 합니다.' );
+					location.reload();
+				});
+		}
+		function ap_scan_5g(callback)
+		{
+			var ifname_5g = 'wl0';
+			
+			var band_d_scan = function (){
+				ap_scan_ajax_callback(ifname_5g,'d',callback);
+			}
+			var band_c_scan = function (){
+				ap_scan_ajax_callback(ifname_5g,'c',band_d_scan);
+			}
+			var band_b_scan = function (){
+				ap_scan_ajax_callback(ifname_5g,'b',band_c_scan);
+			}
+			ap_scan_ajax_callback(ifname_5g,'a',band_b_scan);
+		}
+		function ap_scan_2g(callback)
+		{
+			var ifname_2g = 'wl1';
+			var band_c_scan = function (){
+				ap_scan_ajax_callback(ifname_2g,'c',callback);
+			}
+			var band_b_scan = function (){
+				ap_scan_ajax_callback(ifname_2g,'b',band_c_scan);
+			}
+			ap_scan_ajax_callback(ifname_2g,'a',band_b_scan);
+		}
+		function make_scan_result_form()
+		{
+			var i =0;
+			var sel_if_num = $('#wl_radio_sel option:selected').val();
+			var class_name ='.5g';
+			if(sel_if_num == '0')
+			{
+				class_name = '.5g';
+			}
+			else if(sel_if_num == '1')
+			{
+				class_name = '.2g';
+			}
+			var sel_class = $(class_name+' td:nth-child(1)');
+			for(i =0 ; i< sel_class.length; i++)
+			{
+				var input_radio;
+				var j=1;
+				input_radio ='<td><center><input type=\'radio\'name=\'ap_scan_info';
+				input_radio+='\' value=\'';
+				$(class_name+' td:nth-child(3)').eq(i).html('<center>'+$(class_name+' td:nth-child(3)').eq(i).text().replace(/\(.*\)/g,' ')+'</center>');
+				for(j =1; j<6;j++)
+				{
+					input_radio += $(class_name+' td:nth-child('+String(j)+')').eq(i).text().trim()+',';
+				}
+				input_radio = input_radio.substr(0, input_radio.length-1);
+				input_radio +='\'checked=\'checked\' onclick=\'filling_info()\'/></center></td>';
+				sel_class.eq(i).before(input_radio);
+				$(class_name+' td:nth-child(2)').eq(i).attr('colspan','2');
+			}
+			for(i =0 ; i< sel_class.length; i++)
+			{
+				if(Number($(class_name+' td:nth-child(5)').eq(i).text()) <-70)
+					$(class_name).eq(i).remove();
+				if($(class_name+' td:nth-child(6)').eq(i).text().indexOf('OPEN')==-1)
+				{
+					if($(class_name+' td:nth-child(6)').eq(i).text().indexOf('WPA3')==-1)
+					{
+						if($(class_name+' td:nth-child(6)').eq(i).text().indexOf('PSK')==-1)
+							$(class_name).eq(i).remove();
+					}
+				}
+			}
+			$('#repeater_scan_start').show();
+			$(class_name).show();
+			is_end_progress = 1;
+			$('#progress_bar .ui-progress').animateProgress_next(100, function() {
+				$('.u_popup_bg').fadeOut(200);
+				$('.u_progressive_bar_popup').fadeOut(200);
+			});
+		}
+		function rep_ap_scan()
+		{
+			var sel_if_num = $('#wl_radio_sel option:selected').val();
+			remove_all_scan_results();
+			is_end_progress = 0;
+			progress_fun();
+			if(sel_if_num == '0')
+			{
+				ap_scan_5g(make_scan_result_form);
+			}
+			else if(sel_if_num == '1')
+			{
+				ap_scan_2g(make_scan_result_form);
+			}
+		}
+		function remove_all_scan_results()
+		{
+			$('#repeater_scan_start').hide();
+			$('.5g').remove();
+			$('start').remove();
+			$('.2g').remove();
+		}
+		function show_psk()
+		{
+			var el_psk=document.getElementById('passphrase');
+			var is_show = $('#psk_visible').is(':checked');
+			
+			el_psk.removeAttribute('type');
+			if(is_show)
+				el_psk.setAttribute('type','text');
+			else
+				el_psk.setAttribute('type','password');
+		}
+		function filling_info()
+		{
+			var scan_info_list = $(':input:radio[name=ap_scan_info]:checked').val().split(',');
+			$('#ssid').val(scan_info_list[0]);
+			$('#passphrase').attr('disabled',false);
+			if(scan_info_list[4] == 'WPA2-PSK / WPA3')
+				$('#sec_mode').val('5')
+			else if(scan_info_list[4] == 'WPA3')
+				$('#sec_mode').val('4')
+			else if(scan_info_list[4] == 'WPA-PSK / WPA2-PSK')
+				$('#sec_mode').val('3')
+			else if(scan_info_list[4] == 'WPA2-PSK')
+				$('#sec_mode').val('2')
+			else if(scan_info_list[4] == 'WPA-PSK')
+				$('#sec_mode').val('1')
+			else if(scan_info_list[4] == 'OPEN')
+			{
+				$('#sec_mode').val('0')
+				$('#passphrase').attr('disabled',true);
+			}
+		}
+		function chg_sec_mode()
+		{
+			if($('#sec_mode').val()=='0')
+			{
+				$('#passphrase').attr('disabled',true);
+			}
+			else
+			{
+				$('#passphrase').attr('disabled',false);
+			}
+		}
+		function get_byte_length(str)
+		{
+			var b=0;
+			var i=0;
+			var c;
+   		for(b=i=0;c=str.charCodeAt(i++);b+=c>>11?3:c>>7?2:1);
+    		return b;
+		}
+		function check_ssid_length(ssid_str)
+		{
+			if(get_byte_length(ssid_str) > 32)
+				return 'over';
+			else if(get_byte_length(ssid_str) < 1)
+				return 'empty';
+			else
+				return 'true';
+		}
+		var old_input_str = new String();
+		function save_keydown_str(object)
+		{
+			old_input_str = object.value;
+		}
+		function check_keyup_ssid_length(object)
+		{
+			if (check_ssid_length(object.value) == 'over') 
+			{
+				alert('SSID 제한길이(32byte)를 초과하였습니다.');
+				object.value = old_input_str;
+			}
+			else if (check_ssid_length(object.value) == 'empty') 
+			{
+				alert('SSID는 비어있을 수 없습니다.');
+				object.value = old_input_str;
+			}
+		}
+	</script>
+	<h2 id='repeater_subtitle' class='title_style_2' style='display: none;'>Repeater 모드</h2>
+	<div id='repeater_setup' class='tb_style_2' style='display: none;'>
+		<table id='repeater_setup_t'>
+			<tbody>
+				<tr>
+					<th colspan='2' scope='row' style='width:25%;'>무선 대역(2G/5G)</th>
+					<td colspan='5'>
+						<select name='wl_radio_sel' id='wl_radio_sel' onchange='remove_all_scan_results()'>
+							<option value='0' selected>5GHz</option>
+							<option value='1'>2.4GHz</option>
+						</select>
+					</td>
+			   </tr>
+			   <tr>
+					<th colspan='2' scope='row' style='width:25%;'>네트워크 이름(SSID)</th>
+					<td colspan='5'>
+						<input type='text' name='ssid' id='ssid' style='width:30%;' value='SK_WiFiGIGAxxxx_5G'
+				   		oninput='check_keyup_ssid_length(this);' onKeydown='save_keydown_str(this);'/>
+						<input type='button' value='Scan' class='basic-btn01 btn-blue-bg' onclick='rep_ap_scan()'/> 
+					</td>
+			   </tr>
+			   <tr id='repeater_scan_start'>
+				   <th scope='col' style='width:5%;'>선택</th>
+				   <th colspan='2' scope='col'>SSID</th>
+				   <th scope='col' style='width:20%;'>BSSID</th>
+				   <th scope='col' style='width:15%;'>채널 / 대역폭</th>
+				   <th scope='col' style='width:10%;'>RSSI</th>
+				   <th scope='col' style='width:20%;'>보안</th>
+			   <tr>
+		<tr class='start' style='display: none;'>
+			<td>
+			<label><input type='radio' name='ap_scan_info' value='' checked='checked' onclick='filling_info()'></label></td>
+			<td><label></label></td>
+			<td colspan='2'><label></label></td>
+			<td><label></label></td>
+			<td><label></label></td>
+			<td><label></label></td>
+		</tr>
+					<th colspan='2' scope='row' style='width:25%;'>인증 보안 방식</th>
+					<td colspan='5'>
+						<select name='sec_mode' id='sec_mode' onChange='chg_sec_mode()'>
+							<option value='5'>WPA3/WPA2</option>
+							<option value='4'>WPA3</option>
+							<option value='3' selected='selected' >WPA2/WPA</option>
+							<option value='2'>WPA2</option>
+							<option value='1'>WPA</option>
+							<option value='0'>None</option>
+						</select>
+					</td>
+			   </tr>
+			   <tr style='display: none;'>
+					<th colspan='2' scope='row' style='width:25%;'>암호화 타입</th>
+					<td colspan='5'>
+						<select name='encrypt_mode' id='encrypt_mode'>
+							<option value='3' selected>Auto</option>
+							<option value='2'>TKIP</option>
+							<option value='1'>AES-CCMP</option>
+						</select>
+					</td>
+			   </tr>
+			   <tr>
+					<th colspan='2' scope='row' style='width:25%;'>네트워크 암호</th>
+					<td colspan='5'>
+					<input type='password' name='passphrase' id='passphrase' style='width:30%;' value='a12345678!'/>
+					<input id='psk_visible' name='psk_visible' type='checkbox' onclick='show_psk()'>&nbsp;&nbsp;<span>암호 보기</span>
+					</td>
+			   </tr>
+			</tbody>
+		</table>
+	</div>
+
+
+	<div class="txt_c">
+		<input name="h_wan_button" id="h_wan_button" type="button" onclick="btnApplySave(0)" value="적용" class="basic-btn01 btn-blue-bg" >
+	</div>
+
+	<h2 class="title_style_2" id="w_lan_setup_ip1" name="w_lan_setup_ip1">LAN 설정</h2>
+	<h2 class="title_style_2" id="w_lan_setup_ip2" name="w_lan_setup_ip2">관리용 IP</h2>
+	<div class="tb_style_2 custom_input">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row">IP 주소</th>
+					<td>
+						<input type="text" name="ethIpAddress" id="ethIpAddress" >
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">서브넷 마스크</th>
+					<td>
+						<input type="text" name="ethSubnetMask" id="ethSubnetMask"  >
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">DHCP 서버 설정</h2>
+	<div class="tb_style_2 custom_input" id='test'>
+		<table>
+			<colgroup>
+				<col />
+				<col />
+			</colgroup>
+			<tbody>
+<!--
+				<tr>
+					<th scope "row">서버 활성화</th>
+					<td colspan="2"><input type="text" name="h_dhcp_enable" id="h_dhcp_enable" ></td>
+				</tr>
+-->
+				<tr>
+					<th scope="row">시작 IP 주소</th>
+					<td colspan="2"><input type="text" name="dhcpEthStart" id="dhcpEthStart" ></td>
+				</tr>
+				<tr>
+					<th scope="row">마지막 IP 주소</th>
+					<td colspan="2"><input type="text" name="dhcpEthEnd" id="dhcpEthEnd"  ></td>
+				</tr>
+				<tr>
+					<th scope="row">임대시간(초)</th>
+					<td colspan="2"><input type="text" name="dhcpLeasedTime" id="dhcpLeasedTime"  ></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">DHCP 서버 예약 IP 추가 및 리스트</h2>
+	<div class="tb_style_2" id='static_dhcp_ip_list'>
+	<table>
+		<colgroup>
+			<col style='width:15%;'/>
+			<col style='width:40%;'/>
+			<col style='width:35%;'/>
+			<col style='width:10%;'/>
+		</colgroup>
+		<thead id="table">
+			<tr >
+				<th scope="row">선택</th>
+				<th scope="row">MAC</th>
+				<th scope="row">IP</th>
+			</tr>
+		</thead>
+			<tbody>
+				<tr id='static_1'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_1' id='check_1'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text1'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip1'>
+					</td>
+				</tr>
+				<tr id='static_2'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_2' id='check_2'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text2'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip2'>
+					</td>
+				</tr>
+				<tr id='static_3'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_3' id='check_3'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text3'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip3'>
+					</td>
+				</tr>
+				<tr id='static_4'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_4' id='check_4'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text4'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip4'>
+					</td>
+				</tr>
+				<tr id='static_5'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_5' id='check_5'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text5'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip5'>
+					</td>
+				</tr>
+				<tr id='static_6'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_6' id='check_6'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text6'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip6'>
+					</td>
+				</tr>
+				<tr id='static_7'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_7' id='check_7'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text7'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip7'>
+					</td>
+				</tr>
+				<tr id='static_8'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_8' id='check_8'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text8'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip8'>
+					</td>
+				</tr>
+				<tr id='static_9'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_9' id='check_9'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text9'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip9'>
+					</td>
+				</tr>
+				<tr id='static_10'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_10' id='check_10'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text10'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip10'>
+					</td>
+				</tr>
+				<tr id='static_11'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_11' id='check_11'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text11'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip11'>
+					</td>
+				</tr>
+				<tr id='static_12'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_12' id='check_12'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text12'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip12'>
+					</td>
+				</tr>
+				<tr id='static_13'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_10' id='check_13'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text13'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip13'>
+					</td>
+				</tr>
+				<tr id='static_14'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_14' id='check_14'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text14'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip14'>
+					</td>
+				</tr>
+				<tr id='static_15'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_15' id='check_15'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text15'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip15'>
+					</td>
+				</tr>
+				<tr id='static_16'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_16' id='check_16'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text16'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip16'>
+					</td>
+				</tr>
+				<tr id='static_17'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_17' id='check_17'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text17'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip17'>
+					</td>
+				</tr>
+				<tr id='static_18'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_18' id='check_18'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text18'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip18'>
+					</td>
+				</tr>
+				<tr id='static_19'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_19' id='check_19'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text19'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip19'>
+					</td>
+				</tr>
+				<tr id='static_20'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_20' id='check_20'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text20'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip20'>
+					</td>
+				</tr>
+				<tr id='static_21'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_21' id='check_21'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text21'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip21'>
+					</td>
+				</tr>
+				<tr id='static_22'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_22' id='check_22'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text22'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip22'>
+					</td>
+				</tr>
+				<tr id='static_23'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_23' id='check_23'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text23'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip23'>
+					</td>
+				</tr>
+				<tr id='static_24'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_24' id='check_24'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text24'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip24'>
+					</td>
+				</tr>
+				<tr id='static_25'>
+					<td style='text-align:center;'>
+						<input style='' type='checkbox' name='check_25' id='check_25'>
+					</td>
+					<td>
+						<input type='text' style='width:100%; border:1;' value='' id='mac_text25'>
+					</td>
+					<td>
+						<input style='width:100%' type='text' value='' id='ip25'>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">
+						<span>예약 IP 추가</span>
+					</th>
+					<td>
+						<select style='width:100%;' name='dhcpStaticMac_input' id='dhcpStaticMac_input' onclick='change_dhcp_input_form();'>
+							<option value="0">MAC Address</option>
+							<script language="javascript">
+								var idx;
+								for(var i = 0; i <= max_static_dhcp_ip; i++) {
+									idx = i + 1;
+									if(localhosts.length)
+										if(typeof localhosts[i] != "undefined")
+											document.write("<option value="+ idx + ">" + localhosts[i][0] +" [ "+  localhosts[i][1]  + " ] </option>");
+								}
+							</script>
+							<option value="99">직접입력</option>
+						</select>
+						<input type="text" id='input_mac' name='input_mac' style="width:50%; display:none;">
+					</td>
+					<td>
+						<input style='width:100%' type='text' placeholder='예) 192.168.45.111' name='dhcpStaticIp' id='dhcpStaticIp'>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<script language="javascript">
+			document.write("<p style='font-size:8pt'>※ 최대 " + max_static_dhcp_ip + "개까지 추가 가능합니다.</p>");
+		</script>
+	</div>
+
+	<div class="txt_c">
+		<input type="button" id="add_index"    onclick="" class="basic-btn01 btn-gray-bg mr_10" value="추가">
+		<input type="button" id="delete_index" onclick="" class="basic-btn01 btn-gray-bg2 mr_10"value="삭제">
+		<input type="button" id="h_lan_button" onclick="btnApplySave(1)" class="basic-btn01 btn-blue-bg" value="적용">
+	</div>
+</div>
+		<script language='javascript'>
+var dur = 16000;
+var is_end_progress = 0;
+(function( $ ){
+	$.fn.animateProgress = function(progress, callback) 
+	{
+		return this.each(function() {
+			$(this).animate({
+				width: progress+'%'
+			}, {
+				duration: dur, //초를 조정하여 주세요.
+				easing: 'swing',
+				step: function( progress ){
+					var labelEl = $('.ui-label', this),
+						valueEl = $('.value', labelEl);
+					if (Math.ceil(progress) == 95) {
+						$(this).stop();
+					}
+					else if(is_end_progress == 1)
+					{
+						$(this).stop();
+					}
+					else{
+						valueEl.text(Math.ceil(progress) + '%');
+					}
+				},
+				complete: function(scope, i, elem) {
+					if (callback) {
+						callback.call(this, i, elem );
+					};
+				}
+			});
+		});
+	};
+})( jQuery );
+
+(function( $ ){
+  $.fn.animateProgress_next = function(progress, callback) {
+    return this.each(function() {
+      $(this).animate({
+        width: progress+'%'
+      }, {
+        duration: Math.ceil((dur/95)*5), //초를 조정하여 주세요.
+        easing: 'swing',
+        step: function( progress ){
+          var labelEl = $('.ui-label', this),
+              valueEl = $('.value', labelEl);
+           valueEl.text(Math.ceil(progress) + '%');
+        },
+        complete: function(scope, i, elem) {
+          if (callback) {
+            callback.call(this, i, elem );
+          };
+        }
+      });
+    });
+  };
+})( jQuery );
+
+function progress_fun() {
+	is_end_progress = 0;
+  //$('#progress_bar .ui-progress .ui-label').hide();
+  // Set initial value
+	$('#progress_bar .ui-progress').css('width', '0');
+	$('.u_popup_bg').fadeIn(200);
+	$('.u_progressive_bar_popup').fadeIn(200);
+  // Simulate some progress
+	$('#progress_bar .ui-progress').animateProgress(100, function() {
+		$('.u_popup_bg').fadeOut(200);
+		$('.u_progressive_bar_popup').fadeOut(200);
+	});
+};
+function progress_fun_end() {
+	is_end_progress = 1;
+	$('#progress_bar .ui-progress').animateProgress_next(100, function() {
+		$('.u_popup_bg').fadeOut(200);
+		$('.u_progressive_bar_popup').fadeOut(200);
+	});
+};
+	</script>
+<div class='u_popup_bg' style='display:none'></div>
+<div class='u_progressive_bar_popup' style='display:none'>
+	<div class='inner'>
+		<span class='title'>검색중</span>
+		<div class='progressive_bar'>
+				<div id='progress_bar' class='ui-progress-bar ui-container'>
+					<div class='ui-progress' style='width: 100%;'>
+						<span class='ui-label'><b class='value'>100%</b></span>
+					</div>
+				</div>
+		</div>
+	</div>
+</div> 
+
+
+<script type="text/javascript">
+	/* neon , refs #233 : change method Conflct WAN/LAN IP  */
+	$("input[name=h_wan_ip]").change(function() {
+		if( checkLanIPConflct(document.forms[0].h_wan_ip.value, vethIpAddress ) == true  && isValidIpAddress(document.forms[0].h_wan_ip.value) == true ) {
+			webAlert('WAN IP (' + document.forms[0].h_wan_ip.value + ') 가 LAN IP (' + vethIpAddress + ') 대역이 동일합니다.\n계속하시면 충돌방지를 위해 LAN IP 대역도 함께 변경될 것입니다.');
+		}
+	});
+</script>
+
+</form>
+</body>
+</html>

@@ -1,0 +1,559 @@
+
+<html>
+   <head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+
+var genericSessionKey = '628015681'
+
+function frmReload() {
+	document.location.reload();
+}
+
+function frmLoad() {
+	var igmpVer     = '2';
+	var multicast   = '';
+	var mcastPrec   = '-1';
+	var mcastStrict = '-1';
+
+	var igmpFastLeaveEnable = '1';
+	var igmpAutoModeEnable  = '1';
+	var igmpLan2LanEnable   = '0';
+
+	var mldFastLeaveEnable = '1';
+	var mldAutoModeEnable  = '1';
+
+	if(isNaN(parseInt(igmpVer)) == false) {
+		document.forms[0].igmpVer.value =  igmpVer;
+	}
+	else {
+		document.forms[0].igmpVer.value = '2';
+	}
+
+	document.forms[0].igmpFastLeave.value = igmpFastLeaveEnable;
+	document.forms[0].igmpLan2Lan.value   = igmpLan2LanEnable;
+
+	if(igmpAutoModeEnable == '1') {
+		document.forms[0].igmpAutoMode[0].checked = true;
+		document.forms[0].igmpAutoMode[1].checked = false;
+	} else {
+		document.forms[0].igmpAutoMode[0].checked = false;
+		document.forms[0].igmpAutoMode[1].checked = true;
+	}
+
+	document.forms[0].mldFastLeave.value = mldFastLeaveEnable;
+
+	 if(mldAutoModeEnable == '1') {
+		 document.forms[0].mldAutoMode[0].checked = true;
+		 document.forms[0].mldAutoMode[1].checked = false;
+	 } else {
+		 document.forms[0].mldAutoMode[0].checked = false;
+		 document.forms[0].mldAutoMode[1].checked = true;
+	 }
+}
+
+function btnApply() {
+	var loc = 'multicast.cmd?';
+
+	if ( isNaN(parseInt(document.forms[0].igmpVer.value)) == true ) {
+		webAlert('잘못된 IGMP Version 입니다.');
+		return;
+	}
+
+	iV = parseInt(document.forms[0].igmpVer.value);
+	if (iV < 1 || iV > 3) {
+		webAlert('잘못된 IGMP Version 입니다.');
+		return;
+	}
+
+	if ( isNaN(parseInt(document.forms[0].igmpQI.value)) == true ) {
+		webAlert('잘못된 IGMP Query Interval 입니다.');
+		return;
+	}
+	iQI = parseInt(document.forms[0].igmpQI.value);
+	if ( iQI < 20 || iQI > 400 ) {
+		webAlert('Query Interval은 20 ~ 400 사이로 설정 하십시오.');
+		return;
+	}
+
+	if ( isNaN(parseInt(document.forms[0].igmpQRI.value)) == true ) {
+		webAlert('잘못된 IGMP Query Response Interval 입니다.');
+		return;
+	}
+	iQRI = parseInt(document.forms[0].igmpQRI.value);
+	if ( iQRI < 2 || iQRI > 10 ) {
+		webAlert('Query Response Interval은 2 ~ 10 사이로 설정 하십시오.');
+		return;
+	}
+
+	/*
+	if ( isNaN(parseInt(document.forms[0].igmpLMQI.value)) == true ) {
+		webAlert('잘못된 IGMP Last Member Query Interval 입니다.');
+		return;
+	}
+	iLMQI = parseInt(document.forms[0].igmpLMQI.value);
+
+	if ( iLMQI < 1  || iLMQI > 25) {
+		webAlert('IGMP Last Member Query Interval은 1 ~ 25 사이로 설정하십시오.');
+		return;
+	}
+	*/
+	igmpLMQI = 1;	/* fixed */
+
+	if ( isNaN(parseInt(document.forms[0].igmpRV.value)) == true ) {
+		webAlert('잘못된 IGMP Robustness Value 입니다.');
+		return;
+	}
+	iRV = parseInt(document.forms[0].igmpRV.value);
+	if ( iRV < 1 || iRV > 5 ) {
+		webAlert('IGMP Robustness Value 값은 1 ~ 5 사이로 설정 하십시오.');
+		return;
+	}
+	if ( isNaN(parseInt(document.forms[0].igmpMaxGroups.value)) == true ) {
+		webAlert('잘못된 IGMP Maximum Groups 입니다.');
+		return;
+	}
+	iMaxGroups = parseInt(document.forms[0].igmpMaxGroups.value);
+	if ( iMaxGroups < 1 || iMaxGroups > 128 ) {
+		webAlert('IGMP Maximum Groups은 1 ~ 128 사이로 설정하십시오.');
+		return;
+	}
+
+	if ( isNaN(parseInt(document.forms[0].igmpMaxGroupsLan1.value)) == true ) {
+		webAlert('잘못된 IGMP Maximum Groups (LAN1) 입니다.');
+		return;
+	}
+	iMaxGroupsLan1 = parseInt(document.forms[0].igmpMaxGroupsLan1.value);
+	if ( iMaxGroupsLan1 < 1 || iMaxGroupsLan1 > 128 ) {
+		webAlert('IGMP Maximum Groups (LAN1) 은 1 ~ 128 사이로 설정하십시오.');
+		return;
+	}
+
+	if ( isNaN(parseInt(document.forms[0].igmpMaxGroupsLan2.value)) == true ) {
+		webAlert('잘못된 IGMP Maximum Groups (LAN2) 입니다.');
+		return;
+	}
+	iMaxGroupsLan2 = parseInt(document.forms[0].igmpMaxGroupsLan2.value);
+	if ( iMaxGroupsLan2 < 1 || iMaxGroupsLan2 > 128 ) {
+		webAlert('IGMP Maximum Groups (LAN2) 은 1 ~ 128 사이로 설정하십시오.');
+		return;
+	}
+
+	if ( isNaN(parseInt(document.forms[0].igmpMaxGroupsLan3.value)) == true ) {
+		webAlert('잘못된 IGMP Maximum Groups (LAN3) 입니다.');
+		return;
+	}
+	iMaxGroupsLan3 = parseInt(document.forms[0].igmpMaxGroupsLan3.value);
+	if ( iMaxGroupsLan3 < 1 || iMaxGroupsLan3 > 128 ) {
+		webAlert('IGMP Maximum Groups (LAN3) 은 1 ~ 128 사이로 설정하십시오.');
+		return;
+	}
+
+	if ( isNaN(parseInt(document.forms[0].igmpMaxGroupsLan4.value)) == true ) {
+		webAlert('잘못된 IGMP Maximum Groups (LAN4) 입니다.');
+		return;
+	}
+	iMaxGroupsLan4 = parseInt(document.forms[0].igmpMaxGroupsLan4.value);
+	if ( iMaxGroupsLan4 < 1 || iMaxGroupsLan4 > 128 ) {
+		webAlert('IGMP Maximum Groups (LAN4) 은 1 ~ 128 사이로 설정하십시오.');
+		return;
+	}
+
+	/* add default value - refs #259 : don't remove. if not used on web. */
+	loc += '&igmpMaxMembers='+'100';
+	loc += '&igmpMaxSources='+'100';
+
+	loc += '&igmpVer=' + document.forms[0].igmpVer.value;
+	loc += '&igmpQI=' + document.forms[0].igmpQI.value;
+	loc += '&igmpQRI=' +document.forms[0].igmpQRI.value;
+	//loc += '&igmpLMQI=' + document.forms[0].igmpLMQI.value;
+	loc += '&igmpLMQI=' + igmpLMQI;
+	loc += '&igmpRV=' + document.forms[0].igmpRV.value;
+	loc += '&igmpMaxGroups=' + document.forms[0].igmpMaxGroups.value;
+	loc += '&igmpMaxGroupsLan1=' + document.forms[0].igmpMaxGroupsLan1.value;
+	loc += '&igmpMaxGroupsLan2=' + document.forms[0].igmpMaxGroupsLan2.value;
+	loc += '&igmpMaxGroupsLan3=' + document.forms[0].igmpMaxGroupsLan3.value;
+	loc += '&igmpMaxGroupsLan4=' + document.forms[0].igmpMaxGroupsLan4.value;
+	loc += '&igmpFastLeaveEnable=' + document.forms[0].igmpFastLeave.value;
+	loc += '&igmpLan2LanEnable=' + document.forms[0].igmpLan2Lan.value;
+
+	if ( document.forms[0].igmpAutoMode[0].checked == true )
+		loc += '&igmpAutoModeEnable=1';
+	else
+		loc += '&igmpAutoModeEnable=0';
+
+
+	if ( isNaN(parseInt(document.forms[0].mldVer.value)) == true ) {
+		webAlert('잘못된 MLD 버젼입니다');
+		return;
+	}
+
+	mVer = parseInt(document.forms[0].mldVer.value);
+	if ( mVer < 1 || mVer > 2 ) {
+		webAlert('잘못된 MLD 버젼입니다');
+		return;
+	}
+	loc += '&mldVer=' + document.forms[0].mldVer.value;
+	loc += '&mldFastLeaveEnable=' + document.forms[0].mldFastLeave.value;
+
+	/* add default value*/
+	loc += '&mldQI='+'125';
+	loc += '&mldQRI='+'10';
+	loc += '&mldLMQI='+'10';
+	loc += '&mldRV='+'2';
+	loc += '&mldMaxSources='+'64';
+	loc += '&mldMaxMembers='+'256';
+
+	if ( document.forms[0].mldAutoMode[0].checked == true )
+		loc += '&mldAutoModeEnable=1';
+	else
+		loc += '&mldAutoModeEnable=0';
+
+	mMaxGroups = parseInt(document.forms[0].mldMaxGroups.value);
+	if ( mMaxGroups < 1 || mMaxGroups > 64 ) {
+		webAlert('MLD Maximum Groups은 1 ~ 64 사이로 설정하십시오.');
+		return;
+	}
+	if ( isNaN(parseInt(document.forms[0].mldMaxGroupsLan1.value)) == true ) {
+		webAlert('잘못된 MLD Maximum Groups (LAN1) 입니다.');
+		return;
+	}
+	mMaxGroupsLan1 = parseInt(document.forms[0].mldMaxGroupsLan1.value);
+	if ( mMaxGroupsLan1 < 1 || mMaxGroupsLan1 > 64 ) {
+		webAlert('MLD Maximum Groups (LAN1) 은 1 ~ 64 사이로 설정하십시오.');
+		return;
+	}
+
+	if ( isNaN(parseInt(document.forms[0].mldMaxGroupsLan2.value)) == true ) {
+		webAlert('잘못된 MLD Maximum Groups (LAN2) 입니다.');
+		return;
+	}
+	mMaxGroupsLan2 = parseInt(document.forms[0].mldMaxGroupsLan2.value);
+	if ( mMaxGroupsLan2 < 1 || mMaxGroupsLan2 > 64 ) {
+		webAlert('MLD Maximum Groups (LAN2) 은 1 ~ 64 사이로 설정하십시오.');
+		return;
+	}
+
+	if ( isNaN(parseInt(document.forms[0].mldMaxGroupsLan3.value)) == true ) {
+		webAlert('잘못된 MLD Maximum Groups (LAN3) 입니다.');
+		return;
+	}
+	mMaxGroupsLan3 = parseInt(document.forms[0].mldMaxGroupsLan3.value);
+	if ( mMaxGroupsLan3 < 1 || mMaxGroupsLan3 > 64 ) {
+		webAlert('MLD Maximum Groups (LAN3) 은 1 ~ 64 사이로 설정하십시오.');
+		return;
+	}
+
+	if ( isNaN(parseInt(document.forms[0].mldMaxGroupsLan4.value)) == true ) {
+		webAlert('잘못된 MLD Maximum Groups (LAN4) 입니다.');
+		return;
+	}
+	mMaxGroupsLan4 = parseInt(document.forms[0].mldMaxGroupsLan4.value);
+	if ( mMaxGroupsLan4 < 1 || mMaxGroupsLan4 > 64 ) {
+		webAlert('MLD Maximum Groups (LAN4) 은 1 ~ 64 사이로 설정하십시오.');
+		return;
+	}
+
+	loc += '&mldMaxGroups=' + document.forms[0].mldMaxGroups.value;
+	loc += '&mldMaxGroupsLan1=' + document.forms[0].mldMaxGroupsLan1.value;
+	loc += '&mldMaxGroupsLan2=' + document.forms[0].mldMaxGroupsLan2.value;
+	loc += '&mldMaxGroupsLan3=' + document.forms[0].mldMaxGroupsLan3.value;
+	loc += '&mldMaxGroupsLan4=' + document.forms[0].mldMaxGroupsLan4.value;
+
+	loc += '&sessionKey=' + genericSessionKey;
+	var code = 'location="' + loc + '"';
+	eval(code);
+}
+
+</script>
+</head>
+
+<body  onLoad='frmLoad()'>
+<script language="javascript">
+showmenubar();
+</script>
+
+
+
+
+<form>
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>네트워크 </li>
+			<li>IPTV </li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">IPTV</h1>
+	<p>IPTV 기능을 설정합니다.</p>
+	<hr>
+
+	<h2 class="title_style_2">IGMP 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:32%;" />
+				<col style="" />
+			</colgroup>
+<!--
+			<thead>
+				<tr>
+					<th scope="col"><center>이름</center></th>
+					<th scope="col"><center>동작</center></th>
+				</tr>
+			</thead>
+-->
+			<tbody>
+				<tr>
+					<th>Fast Leave 활성화</th>
+					<td>
+						<select id='igmpFastLeave' name='igmpFastLeave'>
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>IGMP General Query Interval (125 초)</th>
+					<td><input type='text' name='igmpQI' value='125'></td>
+				</tr>
+				<tr>
+					<th>IGMP Query Response Interval (10 초)</th>
+					<td><input type='text' name='igmpQRI' value='10'></td>
+				</tr>
+				<!--tr>
+					<th>Last Member Query Interval (1 ~ 25 초)</th>
+					<td><input type='text' name='igmpLMQI' value='10'></td>
+				</tr-->
+				<tr>
+					<th>Robustness Value (1 ~ 5)</th>
+					<td><input type='text' name='igmpRV' value='2'></td>
+				</tr>
+				<tr>
+					<!--th>기본 IGMP 버전(2(v2 only), 3(v2 + v3))</th-->
+					<th>IGMP V3 Message Allow</th>
+					<td>
+						<select id='igmpVer' name='igmpVer'>
+							<option value="2">비활성화</option>
+							<option value="3">활성화</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>시스템 최대 IGMP Groups (1 ~ 256)</th>
+					<td><input type='text' name='igmpMaxGroups' value='100'></td>
+				</tr>
+				<tr>
+					<th>IGMP Max Group (LAN1)</th>
+					<td><input type='text' name='igmpMaxGroupsLan1' value='100'></td>
+				</tr>
+				<tr>
+					<th>IGMP Max Group (LAN2)</th>
+					<td><input type='text' name='igmpMaxGroupsLan2' value='100'></td>
+				</tr>
+				<tr>
+					<th>IGMP Max Group (LAN3)</th>
+					<td><input type='text' name='igmpMaxGroupsLan3' value='100'></td>
+				</tr>
+				<tr>
+					<th>IGMP Max Group (LAN4)</th>
+					<td><input type='text' name='igmpMaxGroupsLan4' value='100'></td>
+				</tr>
+				<tr>
+					<th>Querier 모드</th>
+					<td><input type='radio' name='igmpAutoMode'> Auto <input type='radio' name='igmpAutoMode'> Manual</td>
+				</tr>
+				<tr>
+					<th>LAN to LAN Mode</th>
+					<td>
+						<select id='igmpLan2Lan' name='igmpLan2Lan'>
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">MLD 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:32%;" />
+				<col style="" />
+			</colgroup>
+<!--
+			<thead>
+				<tr>
+					<th scope="col"><center>이름</center></th>
+					<th scope="col"><center>동작</center></th>
+				</tr>
+			</thead>
+-->
+			<tbody>
+				<tr>
+					<th>기본 MLD 버전</th>
+					<td><input type='text' name='mldVer' value='2'></td>
+				<tr>
+					<th>Fast Leave 활성화</th>
+					<td>
+						<select id='mldFastLeave' name='mldFastLeave'>
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</tr>
+				<tr>
+					<th>Querier 모드</th>
+					<td><input type='radio' name='mldAutoMode'> Auto <input type='radio' name='mldAutoMode'> Manual</td>
+				</tr>
+				<tr>
+					<th>최대 MLD Groups (1 ~ 64)</th>
+					<td><input type='text' name='mldMaxGroups' value='64'></td>
+				</tr>
+				<tr>
+					<th>MLD Max Group (LAN1)</th>
+					<td><input type='text' name='mldMaxGroupsLan1' value='64'></td>
+				</tr>
+				<tr>
+					<th>MLD Max Group (LAN2)</th>
+					<td><input type='text' name='mldMaxGroupsLan2' value='64'></td>
+				</tr>
+				<tr>
+					<th>MLD Max Group (LAN3)</th>
+					<td><input type='text' name='mldMaxGroupsLan3' value='64'></td>
+				</tr>
+				<tr>
+					<th>MLD Max Group (LAN4)</th>
+					<td><input type='text' name='mldMaxGroupsLan4' value='64'></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c pt_20">
+		<input type="button"  onclick="btnApply()" value="적용" class="basic-btn01 btn-blue-bg" >
+	</div>
+
+	<h2 class="title_style_2">그룹 조회</h2>
+	<div class="tb_style_1  scroll">
+		<table id="igmp_table" name="igmp_table">
+			<colgroup>
+				<col style="width:8%;" />
+				<col style="width:11%;" />
+				<col style="width:11%;" />
+				<col style="width:11%;" />
+				<col style="width:11%;" />
+				<col style="width:11%;" />
+				<col style="width:11%;" />
+				<col style="width:15%;" />
+				<col style="width:11%;" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col"><center>번호</center></th>
+					<th scope="col"><center>그룹주소</center></th>
+					<th scope="col"><center>LAN1</center></th>
+					<th scope="col"><center>LAN2</center></th>
+					<th scope="col"><center>LAN3</center></th>
+					<th scope="col"><center>LAN4</center></th>
+					<th scope="col"><center>WiFi</center></th>
+					<th scope="col"><center>호스트</center></th>
+					<th scope="col"><center>Aging Time</center></th>
+				</tr>
+			</thead>
+			<tbody>
+					<tr>
+						 <td class="igmp_index" align="center" rowspan="4">0</td>
+						 <td class="igmp_group_index" align="center" rowspan="4">239.169.0.1</td>						
+						 <td align="center">O</td>
+						 <td align="center"></td>
+						 <td align="center"></td>
+						 <td align="center"></td>
+						 <td align="center"></td>
+						 <td align="center">192.168.45.20</td>
+						 <td align="center">200</td>
+					</tr>
+					<tr>
+						 <td class="igmp_index" align="center" style="display: none;">0</td>
+						 <td class="igmp_group_index" align="center" style="display: none;">239.169.0.1</td>						
+						 <td align="center"></td>
+						 <td align="center">O</td>
+						 <td align="center"></td>
+						 <td align="center"></td>
+						 <td align="center"></td>
+						  <td align="center">192.168.45.21</td>
+						  <td align="center">200</td>
+					</tr>
+					<tr>
+						 <td class="igmp_index" align="center" style="display: none;">0</td>
+						 <td class="igmp_group_index" align="center" style="display: none;">239.169.0.1</td>						
+						 <td align="center"></td>
+						 <td align="center">O</td>
+						 <td align="center"></td>
+						 <td align="center"></td>
+						 <td align="center"></td>
+						  <td align="center">192.168.45.30</td>
+						  <td align="center">200</td>
+					</tr>
+					<tr>
+						 <td class="igmp_index" align="center" style="display: none;">0</td>
+						 <td class="igmp_group_index" align="center" style="display: none;">239.169.0.1</td>						
+						 <td align="center"></td>
+						 <td align="center"></td>
+						 <td align="center"></td>
+						 <td align="center"></td>
+						 <td align="center">O</td>
+						  <td align="center">192.168.45.120</td>
+						  <td align="center">200</td>
+					</tr>					
+					<tr>
+						 <td class="igmp_index" align="center" rowspan="2">1</td>
+						 <td class="igmp_group_index" align="center" rowspan="2">239.169.0.2</td>						
+						 <td align="center">O</td>
+						 <td align="center"></td>
+						 <td align="center"></td>
+						 <td align="center"></td>
+						 <td align="center"></td>
+						  <td align="center">192.168.45.22</td>
+						  <td align="center">200</td>
+					</tr>
+					<tr>
+						 <td class="igmp_index" align="center" style="display: none;">1</td>
+						 <td class="igmp_group_index" align="center" style="display: none;">239.169.0.2</td>						
+						 <td align="center"></td>
+						 <td align="center">O</td>
+						 <td align="center"></td>
+						 <td align="center"></td>
+						 <td align="center"></td>
+						  <td align="center">192.168.45.23</td>
+						  <td align="center">200</td>
+					</tr>						
+					
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c mb_20">
+		<input type="button"  onclick="frmReload()" value="새로고침" class="basic-btn01 btn-gray-bg2" >
+	</div>	
+</div>
+</form>
+</body>
+</html>

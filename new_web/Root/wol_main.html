@@ -1,0 +1,159 @@
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/prv_util.js"></script>
+	<script language="javascript" src="js/portName.js"></script>
+	<script language="javascript" src="js/popup.js"></script>	
+<script language="javascript">
+var localhosts = [
+["",""]];
+
+var wol_list = [ ["00:01:00:32:ab:42", "woltest"]];
+
+function validate_check() {
+	var sel  = document.getElementById("client_mac");
+	var mac = document.getElementById("input_mac").value;
+	var val  = sel.options[sel.selectedIndex].value;
+
+	if (document.getElementById("cmd").value == "add") {
+		if (wol_list.length >= 4) {
+			webAlert("최대 4개까지 설정할 수 있습니다.");
+			return false;
+		}
+		if (val == 9) {
+			if (isValidMacAddress(mac) == false) {
+				webAlert('유효하지 않는 MAC주소입니다 ' +'Ex) 00:23:AA:00:00:00');
+				return false;
+			}
+		}
+	} else if (document.getElementById("cmd").value == "boot") {
+		webAlert("선택한 PC에 Magic Packet을 전송합니다.");
+		document.formWol.submit();					 
+		//document.location.reload();
+		return true;
+	}
+
+	document.formWol.submit();					 
+	return true;
+}
+
+function change_input() {
+	var sel  = document.getElementById("client_mac");
+	var val  = sel.options[sel.selectedIndex].value;
+	var text  = document.getElementById("input_mac");
+	
+	if (val == 9) {
+		sel.style.width = '30%';
+		text.style.width = '68%';
+		$("#input_mac").show();
+	} else {
+		sel.style.width = '100%';
+		$("#input_mac").hide();
+	}
+}
+function btnLogout() {
+}
+</script>	
+</head>
+<body onLoad='change_input()'>
+<!-- header -->
+	<div class="header_bg">
+		<div class="top_wrap">
+			<div class="top_area clfx">
+				<div class="logo">
+					<img src="img/new/logo.png" alt="SK broadband." /> <span>H854AX</span>
+			</div>
+			<div class="util web clfx">
+			<span>wol</span>
+			<button class="btn_logout" onclick="btnLogout()">로그아웃</button>
+			</div>
+		</div>
+		<!-- //top_wrap -->		
+	</div>
+	<!-- //header_bg -->
+<!-- //header -->
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>WOL</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">WOL</h1>
+	<p> 공유기에 연결되어 있는 PC의 MAC 주소를 이용하여 외부 인터넷 망에서도 PC를 부팅할 수 있습니다.</p>
+	<hr>
+<form id="formWol" name="formWol" action="">
+	<h2 class="title_style_2">WOL 정보 추가 및 리스트</h2>
+	<div class="tb_style_2">
+		<table>
+		<thead>
+			<tr>
+				<th><center>선택</center></th>
+				<th style="width:45%"><center>MAC</center></th>
+				<th><center>설명</center></th>
+			</tr>
+		</thead>
+		<tbody>
+			<script language="javascript">
+			var j = 0;
+			for ( j = 0; j < wol_list.length; j++) {
+				document.write("<tr>\n")
+					document.write("<td align=center><input id='ck_"+Number(j+1)+"' name='ck_"+Number(j+1)+"' type='checkbox'></td>");
+				document.write("<td align=center>"+wol_list[j][0]+"</td>");
+				document.write("<td align=center>"+wol_list[j][1]+"</td>");
+				document.write("</tr>\n")
+			}
+			</script>					
+			<tr>
+				<th scope="row">리스트 추가</th>
+				<td>
+					<select name="client_mac" id="client_mac" style="width:100%" class="w_250" onchange="change_input();">
+					<script language="javascript">
+						var i = 0;
+						document.write("<option value=0>MAC Address</option>\n");
+						for (i = 0; i <localhosts.length; i++ ) {
+							if (localhosts[i][0] !="")
+								document.write("<option value='"+localhosts[i][0]+"'>"+localhosts[i][0]+"</option>\n");
+						}
+						document.write("<option value=9>직접입력</option>\n");
+					</script>
+					</select>
+					<input type="text" id="input_mac" name="input_mac">
+				</td>
+				<td>
+					<input type="text" name="explain" id="explain" />
+				</td>
+			</tr>
+		</tbody>
+		</table>
+		&#8251;&nbsp;최대 4개까지 설정할 수 있습니다.
+	</div>
+
+	<div class="txt_c pt_20">
+		<input type="button"  value="추가" onclick="document.formWol.cmd.value='add';validate_check();" class="basic-btn01 btn-gray-bg mr_10" >
+		<input type="button"  value="삭제" onclick="document.formWol.cmd.value='sel_delete';validate_check();" class="basic-btn01 btn-gray-bg mr_10" >
+		<input type="button"  value="PC 켜기" onclick="document.formWol.cmd.value='boot';validate_check();" class="basic-btn01 btn-blue-bg" >
+		<input type="hidden" value="set" name="cmd" id="cmd">
+		<input type="hidden" value='1366499462' name="sessionKey" id="sessionKey">
+		<input type="hidden" value="wol" name="page">
+	</div>
+</form>
+</div>
+<!-- //wrap -->
+</body>
+</html>

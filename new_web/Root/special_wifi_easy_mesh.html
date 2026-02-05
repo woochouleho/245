@@ -1,0 +1,262 @@
+
+
+<html>
+<head>
+   <title>H854AX</title>
+   <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+   <meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+   <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+   <meta name="description" content=""/>
+   <meta name="keywords" content=""/>
+   <link rel="stylesheet" href="css/common.css?ver=1"/>
+   <script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+   <script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+   <script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+   <script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+   <script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+   <script language="javascript" src="js/util.js"></script>
+   <script language="javascript" src="js/portName.js"></script>
+   <script type="text/javascript" src="js/vis-network.min.js"></script>
+   <link href="js/vis-network.min.css" rel="stylesheet" type="text/css" />
+</head>
+
+
+<script language="javascript">
+function  show_easymesh_db(con_show)
+{
+	var db_enable = $('#db').val();
+	
+	if(con_show == true)
+		$('.easymesh_db').css('display',  db_enable == '1' ? '' : 'none');
+	else
+		$('.easymesh_db').css('display', 'none');
+}
+
+function show_easymesh() 
+{
+	switch( $('#mode').val() ) 
+	{
+		case '0':
+			$('.easymesh_con').css('display', 'none');
+			$('.easymesh_parments').attr('disabled', true);
+			show_easymesh_db(false);
+			break;
+		case '1':
+		case '2':
+		default:
+			$('.easymesh_con').css('display', '');
+			$('.easymesh_parments').attr('disabled', false);
+			show_easymesh_db(true);
+			break;		
+	}
+}
+
+function fmload()
+{
+	show_easymesh();
+}
+</script>
+<body onload='fmload();'>
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form enctype="multipart/form-data" action="spec_wlan_muti_ap_kt.php" id="mainform" name="mainform" method="post">
+<input type="hidden" name="action" id="action" value="action" /> <!--pjo-->
+<div class="container">
+   <div class="navi clfx">
+      <ul class="clfx">
+         <li><img src="img/navi_home.png" alt="home" />Home </li>
+         <li>특수기능</li>
+         <li>EasyMesh</li>
+      </ul>
+   </div>
+
+   <h1 class="title_style_1">EasyMesh</h1>
+
+   <p> EasyMesh를 연결하고 기능을 설정 합니다.</p>
+   <hr>
+    <h2 class="title_style_2">EasyMesh 연결</h2>
+	<div class="tb_style_5">
+		<table>
+			<colgroup> 
+				<col style="width:25%;" />
+				<col style="width:%;" />
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">EasyMesh 연결하기</th>
+					<td>
+						<input type="button" value="연결" class="basic-btn01 btn-gray-bg2" />
+						<input type="button" value="취소" class="basic-btn01 btn-gray-bg2" />
+					</td>			
+				</tr>				
+			</tbody>
+		</table>
+	</div>
+    <h2 class="title_style_2">EasyMesh 설정</h2>
+	<div class="tb_style_5">
+		<table>
+			<colgroup>
+				<col style="width:25%;" />
+				<col style="width:%;" />
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">모드</th>
+					<td>
+						<select id='mode' onchange='show_easymesh();'>
+							<option value='0' >비활성화</option>
+							<option value='1'>Agent</option>
+							<option value='2' selected>Controller</option>							
+						</select>
+					</td>			
+				</tr>				
+				<tr>
+					<th scope="row">DB 기능</th>
+					<td>
+						<select id='db' onchange='show_easymesh();'>
+							<option value='0' >비활성화</option>
+							<option value='1' selected>활성화</option>							
+						</select>
+					</td>			
+				</tr>				
+				<tr>
+					<th scope="row">ap metrics intval</th>
+					<td>
+						<input id="w_dos_tcp_syn_limit"  class='easymesh_parments' name="w_dos_tcp_syn_limit" type="text" style="width:30%;" value='2'> &nbsp;&nbsp;  Sec
+					</td>					
+				</tr>
+				<tr>
+					<th scope="row">retry</th>
+					<td>
+						<input id="w_dos_tcp_syn_limit"  class='easymesh_parments' name="w_dos_tcp_syn_limit" type="text" style="width:30%;" value='2'> &nbsp;&nbsp; 
+					</td>					
+				</tr>				
+			</tbody>
+		</table>
+	</div>
+	<div class="txt_c pt_20">
+		<input type="button"  onclick="btnApplySave()" value="적용" class="basic-btn01 btn-blue-bg" >
+	</div>
+	<br><br>
+   <h2 class="title_style_2 easymesh_con">EasyMesh Topology</h2>
+   <div id="easymesh_topology" class='tb_style_2 easymesh_con' style="height: 40%; border-style: solid;  border-width: 1px;">
+   <script type="text/javascript">
+      // create an array with nodes
+      var IMGDIR = "img/"
+
+      // ex> {id: 2, label: 'Node 2'}
+      var nodes = new vis.DataSet([
+         {
+            id: 1
+            , shape: 'image'
+            , image: IMGDIR + 'icon_skwifi.png'            , label: 'Controller',         }
+         ,{id: 2, shape: 'image', image: IMGDIR + 'repeater.png', label: 'Agent1'}      ]);
+
+      // create an array with edges
+      // ex> {from: 1, to: 2}
+      var edges = new vis.DataSet([
+         {from: 1, to: 2}      ]);
+
+      // create a network
+      var container = document.getElementById('easymesh_topology');
+      var data = {
+         nodes: nodes,
+         edges: edges
+      };
+      var options = {};
+      var network = new vis.Network(container, data, options);
+   </script>
+   </div>
+    <h2 class="title_style_2 easymesh_con">EasyMesh Agent/Controller 리스트</h2>
+   <div class="tb_style_2 easymesh_con">
+      <table>
+      <tbody>
+         <tr>
+            <th scope="row" width="10%">이름</th>
+            <th scope="row" width="20%">MAC 주소</th>
+            <th scope="row" width="20%">IP 주소</th>
+            <th scope="row" width="20%">무선 대역</th>
+            <th scope="row" width="20%" >RSSI </th>
+            <th scope="row"  width="20%">AP WEB UI 접속</th>
+         </tr>
+         <tr>
+			<td  align="center" >Agent</td>
+			<td  align="center" >00:23:AA:FF:14:96</td>
+			<td align="center" >192.168.55.6</td>
+			<td  align="center" >5G</td>
+			<td align="center" >-18</td>
+			<td align="center"><input type="button" value="Connect" onclick="open_web('192.168.55.6')" class="basic-btn01 btn-blue-bg" ></td>
+		</tr>
+			</tbody>
+       </table>
+    </div>
+	<br><br>
+   <h2 class="title_style_2 easymesh_con">EasyMesh 접속 단말 리스트</h2>
+   <div class="tb_style_2 easymesh_con">
+      <table>
+		<colgroup>
+			<col style="width:12.5%;">
+			<col style="width:17.5%;">
+			<col style="width:15%;">
+			<col style="width:12.5%;">
+			<col style="width:10%;">
+			<col style="width:10%;">
+			<col style="width:5%;">
+			<col style="width:12.5%;">
+			<col style="width:10%;">
+		</colgroup>
+		<thead>
+            <th  scope="col">접속 AP</th>
+            <th  scope="col">SSID</th>
+            <th  scope="col">MAC주소</th>
+			<th  scope="col" >IP 주소</th>
+            <th  scope="col">Host Name</th>
+            <th  scope="col">무선</th>
+			<th  scope="col">11V</th>
+            <th  scope="col">Rate Tx/Rx</th>
+            <th  scope="col">RSSI </th>		
+		</thead>
+		<tbody>
+         <tr>
+			<td  align="center" >Controller SSID3</td>
+			<td  align="center" >SK_ WiFiGIGA148B_5G</td>
+			<td  align="center" >00:23:AA:FF:14:96</td>
+			<td  align="center" >192.168.35.20</td>
+			<td  align="center" >quantenna</td>
+			<td  align="center" >5G</td>
+			<td  align="center" >Y</td>
+			<td  align="center" >256 / 256 Mbps</td>
+			<td  align="center" >-45</td>
+		</tr>
+		</tbody>
+   </table>
+   </div>
+   <br><br>
+   <h2 class="title_style_2  easymesh_db">EasyMesh 제외 리스트</h2>
+   <div class="tb_style_2  easymesh_db">
+      <table>
+		<colgroup>
+			<col style="width:100%;">
+		</colgroup>
+		<thead>
+            <th scope="col">MAC주소 </th>		
+		</thead>
+		<tbody>
+         <tr>
+			<td align="center">00:23:AA:FF:14:46</td>
+		</tr>
+         <tr>
+			<td align="center">00:23:AA:FF:14:56</td>
+		</tr>		
+		</tbody>
+   </table>
+   </div>
+   </form>
+</div>
+<!-- //wrap -->
+
+</body>
+</html>

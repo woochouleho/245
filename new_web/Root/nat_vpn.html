@@ -1,0 +1,117 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+
+var sessionKey = '1465861112';
+var wv_pptp_enable  = '1';
+var wv_ipsec_enable = '1';
+
+function btnApplySave() {
+	var loc = 'nat_vpn.cgi?';
+	var code = '';
+	var changed = 0;
+
+	if(wv_pptp_enable  != document.forms[0].pptp_enable.value) changed++;
+	if(wv_ipsec_enable != document.forms[0].ipsec_enable.value) changed++;
+
+	if(!changed) return;
+
+	loc += 'wv_pptp_enable='   + document.forms[0].pptp_enable.value;
+	loc += '&wv_ipsec_enable=' + document.forms[0].ipsec_enable.value;
+
+	loc += '&sessionKey=' + sessionKey;
+	code = 'location="' + loc + '"';
+	eval(code);
+}
+
+function frmLoad() {
+	document.forms[0].pptp_enable.value  = wv_pptp_enable;
+	document.forms[0].ipsec_enable.value = wv_ipsec_enable;
+}
+</script>
+</head>
+
+<body onload="frmLoad()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form>
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>NAT/라우터 </li>
+			<li>VPN </li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">VPN</h1>
+	<p>VPN passthrough 방식을 설정합니다.</p>
+    <hr>
+
+	<h2 class="title_style_2 left_area">VPN passthrough 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row">IPSEC 사용</th>
+					<td>
+						<select id="ipsec_enable" name="ipsec_enable">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">PPTP 사용</th>
+					<td>
+						<select id="pptp_enable" name="pptp_enable">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>	
+	<h2 class="title_style_2 left_area">ALG</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row">SIP 사용</th>
+					<td>
+						<select id="sip_enable" name="sip_enable">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<br>
+	<div class="txt_c">
+		<input type="button"  onclick="btnApplySave()" value="적용" class="basic-btn01 btn-blue-bg" >
+	</div>
+</form>
+</body>
+</html>

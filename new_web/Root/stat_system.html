@@ -1,0 +1,317 @@
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+
+var sessionKey = '646974322';
+var cur_user	= 'root';
+
+/*
+var wv_cpu_th = 80;
+var wv_mem_th = 80;
+*/
+var wv_cpu_th= 80; 
+var wv_mem_th= 80; 
+
+
+function btnApplySave() {
+    var loc = 'stat_system.cgi?';
+	var code = '';
+	var cpu = 0;
+	var mem = 0;
+
+    if ( isNaN(parseInt(document.forms[0].cputhreshold.value)) == true ) {
+        webAlert('잘못된 CPU Threshold 값 입니다.');
+        return;
+    }
+
+    cpu = parseInt(document.forms[0].cputhreshold.value);
+    if ( cpu < 0 || cpu > 100 ) {
+        webAlert('CPU Threshold 값은 0 ~ 100 사이로 설정 하십시오.');
+        return;
+    }
+
+    if ( isNaN(parseInt(document.forms[0].memthreshold.value)) == true ) {
+        webAlert('잘못된 Memory Threshold 값 입니다.');
+        return;
+    }
+
+    mem = parseInt(document.forms[0].memthreshold.value);
+    if ( mem < 0 || mem > 100 ) {
+        webAlert('Memory Threshold 값은 0 ~ 100 사이로 설정 하십시오.');
+        return;
+    }
+
+    loc += 'wv_cpu_threshold='  + document.forms[0].cputhreshold.value;
+    loc += '&wv_mem_threshold=' + document.forms[0].memthreshold.value;
+    loc += '&sessionKey=' + sessionKey;
+    code = 'location="' + loc + '"';
+    eval(code);
+}
+
+function frmLoad() {
+	document.getElementById("cpuusage").innerHTML = "0.2%";
+	document.getElementById("memtotal").innerHTML = "953.16M";
+	document.getElementById("memusage").innerHTML = "374.01M";
+	document.getElementById("memusage_per").innerHTML = "39.239%";
+	document.getElementById("flashsize").innerHTML = "25.10M";
+	document.getElementById("flashused").innerHTML ="128K";
+	document.getElementById("flashusage").innerHTML = "1%";
+	document.forms[0].cputhreshold.value = parseInt(wv_cpu_th);
+	document.forms[0].memthreshold.value = parseInt(wv_mem_th);
+
+	if (cur_user == "admin")
+		document.getElementById("show_netstat").style.display="none";
+	else
+		document.getElementById("show_netstat").style.display="block";
+
+	document.forms[0].SHOW_NETSTAT.innerHTML += 'Active Internet connections (w/o servers)' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'Proto Recv-Q Send-Q Local Address           Foreign Address         State       ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 127.0.0.1:35982         127.0.0.1:8888          TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 127.0.0.1:35979         127.0.0.1:8888          TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 127.0.0.1:35975         127.0.0.1:8888          TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 127.0.0.1:35976         127.0.0.1:8888          TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 127.0.0.1:35977         127.0.0.1:8888          TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 127.0.0.1:35980         127.0.0.1:8888          TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 127.0.0.1:35984         127.0.0.1:8888          TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 127.0.0.1:35974         127.0.0.1:8888          TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 127.0.0.1:35983         127.0.0.1:8888          TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 127.0.0.1:35981         127.0.0.1:8888          TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 127.0.0.1:35985         127.0.0.1:8888          TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 127.0.0.1:35978         127.0.0.1:8888          TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1041 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1050 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1045 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1064 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1061 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1065 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1058 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1056 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1051 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1048 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1044 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1037 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1062 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1043 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1040 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1034 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1035 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1052 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1047 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1059 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1054 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1042 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1066 ESTABLISHED ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1055 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1046 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1038 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1067 ESTABLISHED ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1060 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1063 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1053 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1036 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1039 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1057 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'tcp        0      0 ::ffff:192.168.45.1:8080 ::ffff:192.168.45.254:1049 TIME_WAIT   ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'Active UNIX domain sockets (w/o servers)' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'Proto RefCnt Flags       Type       State         I-Node Path' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  20     [ ]         DGRAM                      2594 /var/log/log' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                     11065 /var/tmp/httpd_ep' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         DGRAM                     12693 /var/run/hostapd/wl1' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                     12695 /var/run/hostapd/wl1.1' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                     12718 /tmp/wpa_ctrl_3212-2' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                      4795 /var/tmp/consoled_ep' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         DGRAM                     17104 /var/run/hostapd/wl0' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                     17106 /var/run/hostapd/wl0.1' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                     10963 /tmp/wpa_ctrl_3212-1' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       4080 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       4053 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       7018 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       4797 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       2627 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       6220 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       6156 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                      6197 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       5256 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                      6210 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                      7742 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                     10575 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                     12709 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED      11064 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       6154 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                      4753 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                     11569 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                      2598 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       4079 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       2590 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       6219 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       7019 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       6155 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       4357 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED      18366 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                     12640 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                      6192 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                      6217 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       4781 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED      11339 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       6153 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       6148 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                      4078 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       4412 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       6191 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       4410 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       9242 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       4358 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                      6200 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                      6218 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       6152 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       7150 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       6260 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       4631 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       6149 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       6150 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       6190 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       4255 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                     10359 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       4782 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED      12327 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       4411 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       4798 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                      6203 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                      6198 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       4413 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       7075 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED      12334 /var/smd_messaging_server_addr' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       6259 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       6151 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  2      [ ]         DGRAM                     11342 ' + '\n';
+document.forms[0].SHOW_NETSTAT.innerHTML += 'unix  3      [ ]         STREAM     CONNECTED       4632 /var/smd_messaging_server_addr' + '\n';
+
+	return;
+}
+
+function frmReload() {
+	document.location.reload();
+}
+
+function resetClick() {
+   var loc = 'statsifcreset.html';
+
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+</script>
+</head>
+
+<body onLoad='frmLoad()'>
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form>
+<div class="container custom_input">
+
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>통계 </li>
+			<li>시스템 통계</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">시스템 통계</h1>
+	<p>네트워크 연결 정보와 CPU 통계 정보를 출력합니다.</p>
+	<hr>
+
+	<h2 class="title_style_2">CPU</h2>
+	<div class="tb_style_2">
+		<table>
+			<tr>
+				<th scope="col"><center>CPU 사용량</center></th>
+				<td><span id="cpuusage" name="cpuusage"></span></td>
+			</tr>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">Memory</h2>
+	<div class="tb_style_2">
+		<table>
+			<tr>
+				<th scope="row">Memory 크기</th>
+				<td><span id="memtotal" name="memtotal"></span> </td>
+			</tr>
+			<tr>
+				<th scope="row">Memory 사용량 </th>
+				<td><span id="memusage" name="memusage"></span> </td>
+			</tr>
+			<tr>
+				<th scope="row">메모리 사용률(%) </th>
+				<td><span id="memusage_per" name="memusage_per"></span> </td>
+			</tr>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">Flash</h2>
+	<div class="tb_style_2">
+		<table>
+			<tr>
+				<th scope="row">Flash 크기</th>
+				<td><span id="flashsize" name="flashusize"></span> </td>
+			</tr>
+			<tr>
+				<th scope="row">Flash 사용량</th>
+				<td><span id="flashused" name="flashused"></span> </td>
+			</tr>
+			<tr>
+				<th scope="row">Flash 사용률(%)</th>
+				<td><span id="flashusage" name="flashusage"></span> </td>
+			</tr>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">Threshold</h2>
+	<div class="tb_style_2_1">
+		<table>
+			<tr>
+				<th scope="row">CPU 알람 임계값</th>
+				<td><input type='text' name='cputhreshold' size="3" maxlength="3" value='80'> %</td>
+			</tr>
+			<tr>
+				<th scope="row">Memory 알람 임계값</th>
+				<td><input type='text' name='memthreshold' size="3" maxlength="3" value='80'> %</td>
+			</tr>
+		</table>
+	</div>
+	<div class='txt_c pt_20'>
+		<input type='button' onClick='btnApplySave()' value='적용' class='basic-btn01 btn-blue-bg mr_20'>
+	</div>
+
+	<div id="show_netstat" name="show_netstat">
+		<h2 class="title_style_2 left_area">Netstat</h2>
+		<div>
+			<textarea rows="35%" name="SHOW_NETSTAT" id="SHOW_NETSTAT" style="color:white; background-color:black; position:relative; overflow:auto; top: 0px; width: 100%; height: 200px;"></textarea>
+		</div>
+		<br>
+		<div class="txt_c">
+			<input type="button"  onclick="frmReload()" value="새로고침" class="basic-btn01 btn-gray-bg2" >
+		</div>
+	</dev>
+</div>
+</form>
+</body>
+</html>

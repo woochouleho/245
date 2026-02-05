@@ -1,0 +1,152 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/portName.js"></script>
+<script language="javascript">
+
+var dur = 300;
+var is_end_scan  =1;
+function frmLoad() {
+	//ap_scan();
+}
+
+$(window).load( function() {
+	document.getElementById("research_channel").disabled = false;
+	document.getElementById("loading").style.display = "none";
+});
+
+
+function ap_scan(){
+	var sel_ifname = $('#wireless_mode option:selected').val();
+	var ifname_5g = "wl0";
+	var ifname_2g = "wl1";
+	
+	$('#loading').css('display','');
+}
+
+function ap_scan_ajax(ifname){
+	var scan_data="Req=scan&ifname="+ifname;
+	var stats_CCA_date="Req=stats_CCA&ifname="+ifname;
+
+	document.getElementById("loading").style.display = "";
+	document.getElementById("research_channel").disabled = true;
+	
+}
+
+</script>	
+</head>
+<body onload="frmLoad()">
+
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<div class="container">
+<!-- 프로그레시브바 -->
+	<div class="u_popup_bg" style="display:none"></div>
+        <div class="u_progressive_bar_popup popup" style="display:none">
+                        <div class="inner">
+                            <span class="title">검색중</span>
+                            <div class="progressive_bar">
+                                <div id="progress_bar" class="ui-progress-bar ui-container">
+                                    <div class="ui-progress" style="width:100%;">
+                                        <span class="ui-label"><b class="value">100%</b></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div> 
+
+
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>WiFi</li>
+			<li>채널 스캔</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">채널 스캔</h1>
+	<p>AP 채널 환경을 조회합니다.</p>
+	<hr>
+	<h2 class="title_style_2">무선 대역 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row">무선 대역</th>
+					<td>
+						<select name="wireless_mode" id="wireless_mode">
+							<option value="0" selected="selected">ALL </option>
+							<option value="1" >5GHz </option>
+							<option value="2">2.4GHz</option>
+						</select>
+						<input type="button" id='research_channel' value="채널검색" onclick="ap_scan()" 
+						class="basic-btn01 btn-blue-bg" disabled>
+						
+						<input type="button" id='loading' value="검색중..." class="basic-btn01 btn-blue-bg" style='display:none;' disabled>
+					</td>
+				</tr>				
+			</tbody>
+		</table>
+	</div>
+	<h2 class="title_style_2">채널 상태</h2>
+	<div class="tb_style_1 scroll" id="stats_CCA_div" name="stats_CCA_div">
+		<table>
+			<colgroup>
+				<col>
+				<col>
+				<col>
+				<col>
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col"><center>무선 대역</center></th>
+					<th scope="col"><center>채널</center></th>
+					<th scope="col"><center>Tx</center></th>
+					<th scope="col"><center>PLCP 오류</center></th>
+					<th scope="col"><center>잡음(dBm)</center></th>
+					<th scope="col"><center>채널 사용율</center></th>
+				</tr>				
+			</thead>
+			<tbody name="stats_CCA_table" id="stats_CCA_table">
+			
+		<tr class="5g">
+			<td><label>5GHz</label></td>
+			<td><label>36/80M</label></td>
+			<td><label>2</label></td>
+			<td><label>18</label></td>
+			<td><label>-91</label></td>
+			<td><label>7</label></td>
+		</tr>
+		<tr class="2g">
+			<td><label>2.4GHz</label></td>
+			<td><label>5/20M</label></td>
+			<td><label>7</label></td>
+			<td><label>38</label></td>
+			<td><label>-100</label></td>
+			<td><label>0</label></td>
+		</tr></tbody>
+		</table>
+	</div>
+</div>
+
+</div>
+<!-- //wrap -->
+
+</body>
+</html>

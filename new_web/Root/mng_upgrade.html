@@ -1,0 +1,174 @@
+
+<html>
+   <head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/jquery.progress.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+var progress = 0;
+
+function showProgress() {
+	document.getElementById("select_firmware").style.display="none";
+	document.getElementById("upload_button").style.display="none";
+	document.getElementById("progress").style.display="";
+
+	$("#loding_bar").Progress({
+		// width & height of the progress bar
+		width: 250,
+		height: 20, 
+
+		// percent value
+		percent: 100, 
+
+		// background color of the progress bar
+		backgroundColor: 'rgb(255, 90, 32, 0.2)',
+
+		// fill color of the progress bar
+		barColor: '#ff5a20', 
+
+		// text color
+		fontColor: '#fff', 
+
+		// border radius
+		radius: 10,
+
+		// font size
+		fontSize: 12,
+
+		/* animation options r630 - firmware upload take 60 sec
+		 * increaseTime: 140 is 70sec	
+		 */
+		increaseTime: 140, 	
+		increaseSpeed: 0.5, 
+		animate: true
+	});
+}
+
+function get_firmware_info() {
+	document.getElementById('firmware_info_1').innerHTML = '<span size="17">1.00.00</span><span style="color:green;"> (standby side)</span>';
+document.getElementById('firmware_info_2').innerHTML = '<span size="17">1.00.00</span><span style="color:red;"> (active side)</span>';
+document.getElementById('firmware_build_date').innerHTML = '19년 12월 09일 16:51';
+
+}
+</script>
+</head>
+
+<body onload="get_firmware_info()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form id="ImgUploadForm" method='post' ENCTYPE='multipart/form-data' action='upload.cgi'>
+<div class="container custom_input">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>관리 </li>
+			<li>업그레이드</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">업그레이드</h1>
+	<p>펌웨어 업그레이드를 수행합니다.</p>
+	<hr>
+
+	<h2 class="title_style_2">펌웨어 정보</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:22%;"/>			
+				<col style="width:%;"/>
+			</colgroup>
+			<tbody>
+			<tr>
+				<th><span style="width:%;">펌웨어 1 버전 정보</span></th>
+				<td>
+					<p id="firmware_info_1" name="firmware_info_1">
+						<span size='17'>TODO</span>
+						<span style="color:red;"> (active side)</span>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<th><span>펌웨어 2 버전 정보</span></th>
+				<td>
+					<p id="firmware_info_2" name="firmware_info_2">
+						<span size='17'>TODO</span>
+						<span style="color:green;"> (stand-by side)</span>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<th><span>이미지 생성날짜</span></th>
+				<td>
+					<p id="firmware_build_date" name="firmware_build_date">
+						<span size='17'> Jun x 2018, HH:MM:SS </span>
+					</p>
+				</td>
+			</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">펌웨어 업그레이드</h2>
+	<div class="tb_style_2" id="select_firmware" name="select_firmware">
+		<table>
+			<colgroup>
+				<col style="width:22%;"/>
+				<col style=""/>
+			</colgroup>
+			<tbody>	
+				<tr>
+					<th><span>펌웨어 선택</span></th>
+					<td><input type='file' name='filename' id='filename' size='15'></td>
+				</tr>
+			<tbody>
+		</table>
+	</div>
+
+	<div class="txt_c mb_40" id="upload_button_div" name="upload_button_div">
+		<input type="button" value="펌웨어 업그레이드" id="upload_button" name="upload_button" class="basic-btn02 btn-blue-bg" />
+	</div>
+
+	<div class="reset" id="progress" name="progress"  style="display:none;">
+		<svg id="loding_bar"></svg>
+		<p class="txt_3">
+			펌웨어 업로드 중 ... 잠시만 기다려 주십시오.
+		</p>
+		<p class="txt_4">
+			시스템 고장의 원인이 될 수 있으므로 전원을 끄지 말아 주십시오
+		</p>
+	</div>	
+</div>
+<script type="text/javascript">
+	$('#upload_button').click(function(){
+		var popup = new Popup({
+			'type': 'confirm',
+			'title': '알림',
+			'fontsize' : 14,
+			'text':  '펌웨어 업그레이드를 실행하시겠습니까?',
+			'cancelbutton': true,
+			'submitCallBack': function(){
+				showProgress();
+				$('#ImgUploadForm')[0].submit();				
+			}
+		});	/* end confirm */
+	});
+</script>
+</form>	  
+</body>
+</html>

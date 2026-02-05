@@ -1,0 +1,542 @@
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/prv_util.js"></script>
+	<script language="javascript" src="js/portName.js"></script>
+<script language="javascript">
+
+var loc ='';
+var query='';
+var show_idx= "";
+
+var wl0_bssid_num= 8;
+var wl1_bssid_num= 8;
+
+var cur_user = 'root';
+
+function frmLoad() 
+{
+	wl_mode_tb();
+	//wl_bandwidth_change();
+	$("#idx").hide();
+	if ( show_idx == "1" )
+		$("#idx").show();
+}
+
+function wl_repeater_master_del()
+{
+	var ssid_5g="SK_WiFiGIGAA101_5G";
+	var ssid_2g="SK_WiFiGIGAA101";
+	var i=0;
+	var sta_list_tr = $( "#wl_connect_list tr" ); 
+	var show_idx_eq=0;
+	if( show_idx == "1")
+		show_idx_eq=1;
+
+	if ( "ap" == "wet" )
+	{
+		for ( i = 0 ;i < sta_list_tr.length;i ++ )
+		{
+			var sta_tr = sta_list_tr.eq( i ); 
+			if ( ssid_5g == sta_tr.find( "td" ).eq(3-show_idx_eq).text() )
+			{
+				if ( sta_tr.find( "td" ).eq(4-show_idx_eq).text() == "0.0.0.0")
+					sta_list_tr.eq( i ).remove();
+			}
+		}
+	}
+	if ( "ap" == "wet" )
+	{
+		for ( i = 0 ;i < sta_list_tr.length;i ++ )
+		{
+			var sta_tr = sta_list_tr.eq( i ); 
+			if ( ssid_2g == sta_tr.find( "td" ).eq(3-show_idx_eq).text() )
+			{
+				if ( sta_tr.find( "td" ).eq(4-show_idx_eq).text() == "0.0.0.0")
+					sta_list_tr.eq( i ).remove();
+			}
+		}
+	}
+}
+
+function all_checked(all) 
+{
+	$('input[type=checkbox]').each(function () {
+		if($(this).is(":disabled") == false)
+			$(this).prop("checked",$("#"+all.id).is(":checked"));
+	});
+}
+
+function wl_bandwidth_change()
+{
+	var ssid_5g = new Array();
+ssid_5g.push("SK_WiFiGIGAA101_5G");
+ssid_5g.push("SK_WiFiGIGAA101");
+ssid_5g.push("T wifi home");
+ssid_5g.push("wl0_Guest3");
+ssid_5g.push("Broadcom");
+ssid_5g.push("Broadcom");
+ssid_5g.push("Broadcom");
+ssid_5g.push("Broadcom");
+
+	var ssid_2g = new Array();
+ssid_2g.push("SK_WiFiGIGAA101");
+ssid_2g.push("SK_VoIP");
+ssid_2g.push("T wifi home");
+ssid_2g.push("SK_WiFi_w6370");
+ssid_2g.push("Broadcom");
+ssid_2g.push("Broadcom");
+ssid_2g.push("Broadcom");
+ssid_2g.push("Broadcom");
+
+	var ssid_ext_5g = new Array();
+ssid_ext_5g.push("메인 5G");
+ssid_ext_5g.push("핸드오버");
+ssid_ext_5g.push("");
+ssid_ext_5g.push("");
+ssid_ext_5g.push("");
+ssid_ext_5g.push("");
+ssid_ext_5g.push("");
+ssid_ext_5g.push("");
+
+	var ssid_ext_2g = new Array();
+ssid_ext_2g.push("메인 2.4G");
+ssid_ext_2g.push("");
+ssid_ext_2g.push("");
+ssid_ext_2g.push("");
+ssid_ext_2g.push("");
+ssid_ext_2g.push("");
+ssid_ext_2g.push("");
+ssid_ext_2g.push("");
+
+	var bss_enabled_5g = new Array();
+bss_enabled_5g.push("1");
+bss_enabled_5g.push("1");
+bss_enabled_5g.push("0");
+bss_enabled_5g.push("0");
+bss_enabled_5g.push("0");
+bss_enabled_5g.push("0");
+bss_enabled_5g.push("0");
+bss_enabled_5g.push("0");
+
+	var bss_enabled_2g = new Array();
+bss_enabled_2g.push("1");
+bss_enabled_2g.push("1");
+bss_enabled_2g.push("0");
+bss_enabled_2g.push("0");
+bss_enabled_2g.push("0");
+bss_enabled_2g.push("0");
+bss_enabled_2g.push("0");
+bss_enabled_2g.push("0");
+
+
+	html_code_to_script_arr(ssid_5g, wl0_bssid_num);
+	html_code_to_script_arr(ssid_2g, wl1_bssid_num);
+	html_code_to_script_arr(ssid_ext_5g, wl0_bssid_num);
+	html_code_to_script_arr(ssid_ext_2g, wl1_bssid_num);
+	$("#wl_ssid").children('option').remove();
+	add_option("wl_ssid","0","ALL");
+
+	var acct_root = 0;
+	$('#user_name').val(cur_user);
+	if (cur_user == "root")
+		acct_root = 1;
+
+	if(document.getElementById('wl_bandwidth').value == "1" || document.getElementById('wl_bandwidth').value == "0")
+	{
+		add_option("wl_ssid","only_display_val","-------5GHz-------");
+        var ifname = "wl0";
+		if(bss_enabled_5g[0] == "1")
+			add_option("wl_ssid", ifname, ssid_5g[0] + ' [' + ssid_ext_5g[0] + ']');
+		for (var i = 1; i < wl0_bssid_num; i++)
+		{
+			var ifname_val = "wl0_"+ String(i);
+
+			// except T wifi home ssid if account isn't root
+			if (acct_root == 0 && ssid_5g[i].indexOf("T wifi home") == 0)
+				continue;
+
+			if(bss_enabled_5g[i] == "1")
+				add_option("wl_ssid", ifname_val, ssid_5g[i] + ' [' + ssid_ext_5g[i] + ']');
+		}
+	}
+
+	if(document.getElementById("wl_bandwidth").value == "2" || document.getElementById("wl_bandwidth").value == "0")
+	{
+		add_option("wl_ssid","only_display_val","-------2.4GHz-------");
+		var ifname = "wl1";
+		if(bss_enabled_2g[0] == "1")
+			add_option("wl_ssid", ifname, ssid_2g[0] + ' [' + ssid_ext_2g[0] + ']');
+		for(var i = 1; i < wl1_bssid_num; i++)
+		{
+			var ifname_val = "wl1_"+ String(i);
+			// Hiding SK_VoIP
+			if (i == 1)
+				continue;
+
+			// except T wifi home ssid if account isn't root
+			if (acct_root == 0 && ssid_2g[i].indexOf("T wifi home") == 0)
+				continue;
+
+			if(bss_enabled_2g[i] == "1")
+				add_option("wl_ssid", ifname_val, ssid_2g[i] + ' [' + ssid_ext_2g[i] + ']');
+		}
+	}
+	$("select option[value*='only_display_val']").prop('disabled',true);
+	wl_connect_list_renew();
+}
+
+function wl_mode_tb()
+{
+	var wl_mode_index_int=["1","2","3","4","8","10","11","12","16","24","28","32","42","43","56","60"];
+	var wl_mode_index_str= ["11b only", "11g only", "11b+g", "11a only", "11n only", "11g+n",
+	"11b+g+n", "11a+n", "11ac only", "11n+ac", "11a+n+ac", "11ax only", "11g+n+ax", "11b+g+n+ax",
+	"11n+ac+ax", "11a+n+ac+ax"];
+	var radio_mode_5g = "60";
+	var radio_mode_2g = "43";
+
+	if( Number(radio_mode_5g) )
+	{
+		for(var i = 0; i < wl_mode_index_int.length; i++)
+		{
+			if( radio_mode_5g == wl_mode_index_int[i])
+			{
+				div_wl_mode_5g.innerHTML=wl_mode_index_str[i];
+			}
+		}
+	}
+	if(isNaN(Number(radio_mode_5g)))
+	{	
+		div_wl_mode_5g.innerHTML=" ";
+	}
+
+
+	if( Number(radio_mode_2g) )
+	{
+		for(var i = 0; i < wl_mode_index_int.length; i++)
+		{
+			if( radio_mode_2g == wl_mode_index_int[i])
+			{
+				div_wl_mode_2g.innerHTML=wl_mode_index_str[i];
+			}
+		}
+	}
+	if(isNaN(Number(radio_mode_2g)))
+	{	
+		div_wl_mode_5g.innerHTML=" ";
+	}
+}
+
+
+function add_option(select_id, option_val, option_name)
+{
+	var tag ="";
+	tag += "<option value=\""+option_val+"\">";
+	tag += option_name+" </option>\n";
+
+	$("#"+select_id).append(tag);
+}
+
+function wl_connect_list_renew()
+{
+	var index = 0;
+	$("#wl_connect_list").children('tr').remove();
+	$.ajax({
+		url : "wifi_sta_list.html",
+		success : function(result)
+		{
+			$("#wl_connect_list").html(result);
+			
+			$("#wl_connect_list tr").hide();
+			var index1 = $('#wl_bandwidth option:selected').val();
+			var index2 = $('#wl_ssid option:selected').val();
+			if(index1 == '0'){
+				if(index2 == '0'){
+					$('#wl_connect_list tr').show();
+				}
+				else{
+					$("#wl_connect_list [class="+index2+"]").show();
+				}
+			}else if(index1 == '1') {
+				if(index2 == '0'){
+					$("#wl_connect_list [class^='wl0']").show();
+				}
+				else{
+					$("#wl_connect_list [class="+index2+"]").show();
+				}
+			}
+			else if(index1 == '2' ) {
+				if(index2 == '0'){
+					$("#wl_connect_list [class^='wl1']").show();
+				}
+				else{
+					$("#wl_connect_list [class="+index2+"]").show();
+				}
+			}
+		}
+	})
+	.done(function()
+		{
+			return wl_repeater_master_del();
+		})
+	.fail(function()
+		{
+			location.reload();
+		});
+}
+
+function add_wl_connect_list(add_id,index)
+{
+	var tag = "";
+
+	tag += "<tr>\n";
+	tag += "<td><input id=\"ck_"+ index +"\" name=\"ck_"+ index +"\" type=\"checkbox\"></td>\n";
+	tag += "<td><label for=\"index_"+ index +"\">"+ index +"</label></td>\n";
+	tag += "<td><label for=\"mac\">00:11:22:33:44:56</label>\n";
+	tag += "<td><label for=\"SSID\">T wifi home_5G</label>\n";
+	tag += "<td><label for=\"ip\">192.168.35.101</label>\n";
+	tag += "<td><label for=\"hostname\">aaaaaaaa</label>\n";
+	tag += "<td><label for=\"Band\">5GHz</label>\n";
+	tag += "<td><label for=\"mode\">AC</label>\n";
+	tag += "<td><label for=\"rate\">867</label>\n";
+	tag += "<td><label for=\"rssi\">-35</label>\n";
+	tag += "<td><label for=\"rx\">1520</label>\n";
+	tag += "<td><label for=\"tx\">2030</label>\n";
+	tag += "<td><label for=\"time\">600</label>\n";
+	tag += "</tr>\n";
+
+	$("#"+add_id).append(tag);
+}
+
+function del_wl_list()
+{
+	var items = $('input:checkbox[type=checkbox]:checked').map(function () {
+	    if( this.id != "ck")
+			return this.id;
+	}).get();
+}
+
+function delete_selected()
+{
+}
+
+</script>	
+</head>
+
+<body onload="frmLoad()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form>
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>WiFi</li>
+			<li>WiFi 상태 정보</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">WiFi 상태 정보</h1>
+	<p>무선 연결 정보와 목록을 표시합니다.</p>
+	<hr>
+	<h2 class="title_style_2">WiFi 5GHz 정보</h2>
+	<div id="div_5GHz">
+		<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row">SSID</th>
+					<td>SK_WiFiGIGAA101_5G</td>
+					<td style="width:25%">00:23:AA:42:A1:03</td>
+					<td style="width:25%">메인 5G</td>
+				</tr>
+				<tr>
+					<th scope="row">SSID</th>
+					<td>SK_WiFiGIGAA101</td>
+					<td style="width:25%">22:33:AA:00:00:03</td>
+					<td style="width:25%">핸드오버</td>
+				</tr>
+				<tr>
+					<th scope="row">핸드오버 동작</th>
+					<td colspan="3">
+						New : 활성화
+						Old : 활성화
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">무선 모드</th>
+					<td colspan="3"><div id="div_wl_mode_5g"></div></td>
+				</tr>
+				<tr>
+					<th scope="row">채널/대역폭</th>
+					<td colspan="3">
+						36/80M
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">BSSID</th>
+					<td colspan="3">00:23:AA:42:A1:03</td>
+				</tr>
+			</tbody>
+			</table>
+		</div>
+	</div>
+	
+	<h2 class="title_style_2">WiFi 2.4GHz 정보</h2>
+	<div id="div_2GHz">
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row">SSID</th>
+					<td>SK_WiFiGIGAA101_2.4G</td>
+					<td style="width:25%">00:23:AA:42:A1:04</td>
+					<td style="width:25%">메인 2.4G</td>
+				</tr>
+				<tr>
+					<th scope="row">SSID</th>
+					<td>SK_WiFiGIGAA101</td>
+					<td style="width:25%">92:23:AA:00:00:04</td>
+					<td style="width:25%">핸드오버</td>
+				</tr>
+				<tr>
+					<th scope="row">핸드오버 동작</th>
+					<td colspan="3">
+						New : 활성화
+						Old : 활성화
+					</td>
+				</tr>				
+				<tr>
+					<th scope="row">무선 모드</th>
+					<td colspan="3"><div id="div_wl_mode_2g"></div></td>
+				</tr>
+				<tr>
+					<th scope="row">채널/대역폭</th>
+					<td colspan="3">
+						5/20M
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	</div>
+
+	<h2 class="title_style_2"> WiFi 연결 단말 리스트</h2>
+	<div class="tb_style_4" style="overflow-x:scroll; overflow-y:hidden;">
+		<table >
+			<colgroup>
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+				<col width='10%'/>
+				<col />
+				<col />
+				<col />
+				<col />
+				<col />
+
+		</colgroup>
+			<thead style="font-size:5px;">
+				<tr>
+					<th scope="col"><center><input id="ck" name="ck" type="checkbox" onclick="all_checked(this);"></center></th>
+					<th scope="col" id="idx"><center>IDX</center></th>
+					<th scope="col"><center>MAC</center></th>
+					<th scope="col"><center>SSID</center></th>
+					<th scope="col"><center>IP</center></th>
+					<th scope="col"><center>Host Name</center></th>
+					<th scope="col"><center>대역</center></th>
+					<th scope="col"><center>Mode</center></th>
+					<th scope="col"><center>11V</center></th>
+					<th scope="col"><center>New Handover</center></th>
+					<th scope="col"><center>Rate Tx/Rx (Mbps)</center></th>
+					<th scope="col"><center>RSSI</center></th>
+					<th scope="col"><center>RX Bytes</center></th>
+					<th scope="col"><center>TX Bytes</center></th>
+					<th scope="col"><center>연결시간</center></th>
+				</tr>				
+			</thead>
+			<tbody style="font-size:5px;" id="wl_connect_list" name="wl_connect_list">
+                
+		<tr class='wl0_1'>
+			<td><input id="ch_1" name="ch_1" type="checkbox" value="A8:2B:B9:09:3B:8C|wl0.1"></td>
+			<td style='text-align:center' ><label for="mac">A8:2B:B9:09:3B:8C</label></td>
+			<td style='text-align:center' ><label for="SSID">SK_WiFiGIGAA101</label></td>
+			<td style='text-align:center' ><label for="ip">192.168.45.32</label></td>
+			<td><label for="host_name"></label></td>
+			<td style='text-align:center' ><label for="Band">5GHz</label></td>
+			<td style='text-align:center' ><label for="mode">AC</label></td>
+			<td style='text-align:center' ><label for="11v">Y</label></td>
+			<td style='text-align:center' ><label for="new_handover">No</label></td>
+			<td style='text-align:center' ><label for="tx">234.0/234.0</label></td>
+			<td style='text-align:center' ><label for="rssi">-77</label></td>
+			<td style='text-align:center' ><label for="rx">15.9Kbytes</label></td>
+			<td style='text-align:center' ><label for="tx">135.9Kbytes</label></td>
+			<td nowrap style='text-align:center' ><label for="time">6 초</label></td>
+		</tr>
+		<tr class='wl0_1'>
+			<td><input id="ch_1" name="ch_1" type="checkbox" value="A8:2B:B9:09:3B:8C|wl0.1"></td>
+			<td style='text-align:center' ><label for="mac">A8:2B:B9:09:3B:DC</label></td>
+			<td style='text-align:center' ><label for="SSID">SK_WiFiGIGAA101_5G</label></td>
+			<td style='text-align:center' ><label for="ip">192.168.45.42</label></td>
+			<td><label for="host_name"></label></td>
+			<td style='text-align:center' ><label for="Band">5GHz</label></td>
+			<td style='text-align:center' ><label for="mode">AC</label></td>
+			<td style='text-align:center' ><label for="11v">Y</label></td>
+			<td style='text-align:center' ><label for="new_handover">No</label></td>
+			<td style='text-align:center' ><label for="tx">234.0/234.0</label></td>
+			<td style='text-align:center' ><label for="rssi">-77</label></td>
+			<td style='text-align:center' ><label for="rx">15.9Kbytes</label></td>
+			<td style='text-align:center' ><label for="tx">135.9Kbytes</label></td>
+			<td nowrap style='text-align:center' ><label for="time">6 초</label></td>
+		</tr>
+		<tr class='wl0_1'>
+			<td><input id="ch_1" name="ch_1" type="checkbox" value="A8:2B:B9:09:3B:8C|wl0.1"></td>
+			<td style='text-align:center' ><label for="mac">A8:2B:B9:09:3B:8C</label></td>
+			<td style='text-align:center' ><label for="SSID">SK_WiFiGIGAA101</label></td>
+			<td style='text-align:center' ><label for="ip">192.168.45.58</label></td>
+			<td><label for="host_name"></label></td>
+			<td style='text-align:center' ><label for="Band">2.4GHz</label></td>
+			<td style='text-align:center' ><label for="mode">AC</label></td>
+			<td style='text-align:center' ><label for="11v">Y</label></td>
+			<td style='text-align:center' ><label for="new_handover">No</label></td>
+			<td style='text-align:center' ><label for="tx">234.0/234.0</label></td>
+			<td style='text-align:center' ><label for="rssi">-77</label></td>
+			<td style='text-align:center' ><label for="rx">15.9Kbytes</label></td>
+			<td style='text-align:center' ><label for="tx">135.9Kbytes</label></td>
+			<td nowrap style='text-align:center' ><label for="time">6 초</label></td>
+		</tr>		
+			</tbody>
+		</table>
+	</div>
+	<div class="txt_c pt_20">
+		<input type="button"  value="연결 해제" onclick="delete_selected();" class="basic-btn01 btn-blue-bg" >
+	</div>
+	<input type="hidden" value="" name="user_name" id="user_name">
+</div>
+
+<!-- //wrap -->
+</form>
+</body>
+</html>

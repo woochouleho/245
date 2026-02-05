@@ -1,0 +1,326 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/portName.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+
+var query = '';
+var sessionKey='169865558';
+
+var br_mode=1;
+var wan_ip ='192.168.80.51';
+var wan_subnet ='255.255.255.0';
+var wan_defaultgw ='192.168.80.1';
+var wan_ip_mode ='DHCP';
+var wan_mac ='';
+var ip_crash = 0
+;
+
+
+function  btnAdd_check_untag(port) {
+	var n 	= 0;
+	var str = ".w_e_vlan_port."+ port;
+
+	for(n = 0; n< $(str).length; n++)
+	{
+		if( Number( $(str).get(n).value) == 1)
+			return false;
+	}
+	
+	return true;
+}
+
+function  btnAdd_check() {
+	var vid 	= 0;
+	var isTag 	= false;
+	
+	if(isNaN(document.forms[0].w_add_vid.value)) {
+		webAlert('잘못된 VID( 1 ~ 4094)');
+		return false;
+	}
+	
+	vid = Number(document.forms[0].w_add_vid.value);
+	
+	if( vid <= 0 || vid > 4094) {
+		webAlert('잘못된 VID( 1 ~ 4094)');
+		return false;
+	}
+	
+	for(n = 0; n< $(".w_e_vid").length; n++)   
+	{
+		if ( Number( $(".w_e_vid").get(n).value ) == vid) {
+			webAlert('중복된  VID');
+			return false;
+		}
+	}
+	
+	for(n = 0; n< $(".c_add_tag_port").length; n++) 
+	{
+		if( Number( $(".c_add_tag_port").get(n).value) == 2)
+			isTag = true;
+	}
+	
+	if(isTag == false) {
+		webAlert('최소 하나의 Tag 포트가 있어야 합니다');
+		return false;
+	}
+
+	for(n = 0; n< $(".c_add_tag_port").length; n++) 
+	{
+		if(Number( $(".c_add_tag_port").get(n).value) == 1) {
+			if( btnAdd_check_untag(n) == false) {
+				webAlert('UnTag 설정은 포트당 하나만 가능합니다');
+				return false;
+			}
+		}
+	}
+
+	if( Number($(".w_e_vid").length) >= 16) {
+		webAlert('남은 엔트리가 없습니다');
+		return false;
+	}
+	
+	return true;
+}
+
+function btnAdd() {
+	var n 	= 0;
+	query = document.forms[0].w_add_vid.value+'|';
+	
+	for(n =0; n< $(".c_add_tag_port").length; n++) 
+		query += $(".c_add_tag_port").get(n).value;
+			
+	query += '|';
+	
+	return;
+}
+
+function btnRemove() {
+	var n = 0;
+
+	for(n = 0; n< $(".w_e_vid").length; n++)  
+	{
+		if ($(".w_e_vid").get(n).checked == true)
+			query += $(".w_e_vid").get(n).value +',';
+	}
+
+	return;
+}
+
+function btnApplySave(save_type) {
+	var code = '';
+	var loc  = 'network_vlan.cgi?';
+	query = '';
+
+	switch(save_type) {
+		case 0:
+			loc += 'common_action=enable';
+			loc += '&wv_vlan_admin=' + document.forms[0].w_VlanEnable.value;
+			break;
+
+		case 2:
+			if( btnAdd_check() == false )
+				return;
+				
+			btnAdd();
+			loc += 'common_action=add';
+			loc += '&common_query=' + query;		
+			break;
+
+		case 3:
+			break;
+
+		case 4:
+			btnRemove();
+			loc += 'common_action=remove';
+			loc += '&common_query=' + query;
+			break;
+	}
+
+	loc += '&sessionKey=' + sessionKey;
+	code = 'location="' + loc + '"';
+
+	eval(code);	
+}
+
+function change_button_value() {
+	if( document.forms[0].w_VlanEnable.value == 1)
+		$(".w_e_vid_element").css('color', '');
+	else
+		$(".w_e_vid_element").css('color', '#a8a8a8');
+		
+	return;
+}
+
+function frmLoad() {
+	var enable = 1;
+
+	if(br_mode != 1) {
+		$(".title_style_2").css('display', 'none');
+		$(".tb_style_2").css('display', 'none');
+		$(".basic-btn01").css('display', 'none');
+		$(".reset.notice").css('display', '');
+		$(".w_vlan_notice.normal").css('display', 'none');
+	}
+
+	document.forms[0].w_VlanEnable.value = enable;
+
+	if(enable == 0)
+		$(".w_e_vid_element").css('color', '#a8a8a8');
+}
+</script>
+</head>
+
+<body onload="frmLoad()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form>
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>네트워크 </li>
+			<li>VLAN </li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">VLAN</h1>
+	<p class='w_vlan_notice normal'>VLAN 기능을 설정합니다.</p>
+	<hr>
+
+  	<div class="reset notice" style='display:none'>
+		<div class="icon_area"><img src="img/reset_icon.png" alt="" /></div>
+			<p class="txt_1">
+			Bridge 모드가 활성화되어 있지 않습니다. <br>
+			이 서비스를 구성하려면 Bridge모드를 활성화해야 합니다.
+			</p>
+	</div>
+
+	<h2 class="title_style_2">VLAN 사용</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row">VLAN 사용</th>
+					<td>
+						<select id="w_VlanEnable" name="w_VlanEnable" onchange="change_button_value()">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+
+	<div class="txt_c pt_20">
+		<input type="button" onclick="btnApplySave(0)" value="적용" class="basic-btn01 btn-blue-bg mr_20" >
+	</div>
+
+	<h2 class="title_style_2">VID 추가 및 리스트</h2>
+	<div class="tb_style_2">
+		<table id="vlanTable">
+			<colgroup>
+				<col style="width:8%;" />
+				<col style="width:15%;" />
+				<col style="width:15%;" />
+				<col style="width:15%;" />
+				<col style="width:15%;" />
+				<col style="width:15%;" />
+				<col style="width:15%;" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col"><center>선택</center></th>
+					<th scope="col"><center>VID</center></th>
+					<th scope="col"><center>WAN</center></th>
+					<th scope="col"><center>LAN1</center></th>
+					<th scope="col"><center>LAN2</center></th>
+					<th scope="col"><center>LAN3</center></th>
+					<th scope="col"><center>LAN4</center></th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+	<td style='text-align:center;'><input type='checkbox' class='w_e_vid' value='400'></td>
+	<td class='w_e_vid_element'>400</td>
+	<td class='w_e_vid_element'><input type='hidden' class='w_e_vlan_port 0' value='2'/>T</td>
+	<td class='w_e_vid_element'><input type='hidden' class='w_e_vlan_port 1' value='1'/>U</td>
+	<td class='w_e_vid_element'><input type='hidden' class='w_e_vlan_port 2' value='0'/>-</td>
+	<td class='w_e_vid_element'><input type='hidden' class='w_e_vlan_port 3' value='0'/>-</td>
+	<td class='w_e_vid_element'><input type='hidden' class='w_e_vlan_port 4' value='0'/>-</td>
+</tr>
+
+			</tbody>
+			<tbody>
+				<tr style="text-align:center;">
+					<th scope="row"><center>VID 추가</center></th>
+					<td><input type='text' id='w_add_vid' name='w_add_vid' style="width:100%"></td>
+					<td>
+						<select style='width:100%;' name='w_add_tag_port' id='w_add_tag_port' class='c_add_tag_port' >
+							<option value='0'>-</option>
+							<option value='1'>U</option>
+							<option value='2'>T</option>								
+						</select>
+					</td>
+					<td>
+						<select style='width:100%;' name='w_add_tag_port' id='w_add_tag_port'  class='c_add_tag_port'>
+							<option value='0'>-</option>
+							<option value='1'>U</option>
+							<option value='2'>T</option>								
+						</select>							
+					</td>
+					<td>
+						<select style='width:100%;' name='w_add_tag_port' id='w_add_tag_port'  class='c_add_tag_port'>
+							<option value='0'>-</option>
+							<option value='1'>U</option>
+							<option value='2'>T</option>								
+						</select>							
+					</td>
+					<td>
+						<select style='width:100%;' name='w_add_tag_port' id='w_add_tag_port'  class='c_add_tag_port'>
+							<option value='0'>-</option>
+							<option value='1'>U</option>
+							<option value='2'>T</option>								
+						</select>							
+					</td>
+					<td>
+						<select style='width:100%;' name='w_add_tag_port' id='w_add_tag_port'  class='c_add_tag_port' >
+							<option value='0'>-</option>
+							<option value='1'>U</option>
+							<option value='2'>T</option>								
+						</select>							
+					</td>							
+				</tr>
+			</tbody>				
+		</table>
+	</div>
+
+	<div class="txt_c pt_20">
+		<input type="button" onclick="btnApplySave(2)" value="추가" class="basic-btn01 btn-gray-bg mr_20" >
+		<input type="button" onClick='btnApplySave(4)' value="삭제" class="basic-btn01 btn-gray-bg2 mr_20" >
+	</div>
+
+</div>
+</form>
+</body>
+</html>

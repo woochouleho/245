@@ -1,0 +1,308 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+
+<script language="javascript">
+var loc   = '';
+var query = '';
+
+var sessionKey='1807904922';
+
+
+var mng_mac_count = 1;
+var mng_mac_list = [
+[ 1,   "3C:A0:67:68:4F:19",  "test"]];
+var enable = 0; 
+
+
+function change_mac_input() {
+	var val = document.getElementById('w_mf_add_mac').value;
+
+	if(val == "99") {
+		document.getElementById('w_mf_add_mac').style.width = "35%"
+		document.getElementById('w_mf_add_mac_data').style.display = "";
+		document.getElementById('w_mf_add_mac_data').style.width = "60%";
+		document.getElementById('w_mf_add_mac_data').value = "";
+	}
+	else {
+		document.getElementById('w_mf_add_mac').style.width = "100%"
+		document.getElementById('w_mf_add_mac_data').style.display = "none";
+
+		if(val != "0") {
+			document.getElementById('w_mf_add_mac_data').value = val;
+		}
+	}
+
+	return;
+}
+
+function btnDel() {
+	var p = 0;
+	var str ='';
+	for(p = 0; p < mng_mac_count ; p++)
+	{
+		str = 'w_mac_entry_rm_' + p;
+		if(document.getElementById(str).checked == true)
+			query += document.getElementById(str).value+",";
+	}
+}
+
+function btnAdd() {
+	var  i = 0;
+	var mac = document.forms[0].w_mf_add_mac_data.value;
+	var mac_entry = "";
+	
+	/* check value */
+	if(mng_mac_count >= 5) {
+		webAlert('남은 엔트리가 없습니다');
+		return false;
+	}
+
+	str = document.forms[0].w_mf_add_mac_data.value;
+	if(str.indexOf(' ') != -1) {
+		webAlert('MAC주소에 공백을 사용할수 없습니다');
+		return false;
+	}
+
+	str = document.forms[0].w_mf_add_desc.value;
+	if(str.indexOf(' ') != -1 ) {
+		webAlert('Comment에 공백을 사용할수 없습니다');
+		return false;
+	}
+	else if( str.indexOf('|') != -1 ) {
+		webAlert('문자 | 을 사용할수 없습니다');
+		return false;
+	}
+	else if(str == '') {
+		webAlert('Comment가 없습니다');
+		return false;
+	}
+	
+	for(i = 0; i < mng_mac_count; i++ )
+	{
+		mac_entry = mng_mac_list[i][1];
+		if( mac.toUpperCase() ==  mac_entry.toUpperCase() ) {
+			webAlert('중복된 MAC 주소 입니다 '+ mac_entry);
+			return false;		
+		}
+	}	
+
+	if(isValidMacAddress(mac) == false )
+	{
+		webAlert('유효하지 않는 MAC주소입니다 ' +'Ex) 00:23:AA:00:00:00');
+		return false;
+	}
+	/* check value end */
+
+	query += document.forms[0].w_mf_add_port.value+'|';
+	query += document.forms[0].w_mf_add_mac_data.value+'|';
+	query += document.forms[0].w_mf_add_desc.value+'|,';
+	
+	return true;
+}
+
+function select_enable() {
+	var  enable = parseInt(document.getElementById('w_wm_enable').value);
+	
+	if( enable == 1)
+		document.getElementById('w_wire_mac_list').style.display = "";
+	else
+		document.getElementById('w_wire_mac_list').style.display = "none";
+	
+	return;
+}
+
+function btnApplySave(save_type) {
+	var code = '';
+
+	loc = 'secure_web_mng.cgi?';
+	query = '';
+
+	switch(save_type) {
+			case 0:
+				loc += 'common_action=remove';
+				btnDel();
+				loc += '&common_query='+query;			
+				break;
+				
+			case 1:	/* set enable */
+				loc += 'common_action=enable';
+				loc += '&common_query='+document.getElementById('w_wm_enable').value;
+				break;
+				
+			case 2:				
+				if( btnAdd() == false )
+					return;			
+				loc += 'common_action=add';
+				loc += '&common_query=' + query;
+				break;
+				
+			default:
+				return;
+		}
+		
+	loc += '&sessionKey=' + sessionKey;
+	code = 'location="' + loc + '"';
+	eval(code);		
+
+}
+function frmLoad() {
+	document.getElementById('w_wm_enable').value = enable;
+}
+</script>
+</head>
+
+<body onload="frmLoad()">
+
+<div id="wrap">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form>
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>보안기능 </li>
+			<li>관리 웹 접속 </li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">관리 웹 접속</h1>
+	<p>MAC 정보를 이용하여 단말 웹 접속 권한을 설정합니다.</p>
+	<hr>
+
+
+
+	<div id="w_wire_mac_list">
+	<h2 class="title_style_2">필터링 추가 및 리스트</h2>
+			<div class='tb_style_2'>
+				<table>
+					<colgroup>
+						<col style="width:10%;" />
+						<col style="width:10%;" />
+						<col style="width:30%;" />
+						<col style="width:25%;" />
+						<col style="width:10%;" />
+					</colgroup>
+					<thead>
+						<th scope="row" style="width:8%">선택</th>
+						<th scope="row">포트번호</th>
+						<th scope="row">MAC주소</th>
+						<th scope="row">설명</th>
+
+					</thead>
+					<tbody id="w_mf_list" style="text-align:center;">
+						<script language="javascript">
+							var i = 0;
+							var port = 0;
+							
+							for(i = 0; i < mng_mac_count; i++) {
+									port   = parseInt(mng_mac_list[i][0]);
+									document.writeln("<tr><td>\n");
+									document.writeln("<input type='checkbox' name='w_mac_entry_rm_" + i + "'");
+									document.writeln("id='w_mac_entry_rm_" + i + "'");
+									document.writeln("value='" + mng_mac_list[i][0] + "|" + mng_mac_list[i][1] + "|" + mng_mac_list[i][2] + "'></td>\n");
+									
+									switch(port) {
+										case 1:
+											document.writeln("<td>LAN</td>\n");
+											break;
+											
+										case 2:
+											document.writeln("<td>무선</td>\n");
+											break;
+											
+										case 3:
+											document.writeln("<td>LAN/무선</td>\n");
+											break;	
+									}
+									
+									document.writeln("<td>" + mng_mac_list[i][1] + "</td>\n");
+									document.writeln("<td>" + mng_mac_list[i][2] + "</td>\n");
+							}
+						</script>
+					</tbody>
+					<tbody>
+						<tr style="text-align:center;">
+							<th scope="row"><center>리스트 추가</center></th>
+							<td>
+								<select id='w_mf_add_port' name='w_mf_add_port' style="width:100%">
+									<option value='1'>LAN</option>
+									<option value='2'>무선</option>
+									<option value='3'>LAN/무선</option>
+								</select>
+							</td>
+							<td>
+								<select style='width:100%;' name='w_mf_add_mac' id='w_mf_add_mac' onchange='change_mac_input()'>
+									<option value="0">MAC Address</option>
+								<option value="2">a8:2b:b9:00:00:01 [엄마_핸드폰]</option>
+								<option value="3">a8:2b:b9:00:00:02 [큰아들_핸드폰]</option>
+								<option value="4">a8:2b:b9:09:3b:8c [Galaxy-S8]</option>									
+									<option value="99">직접입력</option>
+								</select>
+								<input type="text" id='w_mf_add_mac_data' name='w_mf_add_mac_data' style="width:60%; display:none;">
+							</td>
+							<td>
+								<input type="text" id='w_mf_add_desc' name='w_mf_add_mac_desc'>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<p style="font-size:8px" class="mb_20">※ 최대 5개까지 설정할 수 있습니다.</p>
+		</div>
+
+
+		<div class="txt_c mb_20">
+			<input onclick="btnApplySave(2)" type="button"  value="추가" class="basic-btn01 btn-gray-bg" >
+			<input onclick="btnApplySave(0)"  type="button" value="삭제" class="basic-btn01 btn-gray-bg2" >
+		</div>
+	</div>
+	
+	<h2 class="title_style_2">활성화 설정</h2>
+	<div class="tb_style_2 scroll">
+		<table>
+			<colgroup>
+				<col style="width:22%;"/>
+				<col style="width:%;"/>
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">관리 웹 접속 활성화</th>
+					<td>
+						<select name="w_wm_enable" id="w_wm_enable">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c">
+		<input type="button" onclick="btnApplySave(1)" value="적용" class="basic-btn01 btn-blue-bg mr_20" >
+    </div>	
+
+</div>
+</form>
+</div> <!-- //wrap -->
+</body>
+</html>

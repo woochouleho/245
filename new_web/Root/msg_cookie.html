@@ -1,0 +1,57 @@
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv="Pragma" content="no-cache">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+function btnBack() {
+ 
+}
+
+function check_redirect() {
+	var code = '';
+	
+	if(check_cookie() == true) {
+		code = 'location="login.html"';
+		eval(code);
+	}
+
+	return;
+}
+</script>
+</head>
+
+<body>
+<form onload="check_redirect()">
+<div class="container custom_input">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>HTTP Error </span></li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">Login Cookie Error</h1>
+	<div class="msg_no_auth">
+		<!--div class="icon_area"><img src="img/reset_icon.png" alt="" /></div-->
+		<p class="txt_1">H854AX 장치에 로그인 하려면, 웹 브라우저의 Cookie 설정 활성화가 필요합니다.</p>
+		<div class="txt_c">
+			<input type="button" value="OK"  onClick='btnBack()' class="basic-btn01 btn-gray-bg2 mr_20" />
+		</div>
+	</div>
+</div>
+</form>
+</body>
+
+</html>

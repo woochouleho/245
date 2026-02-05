@@ -1,0 +1,52 @@
+
+<html>
+   <head>
+    <title>H854AX</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="description" content=""/>
+    <meta name="keywords" content=""/>
+    <link rel="stylesheet" href="css/common.css"/>
+    <script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/jquery.progress.js" charset="utf-8"></script>
+    <script language="javascript" src="js/util.js"></script>
+<script language="javascript">
+function btnBack() {
+   var code = 'location="secure_storm.html"';
+   eval(code);
+}
+
+function btnReset() {
+   var loc = 'rebootinfo.cgi?';
+   loc += 'sessionKey=553488114';
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+</script>
+</head>
+<body>
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<div class="container custom_input">
+    <div class="reset">
+        <div class="icon_area"><img src="img/reset_icon.png" alt="" /></div>
+        <p class="txt_1">
+            설정을 <strong>저장</strong>하였습니다.
+        </p>
+        <div class="txt_c pt_20">     
+            <input type="button" class="basic-btn01 btn-blue-bg" value="지금 재시작"  OnClick="btnReset()">
+            <input type="button" class="basic-btn01 btn-gray-bg2" value="뒤로가기" onClick="btnBack()">
+        </div>
+    </div>
+</div>
+</body>
+</html>

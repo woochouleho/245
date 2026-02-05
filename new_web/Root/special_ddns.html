@@ -1,0 +1,264 @@
+
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko">
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+
+var sessionKey   = '1941307036';
+var ddns_info    = [
+"0", "-", "-", "********", "eth4.1", "tzo"
+];
+var ddns_service = [ "ddns", "dyndns", "afraid", "zoneedit", "noip", "codns", "tzo" ];
+
+function select_enable() {
+	var value = document.getElementById('w_ddns_enable').value;
+	var i = 0;
+	var tr_name = '';
+
+	if(value == "0") {
+		/*
+		document.getElementById('w_ddns_svr_list').disabled = true;
+		document.getElementById('w_ddns_svr_id').disabled = true;
+		document.getElementById('w_ddns_svr_pw').disabled = true;
+		document.getElementById('w_ddns_svr_domain').disabled = true;
+		*/
+		for(i = 0; i < 4; i++) {
+			tr_name = 'w_ddns_tr' + i;
+			document.getElementById(tr_name).style.display = "none";
+		}
+	}
+	else {
+		document.getElementById('w_ddns_svr_list').disabled = false;
+		document.getElementById('w_ddns_svr_id').disabled = false;
+		document.getElementById('w_ddns_svr_pw').disabled = false;
+		document.getElementById('w_ddns_svr_domain').disabled = false;
+		for(i = 0; i < 4; i++) {
+			tr_name = 'w_ddns_tr' + i;
+			document.getElementById(tr_name).style.display = "";
+		}
+	}
+}
+
+function select_ddns() {
+	var svr_list = document.getElementById('w_ddns_svr_list');
+	var svr_input = document.getElementById('w_ddns_svr_input');
+
+	if(svr_list.value == 'user_input') {
+		svr_list.style.width = "30%";
+		svr_input.style.width = "60%";
+		svr_input.style.display = "";
+	}
+	else {
+		svr_list.style.width = "100%";
+		svr_input.style.width = "0%";
+		svr_input.style.display = "none";
+	}
+
+	return;
+}
+
+function frmLoad() {
+	var ddns_enable = ddns_info[0];
+	var ddns_svr_domain = ddns_info[1];
+	var ddns_svr_id = ddns_info[2];
+	var ddns_svr_pw = ddns_info[3];
+	var ddns_svr_list = ddns_info[5];
+	var i = 0;
+	var found = 0;
+
+	document.getElementById('w_ddns_enable').value = ddns_enable;
+	document.getElementById('w_ddns_svr_id').value = ddns_svr_id;
+	document.getElementById('w_ddns_svr_pw').value = ddns_svr_pw;
+	document.getElementById('w_ddns_svr_domain').value = ddns_svr_domain;
+
+	for(i = 0; i < ddns_service.length; i++) {
+		if(ddns_svr_list == ddns_service[i]) {
+			found = 1;
+			break;
+		}
+	}
+
+	if(found == 0) {
+		document.getElementById('w_ddns_svr_list').value = 'user_input';
+		document.getElementById('w_ddns_svr_input').value = ddns_svr_list;
+	}
+	else {
+		document.getElementById('w_ddns_svr_list').value = ddns_svr_list;
+	}
+
+	select_enable();
+
+	return;
+}
+
+function check_senity() {
+	var enable = document.getElementById('w_ddns_enable').value;
+	var user_id	= document.getElementById('w_ddns_svr_id').value;
+	var user_pw = document.getElementById('w_ddns_svr_pw').value;
+	var user_domain = document.getElementById('w_ddns_svr_domain').value;
+
+	if(enable == "1") {
+		if(user_id.length == 0) {
+			return false;
+		}
+
+		if(user_pw.length == 0) {
+			return false;
+		}
+
+		if(user_domain.length < 2) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+function btnApplySave() {
+	var code = '';
+	var loc = 'special_ddns.cmd?action=setup';
+
+	var enable = document.getElementById('w_ddns_enable').value;
+	var user_service = document.getElementById('w_ddns_svr_list').value;
+	var user_name = document.getElementById('w_ddns_svr_id').value;
+	var user_pw = document.getElementById('w_ddns_svr_pw').value;
+	var user_domain = document.getElementById('w_ddns_svr_domain').value;
+
+	/* senity check */
+	if(check_senity() != true) return;
+
+	loc += '&enable='   + enable;
+	loc += '&username=' + user_name;
+	loc += '&password=' + encodeUrl(user_pw);
+	loc += '&hostname=' + user_domain;
+	if(user_service == 'user_input') {
+		loc += '&service=' + document.getElementById('w_ddns_svr_input').value;
+	}
+	else {
+		loc += '&service=' + user_service;
+	}
+	loc += '&iface=eth4.1';	/* hard coded */
+
+	loc += '&sessionKey='  + sessionKey;
+	code = 'location="' + loc + '"';
+	eval(code);
+}
+
+$(function(){
+    $("form[autocomplete=off]").find('input').attr('autocomplete', 'false');
+});
+
+$('#w_ddns_svr_id').prop('autocomplete', false);
+$('#w_ddns_svr_pw').prop('autocomplete', false);
+</script>
+</head>
+
+<body onload="frmLoad()">
+
+<div id="wrap">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+
+<form autocomplete="off">
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>특수기능 </li>
+			<li>DDNS </li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">DDNS</h1>
+	<p>DDNS 서버 및 계정을 설정합니다.</p>
+	<hr>
+
+	<h2 class="title_style_2">DDNS 설정</h2>
+	<div class="tb_style_2 scroll">
+		<table>
+			<colgroup>
+				<col style="width:22%;"/>
+				<col style="width:%;"/>
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">DDNS 동작</th>
+					<td>
+						<select name="w_ddns_enable" id="w_ddns_enable" onchange="select_enable()">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="w_ddns_tr0" name="w_ddns_tr0">
+					<th scope="row">DDNS 서버</th>
+					<td>
+						<select id="w_ddns_svr_list" name="w_ddns_svr_list" onchange="select_ddns()" style="width:100%;">
+							<option value="ddns" disabled>ddns.co.kr</option>
+							<option value="dyndns" selected>dyndns.org</option>
+							<option value="afraid" disabled>freedns.afraid.org</option>
+							<option value="zoneedit" disabled>zoneedit.com</option>
+							<option value="noip" disabled>no-ip.com</option>
+							<option value="codns" disabled >codns.com</option>
+							<option value="tzo">tzo</option>
+							<option value="user_input">직접입력</option>
+						</select>
+						<input type="text" name="w_ddns_svr_input" id="w_ddns_svr_input" style="display:none;" placeholder="" >
+					</td>
+				</tr>
+				<tr id="w_ddns_tr1" name="w_ddns_tr1">
+					<th scope="row"><span>계정 아이디 </span></th>
+					<td>
+						<!-- fake fields are a workaround for chrome autofill getting ther wrong fields -->
+						<input style="display:none" type="text" name="fakeuserid"/>
+						<input autocomplete="off" type="text" name="w_ddns_svr_id" id="w_ddns_svr_id" style="width:100%;" >
+					</td>
+				</tr>
+				<tr id="w_ddns_tr2" name="w_ddns_tr2">
+					<th scope="row"><span>계정 비밀번호 </span></th>
+					<td>
+						<!-- fake fields are a workaround for chrome autofill getting ther wrong fields -->
+						<input style="display:none" type="password" name="fakeuserpassword" />
+						<!--input autocomplete="off" type="password" name="w_ddns_svr_pw" id="w_ddns_svr_pw" style="width:70%;" value="********" -->
+						<input autocomplete="off" type="password" name="w_ddns_svr_pw" id="w_ddns_svr_pw" style="width:70%;" value="*" >
+						<span> 최대 길이 : 31</span>
+					</td>
+				</tr>
+				<tr id="w_ddns_tr3" name="w_ddns_tr3">
+					<th scope="row"><span>DDNS 도메인 </span></th>
+					<td>
+						<input type="text" name="w_ddns_svr_domain" id="w_ddns_svr_domain" style="width:100%;">
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c">
+		<input type="button" onclick="btnApplySave()" value="적용" class="basic-btn01 btn-blue-bg mr_20" >
+    </div>
+</div>
+</form>
+</div>
+<!-- //wrap -->
+
+</body>
+</html>

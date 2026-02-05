@@ -1,0 +1,285 @@
+<html>
+<head>
+	<title>H854AX</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="description" content=""/>
+    <meta name="keywords" content=""/>
+    <link rel="stylesheet" href="css/common.css"/>
+    <script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+    <script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+    <script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/prv_util.js"></script>
+    <script language="javascript" src="js/portName.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+
+function checkPwdComplex(value) {
+	var num_check = /[0-9]/g.test(value);
+	var eng_check = /[a-z]/ig.test(value);
+	var not_spe_check = /^[a-zA-Z0-9]*$/.test(value);
+	var count = 0;
+
+	if ( num_check ) count++;
+	if ( eng_check ) count++;
+	if ( not_spe_check == false ) count++;
+
+	if( count > 2 )
+		return true;
+	else 
+		return false;
+}
+
+function checkId(value) {
+	var num_check = /[0-9]/g.test(value);
+	var eng_check = /[a-z]/ig.test(value);
+	var not_spe_check = /^[a-zA-Z0-9]*$/.test(value);
+	var count = 0;
+
+	if ( num_check ) count++;
+	if ( eng_check ) count++;
+	if ( not_spe_check == false ) count = count + 3;
+
+	if( count <= 2 && count > 0)
+		return true;
+	else 
+		return false;
+}
+
+function btnApplySave(type){
+
+	if(type == 1)
+	{
+		var port = document.getElementById("nas_port").value;
+		if ( port == 80 || port == 8080 || port == 21 || port == 22 || port == 23 || port == 161 || port == 162 )
+		{
+			webAlert("해당 포트는 사용할 수 없습니다.");
+			return false ;
+		}
+		document.formConfigSet.submit();
+	}
+	else if(type == 2) 
+	{
+		var username = document.getElementById("nas_id").value;
+		var password = document.getElementById("nas_pw").value;
+		var count = document.getElementById("count").value;
+
+		if ( count > 9 ) 
+		{
+			webAlert("계정 최대 생성 개수는 10개 입니다.");
+			return false ;
+		}
+
+		if (username == "root" || username == "admin") 
+		{
+			webAlert("root, admin 계정은 생성할 수 없습니다.");
+			return false ;
+		}
+
+		if ( !checkId(username) ) 
+		{
+			webAlert("ID는 영문, 숫자 조합으로만 입력이 가능합니다.");
+			return false ;
+		}
+
+		if ( password.length < 10 || password == "" )
+		{
+			webAlert("Password는 10자 이상이어야 합니다.");
+			return false ;
+		} else if ( !checkPwdComplex(password) ) {
+			webAlert("영문 대소문자, 숫자, 특수문자 조합이여야 합니다.");
+			return false ;
+		}
+		document.formUserAdd.submit();
+	}
+}
+
+function frmLoad() {
+	
+	var check_nas_val = 1;
+var check_nas_path_val = "/mnt/disk1_1";
+
+	if( check_nas_val == "1"){
+		document.formNasSet.check_nas.value= '1';
+	} else {
+		document.formNasSet.check_nas.value= '2';
+	}
+}
+
+</script>       
+</head>
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<body onload="frmLoad();">
+<div class="container">
+
+    <div class="navi clfx">
+        <ul class="clfx">
+            <li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+            <li>특수기능</li>
+            <li>NAS</li>
+        </ul>
+    </div>
+    <h1 class="title_style_1">NAS</h1>
+	<p> 공유기에 연결된 USB 저장 장치를 이용하여 NAS 기능을 수행합니다.(먼저 DDNS 기능을 설정해야 합니다.)</p>
+	<hr>
+<form id="formNasSet" name="formNasSet" action="">
+	<h2 class="title_style_2">NAS 설정</h2>
+    <div class="tb_style_5">
+        <table>
+            <tbody>
+				<tr>
+					<th scope="row">NAS 동작 설정</th>
+					<td class="txt_l">
+						<select name="check_nas" id="check_nas">
+							<option value="2" > 비활성화 </option>
+							<option value="1" > 활성화 </option>
+						</select>
+					</td>
+				</tr>
+            </tbody>
+        </table>
+		<p style="font-size:8pt">※ 데이터 손실이 발생할 수 있습니다.</p>
+		<div class="txt_c pt_20" style="display:;">
+			<input type="submit"  value="적용" class="basic-btn01 btn-blue-bg" >
+		</div>
+   </div> 
+</form>
+
+<form id="formConfigSet" name="formConfigSet" action="">
+	<h2 class="title_style_2" id="usb_status_subtitle">USB 저장장치 정보</h2>
+	<div class="tb_style_2" id="usb_status" name="usb_status">
+		<table>
+			<tbody>
+				<tr id = "connectusb">
+					<!--<th scope="row" height="25" style="width:100px;" align="center" >선택</th>-->
+					<th height="25" class="col" style="width:100px;"align="center" >이름</th>
+					<th height="25" class="col" style="width:100px;"align="center" >종류</th>
+					<th height="25" class="col" style="width:100px;"align="center" >상태</th>
+					<th height="25" class="col" style="width:100px;"align="center" >파일시스템</th>
+					<th height="25" class="col" style="width:100px;"align="center" >총 용량(Byte)</th>
+					<th height="25" class="col" style="width:100px;"align="center" >남은 용량(Byte)</th>
+				</tr>
+				<tr>
+<input type="hidden" name="usb" id="usb" value="/mnt/disk1_1" /><td width='17%'><center>SMI Corporation
+ PLEOMAX m80
+</center></td>
+<td width='10%'><center> 2.0</center></td>
+<td width='10%'><center>USED</center></td>
+<td width='10%'><center>FAT32</center></td>
+<td width='13%'><center>15G</center></td>
+<td width='13%'><center>5G</center></td>
+</tr>
+
+			</tbody>
+		</table>
+		<p style="font-size:8pt">※ FAT32, NTFS File System Format이 아닌 경우 연결이 안 될 수도 있습니다.</p>
+		<p style="font-size:8pt">※ USB flash 타입만 지원합니다.</p>
+	</div>
+	<br>
+	
+	<h2 class="title_style_2">NAS Port 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row" width="15%">URL</th>
+					<td ><span>192.168.45.1:8010
+</span></th>
+				</tr>
+				<tr>
+					<th scope="row" width="15%" >포트번호</th>
+					<td class="hole_td">
+						<!--<input type="text" id="nas_port" name="nas_port" class="w_250" placeholder="8010"> -->
+						<input type="text" id="nas_port" name="nas_port" class="w_250" placeholder="8010">
+
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="txt_c pt_20" style="display:;">
+			<input type="button" value="적용" onclick="btnApplySave(1)" class="basic-btn01 btn-blue-bg" >
+		</div>
+	</div>
+</form>
+
+<form id="formUserAdd" name="formUserAdd" action="">
+	<h2 class="title_style_2">NAS 계정 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row" width="15%">ID</th>
+					<td >
+						<input type="text" id="nas_id" name="nas_id" class="w_250"  placeholder="UserID" >
+						<span>※ 영문, 숫자 조합으로만 입력이 가능합니다.</span>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">Password</th>
+					<td>
+						<input type="password" id="nas_pw" name="nas_pw" class="w_250"  placeholder="Password">
+						<span>※ 영문 대소문자, 숫자, 특수문자 조합으로 10자 이상이어야 합니다.</span>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">권한</th>
+					<td colspan="2">
+						<select id="nas_auth" name="nas_auth" class="w_250">
+							<option value="r" >읽기</option>
+							<option value="rw" >읽기/쓰기</option>
+							<option value="x" >사용안함</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row" width="15%">설명</th>
+					<td >
+						<input type="text" id="explan" name="explan"  class="w_250" placeholder="설명" >
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<div class="txt_c pt_20" style="display:;">
+			<input type="button" value="추가" onclick="btnApplySave(2)" class="basic-btn01 btn-blue-bg" >
+		</div>
+	</div>
+</form>
+
+<form id="formUserDel" name="formUserDel" action="">
+	<h2 class="title_style_2">계정 리스트</h2>
+	<div class="tb_style_2">
+		<table id="portStatusTable">
+               <tr>		
+					<th scope="row" width="15%"><center>선택</center></th>
+					<th scope="row" width="30%"><center>ID</center></th>
+					<th scope="row" width="15%"><center>권한</center></th>
+					<th scope="row" width="40%"><center>설명</center></th>
+               </tr>
+			   		<tr>
+<td width='5%'>
+<input type="checkbox" name="username_0" value="test" />
+</td>
+<td width='30%'><center>test</center></td>
+<td width='15%'><center>읽기/쓰기</center></td>
+<td width='60%'><center>test</center></td>
+</tr>
+<input type="hidden" id="count" name="count" value="1">
+
+		</table>
+		<p style="font-size:8pt">※ 계정 최대 생성 개수는 10개 입니다.</p>
+		<div class="txt_c pt_20" style="display:;">
+			<input type="submit" value="선택 제거" class="basic-btn01 btn-gray-bg2" >
+		</div>
+	</div>
+</form>
+</div>
+</body>
+</html>

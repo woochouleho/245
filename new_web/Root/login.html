@@ -1,0 +1,189 @@
+<html lang="ko" xml:lang="ko">
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script src="js/md5.js" type="text/javascript"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script type="text/javascript">
+
+var modelname = 'H854AX';
+top.document.title = modelname;
+function resetCAPTCHA()
+{
+	/* forced reload */
+    window['captcha_page'].location.reload(true);
+}
+
+function validate_captcha()
+{
+	//var ret = document.captcha_page.cap_val.value;
+	var ret = window['captcha_page'].cap_val.value;
+	var data = document.getElementById("cap_user").value;
+
+	if(ret != data) {
+		webAlert("로그인 실패: 올바른 보안 문자를 입력해 주세요.");
+		return false;
+	}
+	return true;
+}
+/* zin77 add end 20170523: For CAPTCHA */
+
+function createUUID () {
+	var s = [];
+	var hexDigits = "0123456789abcdef";
+	for (var i = 0; i < 36; i++) {
+		s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+	}
+	s[14] = "4"; 
+	s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1);
+	s[8] = s[13] = s[18] = s[23] = "-";
+
+	var uuid = s.join("");
+	return uuid;
+}
+
+function check_cookie() {
+	var cookieEnabled;
+
+	if(document.all) {
+		cookieEnabled = navigator.cookieEnabled;
+	}
+	else {
+		var cookieName = 'testCookie' + (new Date().getTime());
+		var expire = new Date();
+
+		expire.setDate(expire.getDate() + 1);
+		document.cookie = cookieName + '=cookieValue' + ';expires=' + expire.toGMTString() + ';';
+
+		cookieEnabled = (document.cookie.indexOf(cookieName) != -1);
+
+		if(cookieEnabled) {
+			expire.setDate(expire.getDate() - 1);
+			document.cookie = cookieName + '=' + ';expires=' + expire.toGMTString() + ';';
+		}
+	}
+
+	if(cookieEnabled) return true;
+
+	return false;
+}
+
+function setpass()
+{
+	var code = '';
+	var loc = 'cgilogin.cmd?';
+	var uuid = '';
+	var login_info = '';
+
+	/* zin77 add 20170523: For CAPTCHA */
+	if(validate_captcha() == false)
+		return;
+
+	if(check_cookie() == false) {
+		code = 'location="msg_cookie.html"';
+		eval(code);
+		return;
+	}
+
+	uuid = createUUID();
+
+	loc +='id='+document.forms[0].username.value;
+	loc +='&passwd='+document.forms[0].password.value;
+	loc +='&uuid='+uuid;	
+	
+	document.cookie ="Cookie=";
+	login_info = "Cookie = ID user | UUID " + uuid;
+	document.cookie = login_info;
+	
+	loc += '&sessionKey=1250462462';
+	code = 'location="' + loc + '"';
+	eval(code);
+
+	return;
+}
+
+function frmLoad() {
+
+var ip_crash = 0
+;
+
+
+var ipv6_crash = '0000:0000:0000:0000:0000:0000:0000:0000';
+
+
+	if(ip_crash == 1)
+		document.getElementById("ip_crash").innerHTML="<font color='red' size='4'>IP 충돌 감지</font>";
+		
+	if(ipv6_crash != '0000:0000:0000:0000:0000:0000:0000:0000')
+		document.getElementById("ipv6_crash").innerHTML="<font color='red' size='4'>IPv6 충돌 감지</font>";
+	
+}
+</script>
+</head>
+
+<body class="new_login_bg" onLoad="frmLoad()">
+<form>
+	<div id="wrap">
+	<div class="new_login">
+		<div class="logo">
+			<img src="img/sk_loing_logo.png" alt="" />
+		</div>
+		<div class="login_area">
+			<ul>
+				<li><input type="text"     name="username" placeholder="아이디" /></li>
+				<li><input type="password" name="password" placeholder="비밀번호" /></li>
+			</ul>
+			<p class="txt_1">아래의 이미지를 입력하세요.</p>
+			<div class="automatic_typing_img">
+				<div class="img_area">
+					<!--이미지영역-->
+					<iframe id="captcha_page" name="captcha_page" src="captcha.html" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" width="100" height="35"></iframe>
+				</div>
+				<button class="btn_refresh" type="button" onclick="resetCAPTCHA()">
+					<img src="img/btn_refresh.gif" alt="새로고침">
+				</button>
+			</div>
+			<div class="automatic_typing">
+				<input type="text" maxLength="6" name="cap_user" id="cap_user" autocomplete="off"/>
+			</div>
+			<div class="btn_login">
+				<button class="login_btn"  type="button" id="login_button" name="login_button" onClick="setpass()">
+					<span>로그인</span>
+				</button>
+			</div>
+		</div>
+
+		<div class="internet_status">
+			<ul class="clfx">
+<!--
+				<li>
+					<span>인터넷 상태 : <strong class="f-green">양호</strong></span>
+					<img src="img/login_good.jpg" alt="" />
+				</li>
+				<li>
+					<span>WAN 상태 : <strong class="f-red">불량</strong></span>
+					<img src="img/login_bad.jpg" alt="" />
+				</li>
+-->
+				<p></p>
+			</ul>
+		</div>
+		<p class="copyright">&copy; HFR, Inc. All rights reserved.</p>
+
+	</div>
+	</div>
+</form>
+</body>
+</html>
+

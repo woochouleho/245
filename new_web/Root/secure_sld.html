@@ -1,0 +1,178 @@
+
+<html><head>
+	<title>H854AX</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+/*
+var lan_state_list  = [
+["lan1","foward",0],
+["lan2","foward",0],
+["lan3","foward",0],
+["lan4","foward",0],
+["lan5","foward",0]
+];
+var loop_enable=1;
+var loop_time=300;
+*/
+
+var lan_state_list = [
+[ "LAN1", "Forward", 0],
+[ "LAN2", "Forward", 0],
+[ "LAN3", "Forward", 0],
+[ "LAN4", "Forward", 0]];
+
+
+var loop_enable = 1;
+var loop_time   = 300;
+
+function btnApplySave() {
+	var loc = 'secure_sld.cgi?';
+
+	with ( document.forms[0] )
+	{
+		if(	enable.value == 1)
+			loc += "wv_selfloop_enable=1";
+		else
+			loc += "wv_selfloop_enable=0";
+
+		if( block_time.value < 100 || block_time.value > 3600)
+		{
+			webAlert("차단시간은 100 ~ 3600 사이의 값만 허용됩니다");
+			 block_time.value = loop_time;
+			return true;
+		}
+
+		loc +="&wv_selfloop_bocktime="+block_time.value;
+	}
+
+	loc += '&sessionKey=1730474605';
+	var code = 'location="' + loc + '"';
+	eval(code);
+}
+
+function btnRefresh() {
+	document.location.assign("secure_sld.html");
+}
+
+function changeSldMode() {
+	var idx = document.getElementById('enable').value;
+
+	if(idx != 1) {
+		document.forms[0].w_sld_conf.style.display = "none";
+	}
+	else {
+		document.forms[0].w_sld_conf.style.display = "";
+	}
+}
+
+function frmLoad() {
+	document.forms[0].enable.value     = loop_enable;
+	document.forms[0].block_time.value = loop_time;
+	
+	/* show default */
+	$('#block_time').attr('placeholder', '기본값: ' + '300');	
+
+	changeSldMode();
+}
+</script>
+</head>
+<body onload="frmLoad()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form>
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>보안기능</li>
+			<li>Self Loop Detect</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">Self Loop Detect</h1>
+	<p>Self Loop를 검출합니다.</p>
+    <hr>
+
+	<h2 class="title_style_2">설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:25%;" />
+				<col style="" />
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">Self Loop Detect 활성화</th>
+					<td>
+						<select id="enable" onchange="changeSldMode()">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+					</td>
+				</tr>
+				<tr id="w_sld_conf" name="w_sld_conf">
+					<th scope="row">차단시간</th>
+					<td>
+						<input type="text" name="block_time" id="block_time">
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c pt_20">
+		<input type="button"  onclick="btnApplySave()" value="적용" class="basic-btn01 btn-blue-bg" >
+	</div>
+
+	<h2 class="title_style_2">포트 상태</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:33%;" />
+				<col style="width:33%;" />
+				<col style="width:33%;" />
+			</colgroup>
+			<thead>
+				<tr>
+					<th scope="col"><center>PORT</center></th>
+					<th scope="col"><center>상태</center></th>
+					<th scope="col"><center>PORT 차단시간 (초)</center></th>
+				</tr>
+			</thead>
+			<tbody>
+			<script language="javascript">
+						var i = 0;
+						for(i =0; i<lan_state_list.length; i++)
+						{
+								document.write("<tr>\n");
+								document.write("<td><center>"+lan_state_list[i][0]+"</center></td>\n");
+								document.write("<td><center>"+lan_state_list[i][1]+"</center></td>\n");
+								document.write("<td><center>"+lan_state_list[i][2]+"</center></td>\n");
+								document.write('<tr>\n');
+						}
+			</script>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c pt_20">
+		<input type="button" value="새로고침"  onClick='btnRefresh()' class="basic-btn01 btn-gray-bg2 mr_20" />
+	</div>
+</div>
+</form>
+</body>
+</html>

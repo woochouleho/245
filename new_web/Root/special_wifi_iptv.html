@@ -1,0 +1,95 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script type="text/javascript">
+function frmLoad() {
+
+}	
+
+</script>	
+</head>
+<body onload="frmLoad()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>특수기능</li>
+			<li>무선 IPTV</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">무선 IPTV</h1>
+	<!-- 20190326 말풍선영역 추가 -->
+<!--	
+	<div class="speech_bubble_area">
+		<a href="#" class="speech_bubble_open"><img src="img/icon_speech_bubble.png" alt="말풍선영역열기" /></a>
+		<div class="speech_bubble_txt">
+			설명문구가 들어갑니다. 설명문구가 들어갑니다. 설명문구가 들어갑니다. 설명문구가 들어갑니다. 설명문구가 들어갑니다. 설명문구가 들어갑니다.
+		</div>
+	</div>
+-->	
+	<!-- //20190326 말풍선영역 추가 -->
+
+	<p> 무선 IPTV 기능을 설정합니다.</p>
+	<hr>
+	<h2 class="title_style_2">무선 Bandwidth 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row" style="width:20%;">무선 Bandwidth</th>
+					<td>
+						<select name="wireless_mode" id="wireless_mode" >
+							<option value="0">5GHz </option>
+							<option value="1">2.4GHz</option>
+						</select>
+						<input type="button"  value="적용" onclick="btnApplySave(2)" class="basic-btn01 btn-blue-bg" >
+					</td>
+				</tr>				
+			</tbody>
+		</table>
+	</div>
+	<h2 class="title_style_2">무선 IPTV 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				<tr>
+					<th scope="row" style="width:20%;">무선 IPTV</th>
+					<td>
+						<input type="radio" name="radio1" id="radio1" value="0" />
+						<label for="radio1">중단</label>
+						<input type="radio" name="radio1" id="radio1" value="1" />
+						<label for="radio1">사용</label>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="txt_c">
+		<input type="button"  value="적용" onclick="btnApplySave(2)" class="basic-btn01 btn-blue-bg mr_10" >
+		<button class="basic-btn01 btn-gray-bg2">취소</button>
+	</div>
+
+</div>
+</body>
+</html>

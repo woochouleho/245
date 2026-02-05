@@ -1,0 +1,537 @@
+
+<html>
+	<head>
+	<title>H854AX</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+		<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+		<meta name="description" content=""/>
+		<meta name="keywords" content=""/>
+		<link rel="stylesheet" href="css/common.css"/>
+		<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+		<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+		<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+		<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+		<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+		<script language="javascript" src="js/util.js"></script>
+		<script language="javascript" src="js/prv_util.js"></script>
+		<script language="javascript" src="js/portName.js"></script>
+		<script language="javascript" src="js/overlib.js"></script>
+<script language="javascript">
+
+// function getUrlVarss(...) is in js/util.js
+function frmLoad()
+{
+	var params = getURLVars(window.location.href);
+	var band = params["band"] ? params["band"] : '0';
+	
+	document.getElementById("wireless_mode").value = band;
+	
+	wl_band_Change()	
+	wl_dscp_map("dscp_map");
+}
+
+function btnApplySave()
+{
+	var i=0;
+	var aifs = new Array();
+	var txop = new Array();
+	aifs[0] = document.getElementById("wme_ap_be_AIFS").value;
+	aifs[1] = document.getElementById("wme_ap_bk_AIFS").value;
+	aifs[2] = document.getElementById("wme_ap_vi_AIFS").value;
+	aifs[3] = document.getElementById("wme_ap_vo_AIFS").value;
+
+	txop[0] = document.getElementById("wme_ap_be_Txop").value;
+	txop[1] = document.getElementById("wme_ap_bk_Txop").value;
+	txop[2] = document.getElementById("wme_ap_vi_Txop").value;
+	txop[3] = document.getElementById("wme_ap_vo_Txop").value;
+
+	for (i=0; i < aifs.length; i++) {
+		if (parseInt(aifs[i]) < 1 || parseInt(aifs[i]) > 15) {
+			webAlert("AIFS의 범위는 1~15입니다.");
+			return false;
+		}
+	}
+
+	for (i=0; i < txop.length; i++) {
+		if ((parseInt(txop[i]) < 0 || parseInt(txop[i]) > 65504) || (parseInt(txop[i])%32)) {
+			webAlert("Txop의 범위는 0부터 65504까지 32의 배수만 가능합니다.");
+			return false;
+		}
+	}
+
+	document.wifi_wmm_form.submit();
+}
+
+function ssidcheck()
+{
+	var band_sel = document.getElementById("wireless_mode").value;
+	var ssid_sel;
+	var wmm_bss_dis;
+	var idx;
+	var i;
+
+	if ( band_sel == "0") {
+		ssid_sel = document.getElementById("wl0_ssid_list").value;
+		switch(ssid_sel) {
+			case '0': wmm_bss_dis = "0";
+					  break;
+			case '1': wmm_bss_dis = "0";
+					  break;
+			case '2': wmm_bss_dis = "1";
+					  break;
+			case '3': wmm_bss_dis = "0";
+					  break;
+			case '4': wmm_bss_dis = "0";
+					  break;
+			case '5': wmm_bss_dis = "0";
+					  break;
+			case '6': wmm_bss_dis = "0";
+					  break;
+			case '7': wmm_bss_dis = "0";
+					  break;
+			default :
+					  break;
+		}
+	} else {
+		ssid_sel = document.getElementById("wl1_ssid_list").value;
+		switch(ssid_sel) {
+			case '0': wmm_bss_dis = "0";
+					  break;
+			case '1': wmm_bss_dis = "0";
+					  break;
+			case '2': wmm_bss_dis = "1";
+					  break;
+			case '3': wmm_bss_dis = "1";
+					  break;
+			case '4': wmm_bss_dis = "0";
+					  break;
+			case '5': wmm_bss_dis = "0";
+					  break;
+			case '6': wmm_bss_dis = "0";
+					  break;
+			case '7': wmm_bss_dis = "0";
+					  break;
+			default :
+					  break;
+		}
+	}
+
+	if (wmm_bss_dis == '0') {
+		document.wifi_wmm_form.wl_wme_bss_dis.selectedIndex = 1;
+	} else {
+		document.wifi_wmm_form.wl_wme_bss_dis.selectedIndex = 0;
+	}
+
+}
+
+function radiocheck( band_select)
+{
+	var wmm_able;
+	var index = 0;
+	var select_box;
+	
+	if( band_select == "0") {
+		$("#tr_wl1_ssid_list").hide();
+		$("#tr_wl0_ssid_list").show();
+	} else if( band_select == "1") {
+		$("#tr_wl0_ssid_list").hide();
+		$("#tr_wl1_ssid_list").show();
+	}
+	ssidcheck();
+}
+
+function selectselected( band_select) 
+{
+	var wmm_ap = new Array();
+	var wmm_ap_be = new Array();
+	var wmm_ap_bk = new Array();
+	var wmm_ap_vi = new Array();
+	var wmm_ap_vo = new Array();
+	var index = 0;
+	
+	if(band_select == "0")
+	{
+		wmm_ap.push("15 63 3 0 0 off off");
+		wmm_ap.push("15 1023 7 0 0 off off");
+		wmm_ap.push("7 15 1 6016 3008 off off");
+		wmm_ap.push("3 7 1 3264 1504 off off");
+	}
+
+	else if(band_select == "1")
+	{
+		wmm_ap.push("15 63 3 0 0 off off");
+		wmm_ap.push("15 1023 7 0 0 off off");
+		wmm_ap.push("7 15 1 6016 3008 off off");
+		wmm_ap.push("3 7 1 3264 1504 off off");
+	}
+
+	for(var i = 0; i<4; i++)
+	{
+		if(wmm_ap[i]=="")
+			wmm_ap[i] = "1 1 1 1";
+	}
+
+	wmm_ap_be=wmm_ap[0].split(' ');
+	wmm_ap_bk=wmm_ap[1].split(' ');
+	wmm_ap_vi=wmm_ap[2].split(' ');
+	wmm_ap_vo=wmm_ap[3].split(' ');
+	
+	document.getElementById("wme_ap_be_CWMin").value = wmm_ap_be[0];
+	document.getElementById("wme_ap_be_CWMax").value = wmm_ap_be[1]; 
+	document.getElementById("wme_ap_be_AIFS").value = wmm_ap_be[2]; 
+	document.getElementById("wme_ap_be_Txop").value = wmm_ap_be[3];
+
+	document.getElementById("wme_ap_bk_CWMin").value = wmm_ap_bk[0];
+	document.getElementById("wme_ap_bk_CWMax").value = wmm_ap_bk[1];
+	document.getElementById("wme_ap_bk_AIFS").value = wmm_ap_bk[2];
+	document.getElementById("wme_ap_bk_Txop").value = wmm_ap_bk[3];
+
+	document.getElementById("wme_ap_vi_CWMin").value = wmm_ap_vi[0];
+	document.getElementById("wme_ap_vi_CWMax").value = wmm_ap_vi[1];
+	document.getElementById("wme_ap_vi_AIFS").value = wmm_ap_vi[2];
+	document.getElementById("wme_ap_vi_Txop").value = wmm_ap_vi[3];
+
+	document.getElementById("wme_ap_vo_CWMin").value = wmm_ap_vo[0];
+	document.getElementById("wme_ap_vo_CWMax").value = wmm_ap_vo[1];
+	document.getElementById("wme_ap_vo_AIFS").value = wmm_ap_vo[2];
+	document.getElementById("wme_ap_vo_Txop").value = wmm_ap_vo[3];
+}
+
+function wl_band_Change()
+{
+	var select_box = document.getElementById("wireless_mode");
+	radiocheck(select_box.options[select_box.selectedIndex].value);
+	selectselected(select_box.options[select_box.selectedIndex].value);
+}
+
+function wl_dscp_map(dscp_id)
+{
+	var dscp_nvram_val="1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 0 1 1 1 1 1 1 1 2 1 1 1 1 1 1 1 1 1 1 1 1 1 3 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1";
+	var dscp_arr= new Array();
+	var tag ="";
+	var index = 0;
+
+	dscp_arr = dscp_nvram_val.split(" ");
+
+	if( dscp_arr.length < 64)
+	{
+		for(var i = dscp_arr.length; i < 64; i++ )
+		{
+			dscp_arr.push("0");
+		}
+	}
+	for(index = 0; index < 64; index++)
+	{
+		tag = "";
+		if((index == 0) || ((index % 8) == 0))
+		{
+			tag += "<tr>\n";
+			for(var i = index; i < 8+index; i++)
+			{
+				tag += "<th><center>"+String(i)+"</center></th>\n";
+			}
+			tag += "</tr>\n";
+			tag += "<tr>\n";
+		}
+
+		$("#"+dscp_id).append(tag);
+		add_dscp_list(dscp_id,index,dscp_arr[index]);
+			
+		if((index == 0) || ((index % 8) == 0))
+		{
+			tag = "</tr>\n";
+			$("#"+dscp_id).append(tag);
+		}
+	}
+}
+
+function add_dscp_list(add_id,index,val)
+{
+	var value_comant = ["BE","BK","VI","VO"];
+	var tag= "";
+	var int_val=0;
+
+	int_val = Number(val);
+	
+	tag += "<td><center>\n";
+	tag += "<select name=\"DSCP"+ index +"\" id=\"DSCP"+ index +"\">\n";
+	for(var i = 0; i<4; i++)
+	{
+		if((!isNaN(int_val)) && (int_val == i))
+		{
+			tag += "<option value=\""+ i +"\" selected >"+ i;
+			tag += " ("+ value_comant[i] +")</option>\n";
+		}
+		else
+		{
+			tag += "<option value=\""+ i +"\">"+ i +" ("+ value_comant[i] +")</option>\n";
+		}
+	}
+
+	tag += "</center></td>";
+
+	$("#"+add_id).append(tag);
+}
+
+</script>
+<style>
+	select:disabled{background: #e5e8ea}
+</style>
+</head>
+<body onload="frmLoad()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+
+		<div id="container" name="container" class="container">
+			<form  name= "wifi_wmm_form" method="post" action="/wifi_wmm.cmd">
+				<div class="navi clfx">
+					<ul class="clfx">
+						<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+						<li>WiFi</li>
+						<li>WMM</li>
+					</ul>
+				</div>
+				<h1 class="title_style_1">WMM</h1>
+				<p>WMM 설정을 합니다</p>
+				<hr>
+				<h2 class="title_style_2">WMM 설정</h1>
+				<div class="tb_style_2">
+					<table>
+						<tbody>
+							<tr>
+								<th scope="row">무선 대역</th>
+								<td>
+									<select name="wireless_mode" id="wireless_mode" style="width:25%;" onChange="wl_band_Change();">
+										<option value="0" selected>5GHz </option>
+										<option value="1">2.4GHz</option> 
+									</select> 
+								</td>
+							</tr>				
+							<tr id='tr_wl0_ssid_list'><th scope='row' style='width:20%;'>SSID(네트워크이름 [설명])</th><td><select name='wl0_ssid_list' id='wl0_ssid_list' style='width:45%;' onChange='ssidcheck();'><option value='0'>SK_WiFiGIGAA101_5G [메인 5G]</option><option value='1'>SK_WiFiGIGAA101 [핸드오버]</option></select></td></tr>	
+							<tr id='tr_wl1_ssid_list'><th scope='row' style='width:20%;'>SSID(네트워크이름 [설명])</th><td><select name='wl1_ssid_list' id='wl1_ssid_list' style='width:45%;' onChange='ssidcheck();'><option value='0'>SK_WiFiGIGAA101 [메인 2.4G]</option></select></td></tr>	
+							<tr>
+								<th scope="row">WMM 동작설정</th>
+								<td>
+									<select name="wl_wme_bss_dis", id="wl_wme_bss_dis" style="width:25%;">
+										<option value="1">비활성화</option>
+										<option value="0">활성화</option>
+									</select>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<h2 class="title_style_2">WMM 설정</h2>
+				<div class="tb_style_1 scroll">
+					<table>
+						<colgroup>
+							<col style="width:20%;" />
+							<col style="width:20%;" />
+							<col style="width:20%;" />
+							<col style="width:20%;" />
+							<col style="width:20%;" />
+						</colgroup>
+						<thead>
+							<tr>
+								<th scope="col"><center>Access Class</center></th>
+								<th scope="col"><center>CWMin</center></th>
+								<th scope="col"><center>CWMax</center></th>
+								<th scope="col"><center>AIFS</center></th>
+								<th scope="col"><center>Txop(us)</center></th>
+							</tr>				
+						</thead>
+					<tbody>
+						<tr>
+							<td><label for="wme_ap_be">AC_BE</label></td>
+							
+							<td>
+								<select name="ap_be_CWMin" id="wme_ap_be_CWMin">
+									<option value="1">1</option>
+									<option value="3">3</option>
+									<option value="7">7</option>
+									<option value="15">15</option>
+									<option value="31">31</option>
+									<option value="63">63</option>
+									<option value="127">127</option>
+									<option value="255">255</option>
+									<option value="511">511</option>
+									<option value="1023">1023</option>
+								</select>
+							</td>
+							
+							<td>
+								<select name="ap_be_CWMax" id="wme_ap_be_CWMax">
+									<option value="1">1</option>
+									<option value="3">3</option>
+									<option value="7">7</option>
+									<option value="15">15</option>
+									<option value="31">31</option>
+									<option value="63">63</option>
+									<option value="127">127</option>
+									<option value="255">255</option>
+									<option value="511">511</option>
+									<option value="1023">1023</option>
+								</select>
+							</td>
+							
+							<td><input type="text" name="wme_ap_be_AIFS" id="wme_ap_be_AIFS" value="0" /></td>
+							<td><input type="text" name="wme_ap_be_Txop" id="wme_ap_be_Txop" value="0" /></td>
+						</tr>
+						
+						<tr>
+							<td><label for="wme_ap_bk">AC_BK</label></td>
+							
+							<td>
+								<select name="ap_bk_CWMin" id="wme_ap_bk_CWMin">
+									<option value="1">1</option>
+									<option value="3">3</option>
+									<option value="7">7</option>
+									<option value="15">15</option>
+									<option value="31">31</option>
+									<option value="63">63</option>
+									<option value="127">127</option>
+									<option value="255">255</option>
+									<option value="511">511</option>
+									<option value="1023">1023</option>
+								</select>
+							</td>
+							
+							<td>
+								<select name="ap_bk_CWMax" id="wme_ap_bk_CWMax">
+									<option value="1">1</option>
+									<option value="3">3</option>
+									<option value="7">7</option>
+									<option value="15">15</option>
+									<option value="31">31</option>
+									<option value="63">63</option>
+									<option value="127">127</option>
+									<option value="255">255</option>
+									<option value="511">511</option>
+									<option value="1023">1023</option>
+								</select>
+							</td>
+							
+							<td><input type="text" name="ap_bk_AIFS" id="wme_ap_bk_AIFS" value="7" /></td>
+							<td><input type="text" name="ap_bk_Txop" id="wme_ap_bk_Txop" value="0" /></td>
+						</tr>
+						
+						<tr>
+							<td><label for="wme_ap_vi">AC_VI</label></td>
+							
+							<td>
+								<select name="ap_vi_CWMin" id="wme_ap_vi_CWMin">
+									<option value="1">1</option>
+									<option value="3">3</option>
+									<option value="7">7</option>
+									<option value="15">15</option>
+									<option value="31">31</option>
+									<option value="63">63</option>
+									<option value="127">127</option>
+									<option value="255">255</option>
+									<option value="511">511</option>
+									<option value="1023">1023</option>
+								</select>
+							</td>
+							
+							<td>
+								<select name="ap_vi_CWMax" id="wme_ap_vi_CWMax">
+									<option value="1">1</option>
+									<option value="3">3</option>
+									<option value="7">7</option>
+									<option value="15">15</option>
+									<option value="31">31</option>
+									<option value="63">63</option>
+									<option value="127">127</option>
+									<option value="255">255</option>
+									<option value="511">511</option>
+									<option value="1023">1023</option>
+								</select>
+							</td>
+							
+							<td><input type="text" name="ap_vi_AIFS" id="wme_ap_vi_AIFS" value="1" /></td>
+							<td><input type="text" name="ap_vi_Txop" id="wme_ap_vi_Txop" value="3008" /></td>
+						</tr>
+						
+						<tr>
+							<td><label for="wme_ap_vo">AC_VO</label></td>
+							<td>
+								<select name="ap_vo_CWMin" id="wme_ap_vo_CWMin">
+									<option value="1">1</option>
+									<option value="3">3</option>
+									<option value="7">7</option>
+									<option value="15">15</option>
+									<option value="31">31</option>
+									<option value="63">63</option>
+									<option value="127">127</option>
+									<option value="255">255</option>
+									<option value="511">511</option>
+									<option value="1023">1023</option>
+								</select>
+							</td>
+							
+							<td>
+								<select name="ap_vo_CWMax" id="wme_ap_vo_CWMax">
+									<option value="1">1</option>
+									<option value="3">3</option>
+									<option value="7">7</option>
+									<option value="15">15</option>
+									<option value="31">31</option>
+									<option value="63">63</option>
+									<option value="127">127</option>
+									<option value="255">255</option>
+									<option value="511">511</option>
+									<option value="1023">1023</option>
+								</select>
+							</td>
+							
+							<td><input type="text" name="ap_vo_AIFS" id="wme_ap_vo_AIFS" value="1" /></td>
+							<td><input type="text" name="ap_vo_Txop" id="wme_ap_vo_Txop" value="1504" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="txt_c pt_20">
+			<input type="button"	 class="basic-btn01 btn-blue-bg"  value = "적용"
+			onclick="document.wifi_wmm_form.flag.value= 'wmm'; btnApplySave()">
+			<!-- input type="reset"		 class="basic-btn01 btn-gray-bg2" value = "취소" -->
+			</div>
+
+			<h2 class="title_style_2">DSCP Mapping</h2>
+			<div class="tb_style_1 scroll">
+				<table>
+					<thead>
+						<tr>
+							<th scope="col" colspan="8"><center>DSCP Value</center></th>
+						</tr>				
+					</thead>
+					<colgroup>
+					<col style="width:12%;"/>
+					<col style="width:12%;"/>
+					<col style="width:12%;"/>
+					<col style="width:12%;"/>
+					<col style="width:12%;"/>
+					<col style="width:12%;"/>
+					<col style="width:12%;"/>
+					<col style="width:12%;"/>
+					</colgroup>
+					<tbody id="dscp_map" name="dscp_map" >
+					</tbody>
+				</table>
+			</div>
+			<div class="txt_c pt_20">
+				<input type="button" name="dscp" class="basic-btn01 btn-blue-bg"  value = "적용"
+				onclick="document.wifi_wmm_form.flag.value = 'dscp'; btnApplySave()">
+				<!-- input type="reset"		 class="basic-btn01 btn-gray-bg2" value = "취소" -->
+			</div>
+		</div>
+		<!-- //wrap -->
+		<input  type="hidden" name="sessionKey" value="2076007985">
+		<input  type="hidden" name="flag" id="flag">
+		</form>
+	</body>
+</html>

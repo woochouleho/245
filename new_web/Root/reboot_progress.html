@@ -1,0 +1,74 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+<script language="javascript">
+
+</script>
+</head>
+
+<body>
+
+
+<div class="container custom_input">
+	<h1 class="title_style_1">재시작 </h1>
+	<div class="msg_no_auth">
+
+		<p class="txt_2">
+			현재 설정을 저장하고, 재시작 합니다.<br>
+			잠시만 기다려 주세요
+		</p>
+
+		<div class="pie degree">
+			<span class="block"></span>
+			<span id="time">60</span>
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">  
+var totaltime = 0;
+function update(percent){
+  var deg;
+  if(percent<(totaltime/2)){
+    deg = 90 + (360*percent/totaltime);
+      $('.pie').css('background-image',
+                'linear-gradient('+deg+'deg, transparent 50%, white 50%),linear-gradient(90deg, white 50%, transparent 50%)'
+               );
+  } else if(percent>=(totaltime/2)){
+          deg = -90 + (360*percent/totaltime);
+          $('.pie').css('background-image',
+                'linear-gradient('+deg+'deg, transparent 50%, white 50%),linear-gradient(90deg, white 50%, transparent 50%)'
+               );
+          }
+}
+var count = parseInt($('#time').text());
+myCounter = setInterval(function () {
+  count-=1;
+  $('#time').html(count);
+    update(count);
+  
+  if(count==totaltime) 
+	clearInterval(myCounter);
+
+  
+  if (count == 0)
+  {
+	location.replace("basic_status.html");
+	//top.document.location.reload();  
+  }
+
+}, 1000);
+</script>
+
+
+</body>
+</html>

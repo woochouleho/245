@@ -1,0 +1,78 @@
+
+<html>
+   <head>
+	<title>H854AX</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/jquery.progress.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+<script language='javascript'>
+function send(sendType) {
+	var loc ='';
+   loc += 'special_selfcheck_ping.cmd?action=send';
+
+	if(sendType == 0) {
+		loc += '&sendType=0';
+		loc += '&pingAddr=' + document.forms[0].send_ip.value;
+	} else { 
+		loc += '&sendType=1';
+		loc += '&pingAddr=210.220.163.82';
+
+	}
+   loc += '&sessionKey=135598035';
+   var code = 'location="' + loc + '"';
+   eval(code);
+}
+
+function frmLoad() {
+}
+</script>
+</head>
+<body>
+<form>
+<div class='tb_style_2 w_200 mb_10'>
+		<table>
+			<tr>
+				<th scope='row'>IP 주소</th>
+				<td style='width:35%;'>
+				<div>
+					<div style='width:60%; float: left;'>
+						<input type='text' id='send_ip' name='send_ip' size='17'/>
+					</div>
+					<div style='width:40%; float: right; text-align: right;'>
+						<input type='button' style='width:90%;' class='basic-btn01 btn-gray-bg2' onclick='send(0)' value='Send Ping'>
+					</div>
+				</div>
+				</td>
+				<td>
+					<span id='ip_ping' name='ip_ping' style='color:red;'></span>				</td>
+			</tr>
+			<tr>
+				<th scope='row'>기본 DNS</th>
+				<td style='width:35%;'>
+				<div>
+					<div style='width:60%; float: left;'>
+					</div>
+					<div style='width:40%; float: right; text-align: right;'>
+						<input type='button' style='width:90%;' class='basic-btn01 btn-gray-bg2' onclick='send(1)' value='Send Ping'>
+					</div>
+				</div>
+				</td>
+				<td>
+					<span id='ip_ping' name='ip_ping' style='color:red;'></span>
+				</td>
+			</tr>
+		</table>
+	</div>
+</form>
+</body>
+</html>

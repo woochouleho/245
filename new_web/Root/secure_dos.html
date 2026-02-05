@@ -1,0 +1,310 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+
+<script language="javascript">
+
+function check_dos_param()
+{
+	var value = 0;
+
+	value = parseInt(document.forms[0].ping_res_limit.value);
+	if(value < 1 || value > 1000 || isValidDecNum(value) == false || value == "" ) {
+		webAlert("ping 응답제한은 1 ~ 1000입니다.");
+		return false;
+	}
+
+	value = parseInt(document.forms[0].w_dos_tcp_syn_limit.value);
+	if (isNaN(value) == true || value < 100 || value > 500) {
+		webAlert("TCP Sync Flood 응답제한은 100 ~ 500 를 입력해야합니다.");
+		return false;
+	}
+
+	value = parseInt(document.forms[0].w_dos_port_scan_limit.value);
+	if (isNaN(value) == true || value < 60 || value > 86400) {
+		webAlert("Port Scan 응답제한은 60 ~ 86400 를 입력해야합니다.");
+		return false;
+	}
+
+	value = parseInt(document.forms[0].snmp_res_limit.value);
+	if(isNaN(value) == true || value < 100  || value > 1000) {
+		webAlert("SNMP 응답제한은 100 ~ 1000를 입력해야합니다.");
+		return false;
+	}
+
+	value = parseInt(document.forms[0].ntp_res_limit.value);
+	if(isNaN(value) == true || value < 100  || value > 1000) {
+		webAlert("NTP 응답제한은 100 ~ 1000를 입력해야합니다.");
+		return false;
+	}
+
+	return true;
+}
+
+function btnApplySave() {
+	var loc  = 'secure_dos.cgi?';
+	var code = '';
+	var arpspoofing_enable = Number(document.forms[0].arp_spooping_enable.value);
+
+	if(check_dos_param() != true) return;
+
+	loc += 'wv_tcp_sync_dos_enable='     + document.forms[0].tcp_sync_dos_enable.value;
+	loc += '&wv_ping_res_limit_enable='  + document.forms[0].ping_res_limit_enable.value;
+	loc += '&wv_ping_res_limit_value='   + document.forms[0].ping_res_limit.value;
+	loc += '&wv_icmp_smuf_enable='       + document.forms[0].icmp_smuf_enable.value;
+	loc += '&wv_tcpSyncDosLimitValue='   + document.forms[0].w_dos_tcp_syn_limit.value;
+	loc += '&wv_tcp_port_scan_enable='   + document.forms[0].tcp_port_scan_enable.value;
+	loc += '&wv_tcpPortScanLimitValue='  + document.forms[0].w_dos_port_scan_limit.value;
+	loc += '&wv_ip_spoofing_enable='     + document.forms[0].ip_spoofing_enable.value;
+	loc += '&wv_ping_of_death_enable='   + document.forms[0].ping_of_death_enable.value;
+	loc += '&wv_trace_route_enable='     + document.forms[0].trace_route_enable.value;
+	loc += '&wv_snmp_res_limit_enable='  + document.forms[0].snmp_res_limit_enable.value;
+	loc += '&wv_snmpResLimitValue='      + document.forms[0].snmp_res_limit.value;
+	loc += '&wv_ntp_res_limit_enable='   + document.forms[0].ntp_res_limit_enable.value;
+	loc += '&wv_ntpResLimitValue='       + document.forms[0].ntp_res_limit.value;
+
+	switch(arpspoofing_enable) {
+		case 0 :
+			loc += '&ArpSpoofingLanEnable=0';
+			loc += '&ArpSpoofingWanEnable=0';
+			break;
+		case 1:
+			loc += '&ArpSpoofingLanEnable=1';
+			loc += '&ArpSpoofingWanEnable=0';
+			break;
+		case 2:
+			loc += '&ArpSpoofingLanEnable=0';
+			loc += '&ArpSpoofingWanEnable=1';
+			break;
+		case 3:
+			loc += '&ArpSpoofingLanEnable=1';
+			loc += '&ArpSpoofingWanEnable=1';
+			break;
+	}
+
+    loc += '&sessionKey=1833256397';
+	code = 'location="' + loc + '"';
+	eval(code);
+
+	return;
+}
+
+function frmLoad() {
+
+	var ArpSpoofingLanEnable = 0;
+	var ArpSpoofingWanEnable = 0;
+
+	document.forms[0].tcp_sync_dos_enable.value   = 0;
+	document.forms[0].tcp_port_scan_enable.value = 1;
+	document.forms[0].ping_res_limit_enable.value = 1;
+	document.forms[0].ping_res_limit.value        = 10;
+	document.forms[0].icmp_smuf_enable.value      = 0;
+	document.forms[0].ip_spoofing_enable.value    = 0;
+	document.forms[0].ping_of_death_enable.value  = 0;
+	document.forms[0].trace_route_enable.value    = 0;
+	document.forms[0].w_dos_tcp_syn_limit.value  = 200;
+	document.forms[0].w_dos_port_scan_limit.value = 300;
+	document.forms[0].snmp_res_limit_enable.value = 0;
+	document.forms[0].snmp_res_limit.value        = 100;
+	document.forms[0].ntp_res_limit_enable.value  = 0;
+	document.forms[0].ntp_res_limit.value         = 100;
+	document.forms[0].arp_spooping_enable.value   = Number(ArpSpoofingLanEnable) + Number(ArpSpoofingWanEnable)*2;
+
+	/* Show Default */
+	$('#w_dos_tcp_syn_limit').attr('placeholder', '기본값: ' + 200);
+	$('#ping_res_limit').attr('placeholder', '기본값: ' +  10);
+	$('#w_dos_port_scan_limit').attr('placeholder', '기본값: ' +  300);
+	$('#snmp_res_limit').attr('placeholder', '기본값: ' +  100);
+	$('#ntp_res_limit').attr('placeholder', '기본값: ' +  100);
+	
+	return;
+}
+
+</script>
+
+<body onLoad='frmLoad()'>
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form>
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>보안 기능 </li>
+			<li>DOS 공격 방어</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">DOS 공격 방어</h1>
+	<p>DOS Attack 방어 기능을 설정합니다.</p>
+	<hr>
+
+	<h2 class="title_style_2">DoS 공격 방어 설정</h2>
+	<div class="tb_style_5">
+		<table>
+			<colgroup>
+				<col style="width:25%;" />
+				<col style="width:%;" />
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">TCP SYN Flood</th>
+					<td>
+						<select id="tcp_sync_dos_enable" name="tcp_sync_dos_enable">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+						&nbsp;&nbsp;
+						<input id="w_dos_tcp_syn_limit" name="w_dos_tcp_syn_limit" type="text" style="width:30%;">
+						&nbsp; Packet / Sec
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">ICMP Flood</th>
+					<td>
+						<select id="ping_res_limit_enable" name="ping_res_limit_enable">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+						&nbsp;&nbsp;
+						<input id="ping_res_limit" name="ping_res_limit" type="text"  style="width:30%;">
+						&nbsp; Packet / Sec
+					</td>
+				</tr>
+				<!--
+				<tr>
+					<th scope="row">UDP Flood</th>
+					<td>
+						<select id="w_dos_udp_flood_enable" name="w_dos_udp_flood_enable" disabled>
+							<option value="0">비활성화</option>
+							<option value="1" selected>활성화</option>
+						</select>
+						&nbsp;&nbsp;
+						<input id="w_dos_udp_flood_value" name="w_dos_udp_flood_value" type="text" style="width:30%;">
+						&nbsp; Packet / Sec
+					</td>
+				</tr>
+				-->
+				<tr>
+					<th scope="row">Broadcast Ping</th>
+					<td>
+						<select id="icmp_smuf_enable" name="icmp_smuf_enable">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">Port Scan</th>
+					<td>
+						<select id="tcp_port_scan_enable" name="tcp_port_scan_enable">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+						&nbsp;&nbsp;
+						<input id="w_dos_port_scan_limit" name="w_dos_port_scan_limit"  type="text" style="width:30%;">
+						&nbsp; Sec
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">ARP Spoofing</th>
+					<td>
+						<select id="arp_spooping_enable" name="arp_spooping_enable">
+							<option value="0">비활성화</option>
+							<option value="1">LAN</option>
+							<option value="2">WAN</option>
+							<option value="3">ALL(WAN+LAN)</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">IP Spoofing</th>
+					<td>
+						<select id="ip_spoofing_enable" name="ip_spoofing_enable">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">Ping of Death</th>
+					<td>
+						<select id="ping_of_death_enable" name="ping_of_death_enable">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">Trace Routing</th>
+					<td>
+						<select id="trace_route_enable" name="trace_route_enable">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">SNMP Attack</th>
+					<td>
+						<select id="snmp_res_limit_enable" name="snmp_res_limit_enable">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+						&nbsp;&nbsp;
+						<input id="snmp_res_limit" name="snmp_res_limit" type="text">
+						&nbsp; Packet / Sec
+					</td>
+				</tr>
+				<tr>
+					<th scope="row">NTP Attack</th>
+					<td>
+						<select id="ntp_res_limit_enable" name="ntp_res_limit_enable">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+						&nbsp;&nbsp;
+						<input id="ntp_res_limit" name="ntp_res_limit"  type="text">
+						&nbsp; Packet / Sec
+					</td>
+				</tr>
+				<!--tr style="display:none;">
+					<th scope="row">IGMP 쿼리</th>
+					<td>
+						<select id="igmp_query_enable" name="igmp_query_enable">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr-->
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c pt_20">
+		<input type="button"  onclick="btnApplySave()" value="적용" class="basic-btn01 btn-blue-bg" >
+	</div>
+
+</div>
+</form>
+</body>
+</html>

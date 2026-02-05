@@ -1,0 +1,364 @@
+
+<!DOCTYPE html>
+<html lang="ko" xml:lang="ko">
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' CONTENT='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+
+<script language="javascript">
+
+var sessionKey = '569035013';
+
+function isSecrt(str) {
+	var n = 0;
+
+	for( n = 0; n < str.length;n++)
+	{
+		if ( str.charAt(n) != '*')
+			return false;
+	}
+	return true;
+}
+
+function btnApplySave(saveType) {
+	var loc = "";
+	var idx = 0;
+	var code = "";
+
+	switch(saveType) {
+		case 0:
+			idx  = document.getElementById('w_ldap_enable').selectedIndex;
+			loc  = 'mng_remote.cgi?wv_action=ldap';
+			loc += '&wv_ap_cfg_enable=' + document.getElementById('w_ldap_enable').options[idx].value;
+			if( isSecrt(document.forms[0].w_ldap_authserver.value)  == false)
+				loc += '&wv_ap_cfg_authServer='  + encodeUrl(document.forms[0].w_ldap_authserver.value);
+
+			if( isSecrt(document.forms[0].w_ldap_cfgfile.value)  == false )
+				loc += '&wv_ap_cfg_cfgFileName=' + encodeUrl(document.forms[0].w_ldap_cfgfile.value);
+
+			if( isSecrt(document.forms[0].w_ldap_pathprefix.value)  == false )
+				loc += '&wv_ap_cfg_pathPrefix='  + encodeUrl(document.forms[0].w_ldap_pathprefix.value);
+			break;
+
+		case 1:
+			idx  = document.getElementById('w_hp_enable').value;
+			loc  = 'mng_remote.cgi?wv_action=hp';
+			loc += '&wv_hp_enable=' + idx;
+			if( isSecrt(document.forms[0].w_hp_authserver.value)  == false)
+				loc += '&wv_hp_authserver='  + encodeUrl(document.forms[0].w_hp_authserver.value);
+			if( isSecrt(document.forms[0].w_hp_authport.value)  == false)
+				loc += '&wv_hp_authport='  + encodeUrl(document.forms[0].w_hp_authport.value);
+			loc += '&wv_hp_interval='  + parseInt(document.forms[0].w_hp_keep_alive_time.value);
+			break;
+
+		case 2:
+			loc  = 'mng_remote.cgi?wv_action=snmp';
+			loc += '&snmpStatus=' + document.getElementById('w_snmp_enable').value;
+			loc += '&wv_snmp_comm_enable_1=' + document.getElementById('w_snmp_comm_enable_1').value;
+			loc += '&wv_snmp_comm_enable_2=' + document.getElementById('w_snmp_comm_enable_2').value;
+			break;
+
+		default:
+			return;
+			break;
+	}
+
+	loc += '&sessionKey=' + sessionKey;
+	code = 'location="' + loc + '"';
+	eval(code);
+
+	return;
+}
+
+function ldap_tr_display(dis)
+{
+	if(dis == 1) {
+		/*
+        document.forms[0].w_ldap_authserver.disabled = false;
+        document.forms[0].w_ldap_cfgfile.disabled    = false;
+        document.forms[0].w_ldap_pathprefix.disabled = false;
+		*/
+		document.getElementById('w_ldap_tr1').style.display   = "";
+		document.getElementById('w_ldap_tr2').style.display   = "";
+		document.getElementById('w_ldap_tr3').style.display   = "";
+	}
+	else {
+		/*
+        document.forms[0].w_ldap_authserver.disabled = true;
+        document.forms[0].w_ldap_cfgfile.disabled    = true;
+        document.forms[0].w_ldap_pathprefix.disabled = true;
+		*/
+		document.getElementById('w_ldap_tr1').style.display   = "none";
+		document.getElementById('w_ldap_tr2').style.display   = "none";
+		document.getElementById('w_ldap_tr3').style.display   = "none";
+	}
+}
+
+function changeLdapMode() {
+    var idx = document.getElementById('w_ldap_enable').selectedIndex;
+
+    if(document.getElementById('w_ldap_enable').options[idx].value == "1") {
+		ldap_tr_display(1);
+    } else {
+		ldap_tr_display(0);
+    }
+
+	return;
+}
+
+function hp_tr_display(dis)
+{
+	if(dis == 1) {
+		/*
+		document.forms[0].w_hp_authserver.disabled = false;
+		document.forms[0].w_hp_cfgfile.disabled    = false;
+		document.forms[0].w_hp_pathprefix.disabled = false;
+		*/
+		document.getElementById('w_hp_tr1').style.display   = "";
+		document.getElementById('w_hp_tr2').style.display   = "";
+		document.getElementById('w_hp_tr3').style.display   = "";
+	}
+	else {
+		/*
+		document.forms[0].w_hp_authserver.disabled = true;
+		document.forms[0].w_hp_cfgfile.disabled    = true;
+		document.forms[0].w_hp_pathprefix.disabled = true;
+		*/
+		document.getElementById('w_hp_tr1').style.display   = "none";
+		document.getElementById('w_hp_tr2').style.display   = "none";
+		document.getElementById('w_hp_tr3').style.display   = "none";
+	}
+}
+
+function changeHPMode() {
+	var idx = document.getElementById('w_hp_enable').selectedIndex;
+
+	if(document.getElementById('w_hp_enable').options[idx].value == "1") {
+		hp_tr_display(1);
+	} else {
+		hp_tr_display(0);
+	}
+
+	return;
+}
+
+function frmLoad() {
+	var def_value          = "****************";
+	var cfg_enable         = 1;
+	var hp_enable          = 1;
+	var hp_keep_alive      = 60;
+	var snmp_enable        = 1;
+	var snmp_comm_enable_1 = 1;
+	var snmp_comm_enable_2 = 1;
+
+	document.forms[0].w_ldap_enable.value = cfg_enable;
+	if(cfg_enable == 1) {
+		ldap_tr_display(1);
+	} else {
+		document.forms[0].w_ldap_enable.selectedIndex = 0;
+		ldap_tr_display(0);
+	}
+	document.forms[0].w_ldap_authserver.value = def_value;
+	document.forms[0].w_ldap_cfgfile.value    = def_value;
+	document.forms[0].w_ldap_pathprefix.value = def_value;
+
+	document.forms[0].w_hp_enable.value = hp_enable;
+	if(hp_enable == 1) {
+		hp_tr_display(1);
+	} else {
+		hp_tr_display(0);
+	}
+	document.forms[0].w_hp_authserver.value      = def_value;
+	document.forms[0].w_hp_authport.value        = def_value;
+	document.forms[0].w_hp_keep_alive_time.value = hp_keep_alive;
+
+	document.forms[0].w_snmp_enable.value        = snmp_enable;
+	document.forms[0].w_snmp_comm_enable_1.value = snmp_comm_enable_1;
+	document.forms[0].w_snmp_comm_enable_2.value = snmp_comm_enable_2;
+
+	return;
+}
+</script>
+</head>
+
+<body onload="frmLoad()">
+
+<script language="javascript">
+showmenubar();
+</script>
+
+<form>
+<div class="container">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>관리 </li>
+			<li>원격서버 관리 </li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">원격서버 관리</h1>
+	<p>원격서버, SNMP 기능, Hole Punching 기능들의 관리 정보를 설정합니다.</p>
+	<hr>
+
+	<h2 class="title_style_2">원격서버 관리 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:20%;"/>
+				<col style="" />
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">원격서버관리 기능동작</th>
+					<td>
+						<select id="w_ldap_enable" onchange="changeLdapMode()">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="w_ldap_tr1" name="w_ldap_tr1" style="display:none">
+					<th scope="row">LDAP Server Address</th>
+					<td>
+						<input type="password" name="w_ldap_authserver" id="w_ldap_authserver" />
+					</td>
+				</tr>
+				<tr id="w_ldap_tr2" name="w_ldap_tr2" style="display:none">
+					<th scope="row">Download Path Prefix</th>
+					<td>
+						<input type="text" name="w_ldap_pathprefix" id="w_ldap_pathprefix" />
+					</td>
+				</tr>
+				<tr id="w_ldap_tr3" name="w_ldap_tr3" style="display:none">
+					<th scope="row">Download FileName</th>
+					<td>
+						<input type="text" name="w_ldap_cfgfile" id="w_ldap_cfgfile" />
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c mb_20">
+		<input type="button"  onclick="btnApplySave(0)" value="적용" class="basic-btn01 btn-blue-bg" >
+	</div>
+
+	<h2 class="title_style_2">Hole Punching 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:22%;"/>
+				<col style="" />
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="row">Hole Punching 기능 동작</th>
+					<td>
+						<select id="w_hp_enable" onchange="changeHPMode()">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+				<tr id="w_hp_tr1" name="w_hp_tr1" style="display:none">
+					<th scope="row">서버 주소</th>
+					<td>
+						<input type="password" name="w_hp_authserver" id="w_hp_authserver" />
+					</td>
+				</tr>
+				<tr id="w_hp_tr2" name="w_hp_tr2" style="display:none">
+					<th scope="row">서버 포트</th>
+					<td>
+						<input type="password" name="w_hp_authport" id="w_hp_authport" maxlength="8" />
+					</td>
+				</tr>
+				<tr id="w_hp_tr3" name="w_hp_tr3" style="display:none">
+					<th scope="row">Keep Alive 주기 시간</th>
+					<td>
+						<input type="text" style="width:40%" name="w_hp_keep_alive_time" id="w_hp_keep_alive_time" maxlength="4" /> [초]
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="txt_c mb_20">
+		<input type="button"  onclick="btnApplySave(1)" value="적용" class="basic-btn01 btn-blue-bg" >
+	</div>
+
+	<h2 class="title_style_2">SNMP 기본설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<colgroup>
+				<col style="width:22%;"/>
+				<col style="width:%;"/>
+			</colgroup>
+			<tbody>
+				<tr>
+					<th scope="col"><span>SNMP 활성화</span></th>
+					<td>	
+						<select id="w_snmp_enable">
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">SNMP Community 동작 설정</h2>
+	<div class="tb_style_2">
+		<table style="">
+			<colgroup>
+				<col style="width:22%;" />
+				<col style="width:28%;" />
+			</colgroup>
+			<thead>
+				<th scope="col"><center>Community 번호</center></th>
+				<th scope="col"><center>활성화</center></th>
+			</thead>
+			<tbody>
+				<tr>
+				   <th scope="col">Community 1</th>
+				   <td>
+						<select name='w_snmp_comm_enable_1' id='w_snmp_comm_enable_1'>
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+				   <th scope="col">Community 2</th>
+				   <td>
+						<select name='w_snmp_comm_enable_2' id='w_snmp_comm_enable_2'>
+							<option value="0">비활성화</option>
+							<option value="1">활성화</option>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+
+	<div class="txt_c mb_20">
+		<input type="button"  onclick="btnApplySave(2)" value="적용" class="basic-btn01 btn-blue-bg" >
+	</div>
+
+</div>
+</form>
+</body>
+</html>

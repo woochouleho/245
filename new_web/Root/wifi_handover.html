@@ -1,0 +1,353 @@
+
+<html>
+<head>
+	<title>H854AX</title>
+	<meta http-equiv='Pragma' content='no-cache'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta name="viewport" content="width=device-width, user-scalable=0, initial-scale=1, minimum-scale=1, maximum-scale=1" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+	<meta name="description" content=""/>
+	<meta name="keywords" content=""/>
+	<link rel="stylesheet" href="css/common.css"/>
+	<script type="text/javascript" src="js/jquery-1.11.2.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/modernizr.custom.39786.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/response.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/icheck.js" charset="utf-8"></script>
+	<script type="text/javascript" src="js/sb_common.js" charset="utf-8"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/util.js"></script>
+	<script language="javascript" src="js/portName.js"></script>
+	<script language="javascript" src="js/popup.js"></script>
+<script language="javascript">
+
+
+var sessionKey='716470195';
+var cur_user = 'root';
+function onLoad() {
+	$('#user_name').val(cur_user);
+	var new_enable, old_nable, new_rssi, old_rssi, old_packet_monitor_sec, old_packet_per_sec;
+	var band_2g, band_5g, handover_ssid_2g, handover_ssid_5g;
+	
+	new_enable = '1';
+	old_enable = '1';
+	new_rssi = '75';
+	old_rssi = '80';
+	old_packet_monitor_sec = '3';
+	old_packet_per_sec = '1';
+
+	band_5g = 1;
+	band_2g = 1;
+	handover_ssid_5g = 1;
+	handover_ssid_2g = 1;
+	
+	$('#handover_old_enable').val(old_enable);
+	$('#handover_new_enable').val(new_enable);
+
+	if ( new_rssi >= 80 )
+		document.getElementById("NEW_rssi").selectedIndex = 0;
+	else if ( new_rssi >= 75 )
+		document.getElementById("NEW_rssi").selectedIndex = 1;
+	else if ( new_rssi >= 70 )
+		document.getElementById("NEW_rssi").selectedIndex = 2;
+	else if ( new_rssi >= 65 )
+		document.getElementById("NEW_rssi").selectedIndex = 3;
+	else if ( new_rssi >= 60 )
+		document.getElementById("NEW_rssi").selectedIndex = 4;
+	else 
+		document.getElementById("NEW_rssi").selectedIndex = 5;
+
+	if ( old_rssi >= 80 )
+		document.getElementById("OLD_rssi").selectedIndex = 0;
+	else if ( old_rssi >= 75 )
+		document.getElementById("OLD_rssi").selectedIndex = 1;
+	else if ( old_rssi >= 70 )
+		document.getElementById("OLD_rssi").selectedIndex = 2;
+	else if ( old_rssi >= 65 )
+		document.getElementById("OLD_rssi").selectedIndex = 3;
+	else if ( old_rssi >= 60 )
+		document.getElementById("OLD_rssi").selectedIndex = 4;
+	else if ( old_rssi >= 55 )
+		document.getElementById("OLD_rssi").selectedIndex = 5;
+	else if ( old_rssi >= 50 )
+		document.getElementById("OLD_rssi").selectedIndex = 6;
+	else 
+		document.getElementById("OLD_rssi").selectedIndex = 7;
+		
+	document.getElementById("packet_monitor_sec").value = old_packet_monitor_sec;
+	document.getElementById("packet_per_sec").value = old_packet_per_sec;
+/*
+	if (!(band_5g && band_2g && handover_ssid_5g && handover_ssid_2g)) {
+		document.getElementById("NEW_enable").disabled = true;
+		document.getElementById("NEW_disable").disabled = true;
+
+		document.getElementById("NEW_rssi").disabled = true;
+
+		document.getElementById("OLD_enable").disabled = true;
+		document.getElementById("OLD_disable").disabled = true;
+
+		document.getElementById("OLD_rssi").disabled = true;
+		document.getElementById("packet_monitor_sec").disabled = true;
+		document.getElementById("packet_per_sec").disabled = true;
+	}
+*/
+	if (cur_user == "admin") {
+		$("#new_treshold").hide();
+		$("#old_treshold").hide();
+		$("#old_packet_1").hide();
+		$("#old_packet_2").hide();
+	}
+}
+
+function validate_check() {
+	var hostname_num, nvram_str, hostname, cur_hostname;
+	var flag =1;
+	var packet_monitor_sec = document.getElementById("packet_monitor_sec").value;
+	var packet_per_sec = document.getElementById("packet_per_sec").value;
+
+	if( document.getElementById("cmd").value == "save") {
+		if(parseInt(packet_monitor_sec) < 0 || parseInt(packet_monitor_sec) > 100 || 
+		     isValidDecNum(packet_monitor_sec) == false || packet_monitor_sec=="" ){
+			webAlert("Handover 패킷 감시 시간은 0 ~ 100입니다.");
+			flag = 0;
+			return false;
+		}
+    
+		if(parseInt(packet_per_sec) < 1 || parseInt(packet_per_sec) > 100 || 
+		     isValidDecNum(packet_per_sec) == false || packet_per_sec=="" ){
+			webAlert("Handover 초당 발생 패킷 수는 1 ~ 100입니다.");
+			flag = 0;
+			return false;
+		}
+	} else if ( document.getElementById("cmd").value == "add") {
+		if(document.getElementById("HostName").value == "") {
+			webAlert("Host Name을 입력하세요.");
+			flag = 0;
+			return false;
+		}
+
+		hostname_num = '23';
+		if (parseInt(hostname_num) >= 64) {
+			webAlert("Host Name은 최대 64개까지 등록 가능합니다.");
+			flag = 0;
+			return false;
+		}
+		$('#HostNameTable tr').each(function() {
+			var hostname = this.cells[1].innerHTML;
+			cur_hostname = document.getElementById("HostName").value;
+			if (cur_hostname == hostname){
+				webAlert("이미 동일한 항목이 존재합니다.");
+				flag = 0;
+				return false;
+			}
+		});
+	}
+
+	if ( flag ) {
+		document.formHandover.submit();					 
+	}
+	return true;
+}
+
+
+</script>	
+</head>
+<body onload="onLoad();">
+
+
+<script language="javascript">
+showmenubar();
+</script>
+
+
+<div class="container">
+<form id="formHandover" name="formHandover" action="">
+	<div class="navi clfx">
+		<ul class="clfx">
+			<li><img src="img/navi_home.png" alt="home" /><span>Home </span></li>
+			<li>WiFi</li>
+			<li>핸드오버 설정</li>
+		</ul>
+	</div>
+
+	<h1 class="title_style_1">핸드오버 설정</h1>
+	<p> Handover 기본 정보를 설정합니다.</p>
+	<hr>
+	<h2 class="title_style_2">NEW Handover 설정</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				</tr>
+				<tr>
+					<th scope="row" style="width:18%">NEW Handover</th>
+					<td>				
+						<select name="handover_new_enable" id='handover_new_enable'>
+							<option value='0'>비활성화</option>
+							<option value='1'>활성화</option>
+						</select>
+<!--						
+						<input type="radio" name="NEW_disable" id="NEW_disable" value="0" />
+						<label for="NEW">비활성화</label>
+						<input type="radio" name="NEW_disable" id="NEW_enable" value="1" />
+						<label for="NEW">활성화</label>
+-->						
+					</td>
+					<td style="width:25%; font-size:13; font-weight:bold">활성화</td>
+				</tr>
+				<tr id="new_treshold">
+					<th scope="row">RSSI Threshold</th>
+					<td colspan="2">
+						<select name="NEW_rssi" id="NEW_rssi">
+							<option value="0">-80</option>
+							<option value="1">-75</option>
+							<option value="2">-70</option>
+							<option value="3">-65</option>
+							<option value="4">-60</option>
+							<option value="5">-55</option>
+						</select>
+						<b>dBm 이하(default -75dBm)</b>
+					</td>
+			</tbody>
+		</table>
+	</div>
+
+	<h2 class="title_style_2">OLD Handover</h2>
+	<div class="tb_style_2">
+		<table>
+			<tbody>
+				</tr>
+				<tr>
+					<th scope="row" style="width:18%">OLD Handover</th>
+					<td>
+						<select name="handover_old_enable" id='handover_old_enable'>
+							<option value='0'>비활성화</option>
+							<option value='1'>활성화</option>
+						</select>							
+<!--					
+						<input type="radio" name="OLD_disable" id="OLD_disable" value="0"/>
+						<label for="OLD">비활성화</label>
+						<input type="radio" name="OLD_disable" id="OLD_enable" value="1"/>
+						<label for="OLD">활성화</label>
+-->						
+					</td>
+					<td style="width:25%; font-size:13; font-weight:bold">활성화</td>
+				</tr>
+				<tr id="old_treshold">
+					<th scope="row">RSSI Threshold</th>
+					<td colspan="2">
+						<select name="OLD_rssi" id="OLD_rssi">
+							<option value="0">-80</option>
+							<option value="1">-75</option>
+							<option value="2">-70</option>
+							<option value="3">-65</option>
+							<option value="4">-60</option>
+							<option value="5">-55</option>
+							<option value="6">-50</option>
+							<option value="7">-45</option>
+					/	</select>
+						<b>dBm 이하(default -80dBm)</b>
+					</td>
+				</tr>
+				<tr id="old_packet_1">
+					<th scope="row">HandOver 패킷 감시 시간(초)</th>
+					<td colspan="2">
+						<input name="packet_monitor_sec" id="packet_monitor_sec" type="text" style="width:20%;" value="3"/><label for="handover1">sec(0 ~ 100), default:3</label>
+					</td>
+				</tr>
+				<tr id="old_packet_2">
+					<th scope="row">HandOver 초당 발생 패킷 수</th>
+					<td colspan="2">
+						<input type="text" name="packet_per_sec" id="packet_per_sec" style="width:20%;" value="2346"><label for="handover2">packets(1 ~ 100), default:1</label></input>
+					</td>
+				</tr>				
+			</tbody>
+		</table>
+	<div class="txt_c pt_20">
+		<input type="button"  value="저장" class="basic-btn01 btn-blue-bg" onclick="document.formHandover.cmd.value='save';validate_check();" >
+	</div>
+	</div>
+	
+	<h2 class="title_style_2">Host Name 추가 및 리스트</h2>
+	<div class="tb_style_2">
+	<table id="HostNameTable">
+		<colgroup>
+				<col style="width:18%;" />
+				<col style="width:82%;" />
+		</colgroup>
+		<thead>
+			<tr>
+				<th scope="col"><center>선택</center></th>
+				<th scope="col"><center>Host Name</center></th>
+			</tr>
+		</thead>
+		<tbody>
+		<tr>
+<td align=center><input id='ck_1' name='ck_1' type='checkbox'></td><td align=center>Galaxy-S6</td></tr>
+<tr>
+<td align=center><input id='ck_2' name='ck_2' type='checkbox'></td><td align=center>Galaxy-S6-Edge</td></tr>
+<tr>
+<td align=center><input id='ck_3' name='ck_3' type='checkbox'></td><td align=center>S6-edge+</td></tr>
+<tr>
+<td align=center><input id='ck_4' name='ck_4' type='checkbox'></td><td align=center>Samsung-Galaxy-S7</td></tr>
+<tr>
+<td align=center><input id='ck_5' name='ck_5' type='checkbox'></td><td align=center>Samsung-Galaxy-S7-edge</td></tr>
+<tr>
+<td align=center><input id='ck_6' name='ck_6' type='checkbox'></td><td align=center>Galaxy-S8</td></tr>
+<tr>
+<td align=center><input id='ck_7' name='ck_7' type='checkbox'></td><td align=center>Galaxy-S9</td></tr>
+<tr>
+<td align=center><input id='ck_8' name='ck_8' type='checkbox'></td><td align=center>Galaxy-Note5</td></tr>
+<tr>
+<td align=center><input id='ck_9' name='ck_9' type='checkbox'></td><td align=center>Galaxy-Note-Fan-Edition</td></tr>
+<tr>
+<td align=center><input id='ck_10' name='ck_10' type='checkbox'></td><td align=center>Galaxy-Note8</td></tr>
+<tr>
+<td align=center><input id='ck_11' name='ck_11' type='checkbox'></td><td align=center>Galaxy-Note9</td></tr>
+<tr>
+<td align=center><input id='ck_12' name='ck_12' type='checkbox'></td><td align=center>Galaxy-S10</td></tr>
+<tr>
+<td align=center><input id='ck_13' name='ck_13' type='checkbox'></td><td align=center>Galaxy-S10e</td></tr>
+<tr>
+<td align=center><input id='ck_14' name='ck_14' type='checkbox'></td><td align=center>Galaxy-S10-5G</td></tr>
+<tr>
+<td align=center><input id='ck_15' name='ck_15' type='checkbox'></td><td align=center>Galaxy-Note10</td></tr>
+<tr>
+<td align=center><input id='ck_16' name='ck_16' type='checkbox'></td><td align=center>Galaxy-Note10-5G</td></tr>
+<tr>
+<td align=center><input id='ck_17' name='ck_17' type='checkbox'></td><td align=center>Galaxy-Fold</td></tr>
+<tr>
+<td align=center><input id='ck_18' name='ck_18' type='checkbox'></td><td align=center>V35-ThinQ</td></tr>
+<tr>
+<td align=center><input id='ck_19' name='ck_19' type='checkbox'></td><td align=center>Storm-Plus</td></tr>
+<tr>
+<td align=center><input id='ck_20' name='ck_20' type='checkbox'></td><td align=center>V50-ThinQ</td></tr>
+<tr>
+<td align=center><input id='ck_21' name='ck_21' type='checkbox'></td><td align=center>V50S-ThinQ</td></tr>
+<tr>
+<td align=center><input id='ck_22' name='ck_22' type='checkbox'></td><td align=center>G7-ThinQ</td></tr>
+<tr>
+<td align=center><input id='ck_23' name='ck_23' type='checkbox'></td><td align=center>G8-ThinQ</td></tr>
+
+			<tr>
+				<th scope="row">Host Name 설정</th>
+				<td>
+					<input type="text" name="HostName" id="HostName" maxlength="64"/>
+				</td>
+			</tr>
+		</tbody>
+	</table>
+	<div class="txt_c pt_20">
+		<input type="button"  value="추가" onclick="document.formHandover.cmd.value='add';validate_check();" class="basic-btn01 btn-gray-bg mr_10" >
+		<input type="button"  value="삭제" onclick="document.formHandover.cmd.value='sel_delete';validate_check();" class="basic-btn01 btn-gray-bg mr_10" >
+		<input type="hidden" value="set" name="cmd" id="cmd">
+		<input type="hidden" value='1907217778' name="sessionKey" id="sessionKey">
+		<input type="hidden" value="" name="user_name" id="user_name">
+	</div>
+	
+</div>
+
+</form>
+</div>
+<!-- //wrap -->
+
+</body>
+</html>
