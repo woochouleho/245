@@ -1,0 +1,85 @@
+/*
+Copyright (c) 2010 Ivan Vanderbyl
+Originally found at http://ivan.ly/ui
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.
+
+*/
+
+/* Webkit animation keyframes */
+@-webkit-keyframes animate-stripes {
+  from {
+    background-position: 0 0;
+  }
+  
+  to {
+   background-position: 44px 0;
+  }
+}
+
+/* Bar which is placed behind the progress */
+.ui-progress-bar {
+  /* Usual setup stuff */
+  /*position: relative;*/
+  height: 16px;
+}
+
+/* Progress part of the progress bar */
+.ui-progress {
+  /* Usual setup stuff */
+ /* position: relative;*/
+  display: block;
+  overflow: hidden;
+  
+  /* Height should be 2px less than .ui-progress-bar so as to not cover borders and give it a look of being inset */
+  height: 16px;
+  
+  /* Rounds the ends, we specify an excessive amount to make sure they are completely rounded */
+  /* Adjust to your liking, and don't forget to adjust to the same amount in .ui-progress-bar */
+  -moz-border-radius: 20px;
+  -webkit-border-radius: 20px;
+  border-radius: 20px;
+  
+  /* Webkit background stripes and gradient */
+ background: #fe5216; /* Old browsers */
+background: -moz-linear-gradient(top, #fe5216 0%, #f64f15 50%, #cf4312 100%); /* FF3.6-15 */
+background: -webkit-linear-gradient(top, #fe5216 0%,#f64f15 50%,#cf4312 100%); /* Chrome10-25,Safari5.1-6 */
+background: linear-gradient(to bottom, #fe5216 0%,#f64f15 50%,#cf4312 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fe5216', endColorstr='#cf4312',GradientType=0 ); /* IE6-9 */
+  
+  /* Mozilla (Firefox etc) background stripes */
+  /* Note: Mozilla's support for gradients is more true to the original design, allowing gradients at 30 degrees, as apposed to 45 degress in webkit. */
+  background: -moz-repeating-linear-gradient(top left -30deg, 
+    rgba(255,255,255,0.17), 
+    rgba(255,255,255,0.17) 15px, 
+    rgba(255,255,255,0) 15px, 
+    rgba(255,255,255,0) 30px
+  ), -moz-linear-gradient(#9bdd62 0%, #74d04c 100%);
+  
+  
+  /* Webkit magic */
+  -webkit-animation: animate-stripes 2s linear infinite;
+  
+  /* TODO: Wait for Mozilla to support animation, then implement */
+}
+
+/* Progress indicator text */
+.ui-progress span.ui-label {
+ position:absolute; right:0; top:0; width:50px; font-size:14px; text-align:right; font-weight:300;
+}
