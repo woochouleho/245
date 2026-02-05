@@ -50,7 +50,7 @@ web-y += $(WEB_DIR)/multi_lang.asp
 web-y += $(WEB_DIR)/saveconf.asp
 web-y += $(WEB_DIR)/password.asp
 web-y += $(WEB_DIR)/upgrade.asp
-web-y += $(WEB_DIR)/acl.asp
+web-y += $(WEB_DIR)/acl.html
 web-y += $(WEB_DIR)/tz.asp
 web-y += $(WEB_DIR)/tr069config.asp
 web-y += $(WEB_DIR)/igmproxy.asp
@@ -136,5 +136,4 @@ html-y += $(WEB_DIR)/index_base.html
 html-y += $(WEB_DIR)/index_user_base.html
 html-y += $(WEB_DIR)/index2.asp
 html-y += $(WEB_DIR)/init_script.asp
-
 

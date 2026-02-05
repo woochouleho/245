@@ -226,7 +226,7 @@ char * userAuthPage[] = {
 	"upgrade.asp",
 #endif
 #ifdef IP_ACL
-	"acl.asp",
+	"acl.html",
 #endif
 #ifdef TIME_ZONE
 	"tz.asp",

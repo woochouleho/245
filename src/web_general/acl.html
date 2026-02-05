@@ -1,5 +1,18 @@
-<% SendWebHeadStr();%>
-<title>ACL <% multilang(LANG_CONFIGURATION); %></title>
+<!DOCTYPE html>
+<! Copyright (c) Realtek Semiconductor Corp., 2003. All Rights Reserved. ->
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" charset="utf-8">
+<meta HTTP-EQUIV="Pragma" CONTENT="no-cache">
+<meta HTTP-equiv="Cache-Control" content="no-cache">
+<meta name="viewport" content="width=device-width">
+<link rel="stylesheet" href="/admin/bootstrap.min.css">
+<link rel="stylesheet" href="/admin/reset.css">
+<link rel="stylesheet" href="/admin/base.css">
+<link rel="stylesheet" href="/admin/style.css">
+<script language="javascript" src="common.js"></script>
+<script type="text/javascript" src="share.js"></script>
+<title>ACL Configuration</title>
 <SCRIPT>
 var _telnet = 0;
 var _ftp = 0;
@@ -98,10 +111,11 @@ function addClick(obj)
 		return false;
 	if (!checkNetIP(document.acl.aclendIP, 1))
 		return false;*/
-	<% checkAclItems("if_ip_valid"); %>
+	if (!validateAclInputs()) {
+		return false;
+	}
 	with ( document.forms[0] ) 
 	{
-		<% checkAclItems("if_service_open"); %>
 /*
 		if(interface.value == 1)	//wan
 		{
@@ -120,7 +134,7 @@ function addClick(obj)
 
 function deleteClick()
 {
-	if ( !confirm('<% multilang(LANG_CONFIRM_DELETE_ONE_ENTRY); %>') ) {
+	if ( !confirm('Delete the selected entry?') ) {
 		return false;
 	}
 	else
@@ -214,69 +228,147 @@ function on_submit(obj)
 	postTableEncrypt(document.forms[0].postSecurityFlag, document.forms[0]);
 	return true;
 }
+
+function validateAclInputs()
+{
+	if (document.acl.aclIP.value === "") {
+		alert("Enter Source IP address.");
+		document.acl.aclIP.focus();
+		return false;
+	}
+
+	if (document.acl.aclMask.value === "") {
+		alert("Enter Subnet Mask.");
+		document.acl.aclMask.focus();
+		return false;
+	}
+
+	if (validateKey(document.acl.aclIP.value) === 0) {
+		alert("Invalid IP address value.");
+		document.acl.aclIP.focus();
+		return false;
+	}
+
+	if (IsLoopBackIP(document.acl.aclIP.value) === 1) {
+		alert("Invalid IP address value.");
+		document.acl.aclIP.focus();
+		return false;
+	}
+
+	if (!checkDigitRange(document.acl.aclIP.value, 1, 0, 223)) {
+		alert("Invalid IP address range in 1st digit. It should be 0-223.");
+		document.acl.aclIP.focus();
+		return false;
+	}
+
+	if (!checkDigitRange(document.acl.aclIP.value, 2, 0, 255)) {
+		alert("Invalid IP address range in 2nd digit. It should be 0-255.");
+		document.acl.aclIP.focus();
+		return false;
+	}
+
+	if (!checkDigitRange(document.acl.aclIP.value, 3, 0, 255)) {
+		alert("Invalid IP address range in 3rd digit. It should be 0-255.");
+		document.acl.aclIP.focus();
+		return false;
+	}
+
+	if (!checkDigitRange(document.acl.aclIP.value, 4, 0, 254)) {
+		alert("Invalid IP address range in 4th digit. It should be 0-254.");
+		document.acl.aclIP.focus();
+		return false;
+	}
+
+	if (validateKey(document.acl.aclMask.value) === 0) {
+		alert("Invalid subnet mask value.");
+		document.acl.aclMask.focus();
+		return false;
+	}
+
+	if (IsLoopBackIP(document.acl.aclMask.value) === 1) {
+		alert("Invalid subnet mask value.");
+		document.acl.aclMask.focus();
+		return false;
+	}
+
+	if (!checkDigitRange(document.acl.aclMask.value, 1, 0, 255)) {
+		alert("Invalid subnet mask range in 1st digit. It should be 0-255.");
+		document.acl.aclMask.focus();
+		return false;
+	}
+
+	if (!checkDigitRange(document.acl.aclMask.value, 2, 0, 255)) {
+		alert("Invalid subnet mask range in 2nd digit. It should be 0-255.");
+		document.acl.aclMask.focus();
+		return false;
+	}
+
+	if (!checkDigitRange(document.acl.aclMask.value, 3, 0, 255)) {
+		alert("Invalid subnet mask range in 3rd digit. It should be 0-255.");
+		document.acl.aclMask.focus();
+		return false;
+	}
+
+	if (!checkDigitRange(document.acl.aclMask.value, 4, 0, 255)) {
+		alert("Invalid subnet mask range in 4th digit. It should be 0-255.");
+		document.acl.aclMask.focus();
+		return false;
+	}
+
+	return true;
+}
 </SCRIPT>
 </head>
 
 <body>
 <div class="intro_main ">
-	<p class="intro_title">ACL <% multilang(LANG_CONFIGURATION); %></p>
-	<p class="intro_content"> <% multilang(LANG_THIS_PAGE_IS_USED_TO_CONFIGURE_THE_IP_ADDRESS_FOR_ACCESS_CONTROL_LIST_IF_ACL_IS_ENABLED_ONLY_THE_IP_ADDRESS_IN_THE_ACL_TABLE_CAN_ACCESS_CPE_HERE_YOU_CAN_ADD_DELETE_THE_IP_ADDRESS); %></p>
+	<p class="intro_title">ACL Configuration</p>
+	<p class="intro_content">
+		This page configures Access Control List (ACL) IP addresses. When ACL is enabled,
+		only IP addresses in the ACL table can access the device.
+	</p>
 </div>
 <form action=/boaform/admin/formACL method=POST name="acl">
 	<div class="data_common data_common_notitle">
 		<table>
-			<input type="hidden" name="lan_ip" value=<% getInfo("lan-ip"); %>>
-			<input type="hidden" name="lan_mask" value=<% getInfo("lan-subnet"); %>>
+			<input type="hidden" name="lan_ip" value="">
+			<input type="hidden" name="lan_mask" value="">
 				<tr>
-					<th width="30%">ACL <% multilang(LANG_CAPABILITY); %>:</th>
+					<th width="30%">ACL Capability:</th>
 					<td>
-						<input type="radio" value="0" name="aclcap" <% checkWrite("acl-cap0"); %>><% multilang(LANG_DISABLE); %>&nbsp;&nbsp;
-						<input type="radio" value="1" name="aclcap" <% checkWrite("acl-cap1"); %>><% multilang(LANG_ENABLE); %>
+						<input type="radio" value="0" name="aclcap" checked>Disable&nbsp;&nbsp;
+						<input type="radio" value="1" name="aclcap">Enable
 					</td>
-					<td><input class="inner_btn" type="submit" value="<% multilang(LANG_APPLY_CHANGES); %>" name="apply" onClick="return on_submit(this)">&nbsp;&nbsp; </td>
+					<td><input class="inner_btn" type="submit" value="Apply Changes" name="apply" onClick="return on_submit(this)">&nbsp;&nbsp; </td>
 				</tr> 
 		</table>
 		
 		<table> 
-<!--
 			<tr>
-				<th width="30%"><% multilang(LANG_ENABLE); %>:</th>
-				<td width="70%"><input type="checkbox" name="enable" value="1" checked></td>
+				<th width="30%">Enable:</th>
+				<td width="70%"><input type="checkbox" name="enable" value="1"></td>
 			</tr>	  
 			<tr>
-				<th><% multilang(LANG_INTERFACE); %>:</th>
+				<th>Interface:</th>
 				<td>      
 					<select size="1" name="interface" onChange="intfchange(this)"> 
-					<option value="0"><% multilang(LANG_LAN); %></option>
-					<option value="1"><% multilang(LANG_WAN); %></option>
+					<option value="0">LAN</option>
+					<option value="1">WAN</option>
 					</select>
 				</td>
 			</tr>
 			<tr>
--->
-			<!--<th><% multilang(LANG_IP_ADDRESS); %>:</th>
-				<td><input type="text" name="aclIP" size="15" maxlength="15"></td>
-			</tr>  
+				<th>IP Address:</th>
+				<td><input type="text" name="aclIP" size="15" maxlength="15" placeholder="192.168.1.10"></td>
+			</tr>	  
 			<tr>
-				<th><% multilang(LANG_SUBNET_MASK); %>:</th>
-				<td><input type="text" name="aclMask" size="15" maxlength="15"></td>      
-			</tr>-->
-			<!--<th><% multilang(LANG_START); %> <% multilang(LANG_IP_ADDRESS); %>:</th>
-				<td><input type="text" name="aclstartIP" size="15" maxlength="15"></td>
-			</tr>  
-			<tr>
-				<th><% multilang(LANG_END); %> <% multilang(LANG_IP_ADDRESS); %>:</th>
-				<td><input type="text" name="aclendIP" size="15" maxlength="15"></td>      
-			</tr>-->
-			<% checkAclItems("show_input"); %>
+				<th>Subnet Mask:</th>
+				<td><input type="text" name="aclMask" size="15" maxlength="15" placeholder="255.255.255.0"></td>      
+			</tr>
 		</table>
-<!--
-		<% showLANACLItem(); %>
-		<% showWANACLItem(); %>
--->
 	</div>
 	<div class="btn_ctl">
-	   <input class="link_bg" type="submit" value="<% multilang(LANG_ADD); %>" name="addIP" onClick="return addClick(this)">
+	   <input class="link_bg" type="submit" value="Add" name="addIP" onClick="return addClick(this)">
 	</div>
 
 <!--input type="submit" value="Update" name="updateACL" onClick="return addClick()">&nbsp;&nbsp;
@@ -284,23 +376,27 @@ function on_submit(obj)
 
 	<div class="column clearfix column_title">
 		<div class="column_title_left"></div>
-			<p>ACL <% multilang(LANG_TABLE); %></p>
+			<p>ACL Table</p>
 		<div class="column_title_right"></div>
 	</div>	
 	<div class="data_common data_vertical">
 		<table>
-			<% showACLTable(); %>
+			<tr>
+				<th>IP Address</th>
+				<th>Subnet Mask</th>
+				<th>Interface</th>
+				<th>Action</th>
+			</tr>
+			<tr>
+				<td colspan="4" class="empty_table">No ACL entries loaded.</td>
+			</tr>
 		</table>
 	</div> 	
 	<div class="btn_ctl clearfix">
-		<input class="link_bg" type="submit" value="<% multilang(LANG_DELETE_SELECTED); %>" name="delIP" onClick="return deleteClick(this)">    
-		<input type="hidden" value="/admin/acl.asp" name="submit-url">
+		<input class="link_bg" type="submit" value="Delete Selected" name="delIP" onClick="return deleteClick(this)">    
+		<input type="hidden" value="/admin/acl.html" name="submit-url">
 		<input type="hidden" name="postSecurityFlag" value="">
 	</div>  
-	<script>
-		<% checkWrite("aclNum"); %>
-	</script>
 </form>
 </body>
 </html>
-

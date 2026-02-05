@@ -264,7 +264,7 @@ endif
 
 SOURCES += ap_connection.c 
     
-PAGE_ADMIN_DEP1 = mtmcode.js share.js acl.asp date.asp fw-macfilter.asp parental-ctrl.asp reboot.asp \
+PAGE_ADMIN_DEP1 = mtmcode.js share.js acl.html date.asp fw-macfilter.asp parental-ctrl.asp reboot.asp \
 	saveconf.asp status.asp upgrade.asp upgrade2.asp upgrade3.asp toupgrade.asp index2.asp wladvanced.asp \
 	wlbasic.asp wlstatbl.asp wlwpa.asp wlactrl.asp wlwds.asp wlsurvey.asp wlwps.asp connlimit.asp wlmultipleap.asp wlstatbl_vap.asp \
 	ripospf.asp natsession.asa useage.asp autoreboot.asp selfcheck.asp client_info.asp invalid_page.asp

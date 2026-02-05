@@ -1065,7 +1065,7 @@ static char *deo_admin_web_page_list[DEO_MAX_ADMIN_WEB_PAGE_LIST] =
 	"natsession.asp",
 	"useage.asp",
 	"selfcheck.asp",
-	"acl.asp",
+	"acl.html",
 	"tz.asp",
 	"logout.asp",
 	"stats.asp",
