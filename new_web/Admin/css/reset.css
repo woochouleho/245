@@ -1,0 +1,238 @@
+@charset "utf-8";
+
+/*reset*/
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,textarea,p,blockquote,th,td,input,select,textarea,button{margin:0;padding:0;}
+html {height:100%;}
+body {height:100%;}
+a:link {text-decoration:none;}
+a:visited {text-decoration:none;}
+a:hover {text-decoration:none; }
+a:active {text-decoration:none;}
+img{border:0px; max-width:100%;}
+img, a, label, span{vertical-align:middle;}
+li{list-style: none;}
+table{border-collapse:collapse;width:100%;}
+address,caption,cite,code,dfn,em,var,h1,h2,h3,h4,h5,h6 {font-style:normal;font-weight:normal;}
+caption,legend,caption *,legend *{position:absolute; left:-10000px; line-height:0; font-size:0;}
+fieldset{border:solid 0px black;padding:0;}
+
+/*
+body,a,[type=text], [type=password], [type=file], [type=email], [type=number], [type=tel],select,h1, h2, h3, h4, h5, h6, pre,textarea,button{
+font-family:"noto","MalgunGothic","맑은 고딕","돋움","tahoma","sans-serif"; font-size:13px; line-height:1.4; color:#444; font-weight:300;}
+*/
+b, strong{font-weight:500;}
+button{cursor:pointer;}
+
+/* zin77 note: original */
+/*
+body,a,[type=text], [type=password], [type=file], [type=email], [type=number], [type=tel],select,h1, h2, h3, h4, h5, h6, pre,textarea,button,td,th,label{
+font-family: "noto", "MalgunGothic","맑은 고딕","돋움","tahoma","sans-serif"; font-size:13px; line-height:1.4; color:#444; font-weight:300;}
+*/
+
+/* zin77 note 20190417: Temproray use until SKB confirm web font. */
+@import url(http://fonts.googleapis.com/earlyaccess/notosanskr.css);
+body,a,[type=text], [type=password], [type=file], [type=email], [type=number], [type=tel],select,h1, h2, h3, h4, h5, h6, pre,textarea,button,td,th,label{
+	font-family: "Noto Sans KR","Arial","MalgunGothic","맑은 고딕","돋움","tahoma","sans-serif";
+	font-size:13px;
+	line-height:1.4;
+	color:#444;
+	font-weight:300;
+}
+
+input[type="text"]:disabled {background: #e5e8ea;}
+input[type="number"]:disabled {background: #e5e8ea;}
+
+[type=text], [type=password], [type=file], [type=email], [type=number], [type=tel]{padding-left:10px; box-sizing:border-box; vertical-align:middle; border:solid 1px #ccc; background-color:#fff; height:30px; line-height:27px; }
+[type=checkbox], [type=radio]{vertical-align:middle;margin:6px 4px 4px 4px;}
+select{height:30px; line-height:27px; border:1px solid #ccc; box-sizing:border-box; vertical-align:middle;}
+select:disabled{background: #e5e8ea;}
+
+textarea{padding:15px; border:1px solid #ccc; box-sizing:border-box; resize:none;}
+
+/*-- font --*/
+
+/* zin77 note 20190417: Temproray block until SKB confirm web font. */
+/*NotoSans*/
+/*
+@font-face {
+    font-family: 'noto';
+    font-style: normal;
+    font-weight: 100;
+    src: url(font/NotoSans-Thin.eot);
+    src: url(font/NotoSans-Thin.eot?#iefix) format('embedded-opentype'),
+    url(font/NotoSans-Thin.woff2) format('woff2'),
+    url(font/NotoSans-Thin.woff) format('woff'),
+    url(font/NotoSans-Thin.otf) format('opentype');
+}
+
+@font-face {
+    font-family: 'noto';
+    font-style: normal;
+    font-weight: 200;
+    src: url(font/NotoSans-Light.eot);
+    src: url(font/NotoSans-Light.eot?#iefix) format('embedded-opentype'),
+    url(font/NotoSans-Light.woff2) format('woff2'),
+    url(font/NotoSans-Light.woff) format('woff'),
+    url(font/NotoSans-Light.otf) format('opentype');
+}
+
+
+@font-face {
+    font-family: 'noto';
+    font-style: normal;
+    font-weight: 300;
+    src: url(font/NotoSans-DemiLight.eot);
+    src: url(font/NotoSans-DemiLight.eot?#iefix) format('embedded-opentype'),
+    url(font/NotoSans-DemiLight.woff2) format('woff2'),
+    url(font/NotoSans-DemiLight.woff) format('woff'),
+    url(font/NotoSans-DemiLight.otf) format('opentype');
+}
+
+@font-face {
+    font-family: 'noto';
+    font-style: normal;
+    font-weight: 300;
+    src: url(font/NotoSans-DemiLight.eot);
+    src: url(font/NotoSans-DemiLight.eot?#iefix) format('embedded-opentype'),
+    url(font/NotoSans-DemiLight.woff2) format('woff2'),
+    url(font/NotoSans-DemiLight.woff) format('woff'),
+    url(font/NotoSans-DemiLight.otf) format('opentype');
+}
+
+@font-face {
+    font-family: 'noto';
+    font-style: normal;
+    font-weight: 400;
+    src: url(font/NotoSans-Regular.eot);
+    src: url(font/NotoSans-Regular.eot?#iefix) format('embedded-opentype'),
+    url(font/NotoSans-Regular.woff2) format('woff2'),
+    url(font/NotoSans-Regular.woff) format('woff'),
+    url(font/NotoSans-Regular.otf) format('opentype');
+}
+
+
+@font-face {
+    font-family: 'noto';
+    font-style: normal;
+    font-weight: 500;
+    src: url(font/NotoSans-Medium.eot);
+    src: url(font/NotoSans-Medium.eot?#iefix) format('embedded-opentype'),
+    url(font/NotoSans-Medium.woff2) format('woff2'),
+    url(font/NotoSans-Medium.woff) format('woff'),
+    url(font/NotoSans-Medium.otf) format('opentype');
+}
+
+@font-face {
+    font-family: 'noto';
+    font-style: normal;
+    font-weight: 600;
+    src: url(font/NotoSans-Bold.eot);
+    src: url(font/NotoSans-Bold.eot?#iefix) format('embedded-opentype'),
+    url(font/NotoSans-Bold.woff2) format('woff2'),
+    url(font/NotoSans-Bold.woff) format('woff'),
+    url(font/NotoSans-Bold.otf) format('opentype');
+}
+
+@font-face {
+    font-family: 'noto';
+    font-style: normal;
+    font-weight: 700;
+    src: url(font/NotoSans-Black.eot);
+    src: url(font/NotoSans-Black.eot?#iefix) format('embedded-opentype'),
+    url(font/NotoSans-Black.woff2) format('woff2'),
+    url(font/NotoSans-Black.woff) format('woff'),
+    url(font/NotoSans-Black.otf) format('opentype');
+}
+*/
+
+/*float 해제*/
+* html .clfx { height: 1%; overflow: visible;} /* IE6 float 해제*/
+*+html .clfx{ min-height: 1%;} /* IE7 float 해제 */
+.clfx:after{ clear: both; content: "."; display: block; height: 0; visibility: hidden; font-size: 0;}
+.clfix{clear: both; content: "."; display: block; height: 0;}
+
+.hid{display:none;}
+
+/*margin*/
+.mr_0{margin-right:0px !important;}
+.mr_4{margin-right:4px !important;}
+.mr_5{margin-right:5px !important;}
+.mr_10{margin-right:10px !important;}
+.mr_15{margin-right:15px !important;}
+.mr_20{margin-right:20px !important;}
+.mr_60{margin-right:60px !important;}
+
+.ml_0{margin-left:0px !important;}
+.ml_5{margin-left:5px !important;}
+.ml_10{margin-left:10px !important;}
+.ml_15{margin-left:15px !important;}
+
+.mb_0{margin-bottom:0 !important;}
+.mb_5{margin-bottom:5px !important;}
+.mb_8{margin-bottom:8px !important;}
+.mb_25{margin-bottom:25px !important;}
+.mb_30{margin-bottom:30px !important;}
+.mb_35{margin-bottom:35px !important;}
+.mb_10{margin-bottom:10px !important;}
+.mb_20{margin-bottom:20px !important;}
+.mb_30{margin-bottom:30px !important;}
+.mb_40{margin-bottom:40px !important;}
+.mb_45{margin-bottom:45px !important;}
+.mb_50{margin-bottom:50px !important;}
+.mb_60{margin-bottom:60px !important;}
+.mb_70{margin-bottom:70px !important;}
+.mb_85{margin-bottom:85px !important;}
+
+.mt_0{margin-top:0 !important;}
+.mt_5{margin-top:5px !important;}
+.mt_8{margin-top:8px !important;}
+.mt_10{margin-top:10px !important;}
+.mt_15{margin-top:15px !important;}
+.mt_20{margin-top:20px !important;}
+.mt_25{margin-top:25px !important;}
+.mt_30{margin-top:30px !important;}
+.mt_35{margin-top:35px !important;}
+.mt_40{margin-top:40px !important;}
+.mt_50{margin-top:50px !important;}
+.mt_70{margin-top:70px !important;}
+
+/*padding*/
+.pb_0{padding-bottom:0px !important;}
+.pb_5{padding-bottom:5px !important;}
+.pb_20{padding-bottom:20px !important;}
+.pb_25{padding-bottom:25px !important;}
+
+.pt_0{padding-top:0px !important;}
+.pt_8{padding-top:8px !important;}
+.pt_10{padding-top:10px !important;}
+.pt_15{padding-top:15px !important;}
+.pt_20{padding-top:20px !important;}
+.pt_30{padding-top:30px !important;}
+.pt_35{padding-top:35px !important;}
+.pt_40{padding-top:40px !important;}
+.pt_50{padding-top:50px !important;}
+
+.pl_25{padding-left:25px !important;}
+.pl_10{padding-left:10px !important;}
+.pl_20{padding-left:20px !important;}
+.pl_30{padding-left:30px !important;}
+
+/*text-align*/
+.txt_r{text-align:right !important;}
+.txt_l{text-align:left !important;}
+.txt_c{text-align:center !important;}
+
+/*background*/
+.back_no{background:none !important;}
+
+/*border*/
+.bd_l{border-left:none !important;}
+.bd_r{border-right:none !important;}
+
+/*ir*/
+.ir{overflow:hidden;line-height:0 !important;font-size:0 !important;position:relative;text-indent:-10000px;/*display:inline-block;*/}
+.ir *{position:absolute;left:-10000px;top:-10000px;margin:0;padding:0;}
+
+/*float*/
+.f-l{float:left;}
+.f-r{float:right;}
